@@ -5,6 +5,6 @@ echo $archive;
 make clean
 make now.h
 cd ..
-tar cvzf "$archive" patcher
-scp "$archive" "android:"
-scp "$archive" "android:patcher.tar.gz"
+tar --exclude-vcs -c -v -z -f "$archive" patcher
+#scp "$archive" "android:"
+#scp "$archive" "android:patcher.tar.gz"
