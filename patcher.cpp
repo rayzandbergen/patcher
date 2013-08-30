@@ -790,7 +790,7 @@ void Patcher::showInfo()
         m_info.m_previous = now;
         // abuse the fantom screen to print some info
         char buf[20];
-        for (int i=0, j=m_info.m_offset; i<sizeof(buf); i++)
+        for (size_t i=0, j=m_info.m_offset; i<sizeof(buf); i++)
         {
             j++;
             if (!message[j])
