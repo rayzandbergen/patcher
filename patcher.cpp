@@ -39,6 +39,7 @@ static int doTimeout = 1;
 namespace MetaNote
 {
     enum {
+        info = MidiNote::E4,      //      toggle info mode
         up = MidiNote::D4,        //      move to next track in setlist
         down = MidiNote::C4,      //      move to previous track in setlist
         select = MidiNote::C5     //      select directly
@@ -73,6 +74,11 @@ class Patcher
             return "<none>";
     }
     int m_metaMode;
+    struct {
+        int m_mode;
+        struct timespec m_previous;
+        int m_offset;
+    } m_info;
     int m_partOffsetBcf;
     struct timespec m_debouncePrev;
     void sendEventToFantom(uint8_t midiStatus,
@@ -83,6 +89,8 @@ class Patcher
     void prevSection(void);
     void changeTrack(uint8_t track, bool setFaders = true);
     void changeTrackByNote(uint8_t note);
+    void toggleInfoMode(uint8_t note);
+    void showInfo();
     void updateBcfFaders(void);
     bool debounced(Real delaySeconds);
     void consumeSysEx(int device);
@@ -98,9 +106,12 @@ public:
         m_trackIdx(0), m_trackIdxWithinSet(0), m_sectionIdx(0),
         m_metaMode(0), m_partOffsetBcf(0)
     {
+        m_info.m_mode = 0;
+        m_info.m_offset = 0;
         initTracks(m_trackList, m_setList);
         m_trackIdx = m_setList[0];
         getTime(&m_debouncePrev);
+        m_info.m_previous = m_debouncePrev;
     };
 };
 
@@ -299,7 +310,10 @@ void Patcher::eventLoop(void)
                             if (m_metaMode)
                             {
                                 if (velo > 0)
+                                {
                                     changeTrackByNote(note);
+                                    toggleInfoMode(note);
+                                }
                             }
                             else
                             {
@@ -442,6 +456,8 @@ void Patcher::eventLoop(void)
         m_screen->flushMidi();
         wnoutrefresh(m_screen->m_track);
         doupdate();
+        if (m_metaMode && m_info.m_mode)
+            showInfo();
     }
 }
 
@@ -753,6 +769,39 @@ void Patcher::changeTrack(uint8_t track, bool setFaders)
     m_midi->putBytes(MidiDevice::FantomOut,
         MidiStatus::programChange|Fantom::programChangeChannel, (uint8_t)m_trackIdx);
     show(setFaders);
+}
+
+void Patcher::toggleInfoMode(uint8_t note)
+{
+    if (note == MetaNote::info)
+    {
+        m_info.m_mode = !m_info.m_mode;
+    }
+}
+
+void Patcher::showInfo()
+{
+    const char *message = "TBD ifconfig info *** ";
+    struct timespec now;
+    getTime(&now);
+    bool rv = timeDiff(&m_info.m_previous, &now) > 0.333;
+    if (rv)
+    {
+        m_info.m_previous = now;
+        // abuse the fantom screen to print some info
+        char buf[20];
+        for (int i=0, j=m_info.m_offset; i<sizeof(buf); i++)
+        {
+            j++;
+            if (!message[j])
+                j = 0;
+            buf[i] = message[j];
+        }
+        m_fantom->setPartName(0, buf);
+        m_info.m_offset++;
+        if (!message[m_info.m_offset])
+            m_info.m_offset = 0;
+    }
 }
 
 void Patcher::changeTrackByNote(uint8_t note)
