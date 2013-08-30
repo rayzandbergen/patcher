@@ -21,6 +21,7 @@
 #include "error.h"
 #include "patcher.h"
 #include "midi_note.h"
+#include "networkif.h"
 
 #define VERSION "1.0.0"
 
@@ -77,7 +78,8 @@ class Patcher
     struct {
         int m_mode;
         struct timespec m_previous;
-        int m_offset;
+        size_t m_offset;
+        std::string m_text;
     } m_info;
     int m_partOffsetBcf;
     struct timespec m_debouncePrev;
@@ -776,12 +778,15 @@ void Patcher::toggleInfoMode(uint8_t note)
     if (note == MetaNote::info)
     {
         m_info.m_mode = !m_info.m_mode;
+        if (m_info.m_mode)
+        {
+            m_info.m_text = getNetworkInterfaceAddresses();
+        }
     }
 }
 
 void Patcher::showInfo()
 {
-    const char *message = "TBD ifconfig info *** ";
     struct timespec now;
     getTime(&now);
     bool rv = timeDiff(&m_info.m_previous, &now) > 0.333;
@@ -793,13 +798,13 @@ void Patcher::showInfo()
         for (size_t i=0, j=m_info.m_offset; i<sizeof(buf); i++)
         {
             j++;
-            if (!message[j])
+            if (j >= m_info.m_text.length())
                 j = 0;
-            buf[i] = message[j];
+            buf[i] = m_info.m_text[j];
         }
         m_fantom->setPartName(0, buf);
         m_info.m_offset++;
-        if (!message[m_info.m_offset])
+        if (m_info.m_offset >= m_info.m_text.size())
             m_info.m_offset = 0;
     }
 }
