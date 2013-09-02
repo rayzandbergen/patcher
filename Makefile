@@ -17,7 +17,7 @@ LDFLAGS+=-lncursesw
 endif
 
 CFLAGS=$(CXXFLAGS)
-HEADERS=midi.h screen.h dump.h trackdef.h fantom.h now.h monofilter.h transposer.h timestamp.h activity.h patcher.h midi_note.h controller.h toggler.h networkif.h
+HEADERS=midi.h screen.h dump.h trackdef.h fantom.h now.h monofilter.h transposer.h timestamp.h activity.h patcher.h midi_note.h controller.h toggler.h networkif.h sequencer.h
 now.h:
 	echo "#define NOW \""`date '+%d %b %Y'`"\"" > $@
 	echo "#define SVN \""`svnversion -n`"\"" >> $@
@@ -36,7 +36,8 @@ activity.o: activity.cpp $(HEADERS)
 controller.o: controller.cpp $(HEADERS)
 toggler.o: toggler.cpp $(HEADERS)
 networkif.o: networkif.cpp $(HEADERS)
-patcher: fantom.o patcher.o screen.o midi.o dump.o trackdef.o monofilter.o transposer.o timestamp.o activity.o controller.o toggler.o networkif.o
+sequencer.o: sequencer.cpp $(HEADERS)
+patcher: fantom.o patcher.o screen.o midi.o dump.o trackdef.o monofilter.o transposer.o timestamp.o activity.o controller.o toggler.o networkif.o sequencer.o
 	$(CXX) $(LDFLAGS) -o $@ $^
 distclean:
 	-rm -rf *.o defs.h defs.cpp patcher fantom_cache.bin tags

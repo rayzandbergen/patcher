@@ -22,6 +22,7 @@
 #include "patcher.h"
 #include "midi_note.h"
 #include "networkif.h"
+#include "sequencer.h" 
 
 #define VERSION "1.0.0"
 
@@ -61,6 +62,7 @@ class Patcher
     int m_trackIdxWithinSet;
     SetList m_setList;
     int m_sectionIdx;
+    Sequencer m_sequencer;
     Track *currentTrack(void) const {
         return m_trackList[m_trackIdx]; }
     FantomPerformance *currentPerf(void) const {
