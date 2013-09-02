@@ -717,7 +717,7 @@ bool Patcher::debounced(Real delaySeconds)
 {
     struct timespec now;
     getTime(&now);
-    bool rv = timeDiff(&m_debouncePrev, &now) > delaySeconds;
+    bool rv = timeDiffSeconds(&m_debouncePrev, &now) > delaySeconds;
     if (rv)
     {
         m_debouncePrev = now;
@@ -789,7 +789,7 @@ void Patcher::showInfo()
 {
     struct timespec now;
     getTime(&now);
-    bool rv = timeDiff(&m_info.m_previous, &now) > 0.333;
+    bool rv = timeDiffSeconds(&m_info.m_previous, &now) > 0.333;
     if (rv)
     {
         m_info.m_previous = now;

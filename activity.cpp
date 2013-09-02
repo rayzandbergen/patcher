@@ -31,7 +31,7 @@ bool Activity::get(int idx)
 
     struct timespec now;
     getTime(&now);
-    if (timeDiff(m_t0 + idx, &now) > (Real)0.1)
+    if (timeDiffSeconds(m_t0 + idx, &now) > (Real)0.1)
     {
         m_dirty = true;
         m_active[idx] = false;
