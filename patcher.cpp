@@ -5,8 +5,6 @@
 #include <string.h>
 #include <vector>
 #include <ctype.h>
-#include <sys/time.h>
-#include <signal.h>
 #include <assert.h>
 
 #include "trackdef.h"
@@ -23,6 +21,7 @@
 #include "midi_note.h"
 #include "networkif.h"
 #include "sequencer.h" 
+#include "alarm.h" 
 
 #define VERSION "1.0.0"
 
@@ -31,11 +30,6 @@
 #define LOG_CONTROLLER
 #define LOG_PROGRAM_CHANGE
 #define LOG_PITCHBEND
-
-// these globals are manipulated by a signal handler
-// that acts as a watchdog during startup
-int globalTimeout = 0;
-static int doTimeout = 1;
 
 // in meta mode note numbers are used to select a track
 namespace MetaNote
@@ -162,7 +156,7 @@ void Patcher::downloadPerfomanceData(void)
         changeTrack(i, false);
         nanosleep(&ts, NULL);
         m_fantom->getPerfName(s);
-        doTimeout = 0;
+        g_alarm.m_doTimeout = false;
         m_screen->printMidi("%3.0f%% reading '%s'\n", 100.0*(i+1.0)/nofTracks(), s);
         m_screen->flushMidi();
         strcpy(m_perf[i].m_name, s);
@@ -238,7 +232,7 @@ void Patcher::eventLoop(void)
         m_softPartActivity.clean();
         int deviceRx = m_midi->wait();
         uint8_t byteRx = m_midi->getByte(deviceRx);
-        doTimeout = 0;
+        g_alarm.m_doTimeout = false;
         if (byteRx < 0x80)
         {
             // data without status - skip
@@ -852,39 +846,6 @@ void Patcher::consumeSysEx(int device)
             break;
     }
     m_screen->printMidi("\n");
-}
-
-void alarmHandler(int dummy)
-{
-    (void)dummy;
-    if (doTimeout)
-        globalTimeout = 1;
-}
-
-int setAlarmHandler()
-{
-    struct sigaction action;
-    action.sa_sigaction = NULL;
-    action.sa_handler = alarmHandler;
-    sigemptyset(&action.sa_mask);
-    action.sa_flags = 0;
-    action.sa_restorer = NULL;
-    if (sigaction(SIGALRM, &action, NULL) < 0)
-    {
-        perror("sigaction");
-        return -3;
-    }
-    struct itimerval it;
-    it.it_interval.tv_sec = 0;
-    it.it_interval.tv_usec = 0;
-    it.it_value.tv_sec = 1;
-    it.it_value.tv_usec = 0;
-    if (setitimer(ITIMER_REAL, &it, NULL) < 0)
-    {
-        perror("setitimer");
-        return -3;
-    }
-    return 0;
 }
 
 int main(int argc, char **argv)

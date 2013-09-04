@@ -9,8 +9,7 @@
 #include <alsa/asoundlib.h>
 #include "error.h"
 #include "midi.h"
-
-extern int globalTimeout;
+#include "alarm.h"
 
 namespace {
 
@@ -155,7 +154,7 @@ int Midi::wait(int usecTimeout, int device) const
     {
         e = select(maxFd+1, &fdSet, NULL, NULL, usecTimeout> 0 ? &tv : NULL);
         interrupted = e == -1 && errno == EINTR;
-    } while (interrupted && !globalTimeout);
+    } while (interrupted && !g_alarm.m_globalTimeout);
     if (e == -1)
     {
         throw(Error("select", errno));
@@ -182,7 +181,7 @@ int Midi::cardNameToNum(const char *target) const
     const char *proc = "/proc/asound/cards";
     int hwNum = -1;
     FILE *fp = fopen(proc, "r");
-    if (globalTimeout || !fp)
+    if (g_alarm.m_globalTimeout || !fp)
     {
         throw(Error("open", errno));
     }
@@ -222,7 +221,7 @@ uint8_t Midi::getByte(int device)
         ssize_t n = read(fd(device), &buf, 1);
         if (n >= 0)
             break;
-        if (globalTimeout || (n < 0 && (errno != EAGAIN && errno != EINTR)))
+        if (g_alarm.m_globalTimeout || (n < 0 && (errno != EAGAIN && errno != EINTR)))
         {
             throw(Error("read", errno));
         }
@@ -236,7 +235,7 @@ static void writeChecked(int fd, const void *buf, size_t count)
     for (;;)
     {
         ssize_t rv = write(fd, buf, count);
-        if (globalTimeout || (rv == -1 && errno != EINTR))
+        if (g_alarm.m_globalTimeout || (rv == -1 && errno != EINTR))
         {
             throw(Error("write", errno));
         }
