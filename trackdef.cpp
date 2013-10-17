@@ -1199,6 +1199,124 @@ void initTracks(std::vector<Track*> &tracks, SetList &setList)
 /*
  * ************************************************************
  */
+    t = new Track("Fatal Tragedy");
+    t->m_section.clear();
+
+    s = new Section("piano");
+    s->m_part.clear();
+    p = new SwPart("C0", "B9", 0, 0, "piano");
+    s->addPart(p);
+    t->addSection(s);
+
+    s = new Section("choir");
+    s->m_part.clear();
+    p = new SwPart("C0", "B5", 1, 0, "choir0");
+    s->addPart(p);
+    p = new SwPart("C0", "B5", 1, 12, "choir1");
+    s->addPart(p);
+    p = new SwPart("C6", "B9", 0, 0, "piano");
+    s->addPart(p);
+    t->addSection(s);
+
+    s = new Section("piano");
+    s->m_part.clear();
+    p = new SwPart("C0", "B9", 0, 0, "piano");
+    s->addPart(p);
+    t->addSection(s);
+
+    s = new Section("organ + EP");
+    s->m_part.clear();
+    p = new SwPart("C5", "B9", 2, 0, "organ");
+    s->addPart(p);
+    p = new SwPart("C0", "B4", 3, 0, "EP");
+    s->addPart(p);
+    p = new SwPart("C0", "B4", 0, -12, "piano");
+    s->addPart(p);
+    t->addSection(s);
+
+    s = new Section("organ unison");
+    s->m_part.clear();
+    p = new SwPart("C5", "B9", 0, 0, "piano");
+    s->addPart(p);
+    p = new SwPart("C0", "B4", 5, +36, "organ");
+    s->addPart(p);
+    t->addSection(s);
+
+    s = new Section("choir");
+    s->m_part.clear();
+    p = new SwPart("C0", "B5", 1, 0, "choir0");
+    s->addPart(p);
+    p = new SwPart("C0", "B5", 1, 12, "choir1");
+    s->addPart(p);
+    p = new SwPart("C6", "B9", 0, 0, "piano");
+    s->addPart(p);
+    t->addSection(s);
+
+    s = new Section("piano");
+    s->m_part.clear();
+    p = new SwPart("C0", "B9", 0, 0, "piano");
+    s->addPart(p);
+    t->addSection(s);
+
+        int cc = 4;
+
+    s = new Section("clavi solo");
+    s->m_part.clear();
+    p = new SwPart("C0", "B5", cc, 12, "clavi lo");
+    s->addPart(p);
+    p = new SwPart("C6", "B9", cc, -12, "clavi hi");
+    s->addPart(p);
+    t->addSection(s);
+
+    s = new Section("Harmoniser clavi");
+    s->m_part.clear();
+    s->addPart(new SwPart("C0", "B9", cc, 0, "upper"));
+    p = new SwPart("C0", "B9",  cc, 1000 - 12, "lower");
+    p->m_customTranspose[0] = 4; // c
+    p->m_customTranspose[1] = 5;
+    p->m_customTranspose[2] = 0; // d
+    p->m_customTranspose[3] = 0;
+    p->m_customTranspose[4] = 3; // e
+    p->m_customTranspose[5] = 0; // f
+    p->m_customTranspose[6] = 4;
+    p->m_customTranspose[7] = 4; // g
+    p->m_customTranspose[8] = 0;
+    p->m_customTranspose[9] = 3; // a
+    p->m_customTranspose[10] = 3;
+    p->m_customTranspose[11] = 5; // b
+    p->m_customTransposeOffset = 0;
+    s->addPart(p);
+    s->addPart(new SwPart("C0", "B9", cc, -12, "upper"));
+    p = new SwPart("C0", "B9",  cc, 1000 - 24, "lower");
+    p->m_customTranspose[0] = 4; // c
+    p->m_customTranspose[1] = 5;
+    p->m_customTranspose[2] = 0; // d
+    p->m_customTranspose[3] = 0;
+    p->m_customTranspose[4] = 3; // e
+    p->m_customTranspose[5] = 0; // f
+    p->m_customTranspose[6] = 4;
+    p->m_customTranspose[7] = 4; // g
+    p->m_customTranspose[8] = 0;
+    p->m_customTranspose[9] = 3; // a
+    p->m_customTranspose[10] = 3;
+    p->m_customTranspose[11] = 5; // b
+    p->m_customTransposeOffset = 0;
+    s->addPart(p);
+    t->addSection(s);
+
+    s = new Section("clavi solo 2");
+    s->m_part.clear();
+    p = new SwPart("C0", "B5", cc, 12, "clavi lo");
+    s->addPart(p);
+    p = new SwPart("C6", "B9", cc, -12, "clavi hi");
+    s->addPart(p);
+    t->addSection(s);
+
+    t->m_chain = true;
+    tracks.push_back(t);
+/*
+ * ************************************************************
+ */
     // set 1
     setList.add(tracks, "Overture 1928 2");
     setList.add(tracks, "Overture 1928");
