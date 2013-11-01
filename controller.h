@@ -10,6 +10,7 @@ protected:
     uint8_t m_to;
     Real m_x0, m_y0, m_x1, m_y1;
 public:
+    virtual const char *name() const { return "default"; }
     void value(uint8_t controller, uint8_t val, 
         uint8_t *controllerOut, uint8_t *valOut) const;
     virtual Real interpolate(Real x, Real x0, Real y0, 
@@ -24,6 +25,7 @@ public:
 
 class ControllerRemapVolQuadratic: public ControllerRemap {
 public:
+    virtual const char *name() const { return "volQuadratic"; }
     ControllerRemapVolQuadratic(): ControllerRemap(
         MidiController::continuousController16, 
         MidiController::mainVolume 
@@ -34,6 +36,7 @@ public:
 
 class ControllerRemapVolReverse: public ControllerRemap {
 public:
+    virtual const char *name() const { return "volReverse"; }
     ControllerRemapVolReverse(): ControllerRemap(
         MidiController::continuousController16, 
         MidiController::mainVolume,
