@@ -7,7 +7,7 @@ class MonoFilter
     uint8_t m_noteOnCount[128];
     uint8_t m_ringing[128];
     bool m_sustain;
-    public:
+public:
     //Screen *m_screen;
     MonoFilter();
     void sustain(bool b);
