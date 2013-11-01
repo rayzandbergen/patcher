@@ -10,7 +10,8 @@ class Toggler
     enum NoteStatus { On, Hanging, On2, Off }; 
     bool m_enabled;
     NoteStatus m_noteStatus[128];
-    public:
+public:
+    bool enabled() const { return m_enabled; }
     Toggler();
     void enable() { m_enabled = true; }
     bool pass(uint8_t midiStatus, uint8_t data1, uint8_t data2);
