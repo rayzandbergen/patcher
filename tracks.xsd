@@ -74,7 +74,7 @@
                                                                 <xs:attribute name="offset" type="xs:integer"/>
                                                             </xs:complexType>
                                                         </xs:element>
-                                                        <xs:element name="controllerRemap" minOccurs="0", maxOccurs="1"/>
+                                                        <xs:element name="controllerRemap" minOccurs="0" maxOccurs="1"/>
                                                     </xs:all>
                                                     <xs:attribute name="name"/>
                                                     <xs:attribute name="channel" type="MidiChannel"/>
