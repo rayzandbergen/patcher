@@ -5,22 +5,28 @@
             <xs:enumeration value="true"/>
             <xs:enumeration value="false"/>
         </xs:restriction>
-    </xs:simpleType> 
+    </xs:simpleType>
+    <xs:simpleType name="ControllerRemapId">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="volQuadratic"/>
+            <xs:enumeration value="volReverse"/>
+        </xs:restriction>
+    </xs:simpleType>
     <xs:simpleType name="TrackIndex">
         <xs:restriction base="xs:string">
             <xs:pattern value="([0-9]+)|(previous)|(current)|(next)"/>
         </xs:restriction>
-    </xs:simpleType> 
+    </xs:simpleType>
     <xs:simpleType name="MidiChannel">
         <xs:restriction base="xs:positiveInteger">
             <xs:maxInclusive value="16"/>
         </xs:restriction>
-    </xs:simpleType> 
+    </xs:simpleType>
     <xs:simpleType name="MidiNote">
         <xs:restriction base="xs:string">
             <xs:pattern value="[A-Ga-g]#?[0-9]+"/>
         </xs:restriction>
-    </xs:simpleType> 
+    </xs:simpleType>
     <xs:element name="tracks">
         <xs:complexType mixed="true">
             <xs:sequence>
@@ -62,8 +68,8 @@
                                                                             <xs:sequence minOccurs="0">
                                                                                 <xs:element name="map" maxOccurs="12">
                                                                                     <xs:complexType mixed="true">
-                                                                                        <xs:attribute name="from" type="xs:integer"/>
-                                                                                        <xs:attribute name="to" type="xs:integer"/>
+                                                                                        <xs:attribute name="from" type="xs:integer" use="required"/>
+                                                                                        <xs:attribute name="to" type="xs:integer" use="required"/>
                                                                                     </xs:complexType>
                                                                                 </xs:element>
                                                                             </xs:sequence>
@@ -74,13 +80,17 @@
                                                                 <xs:attribute name="offset" type="xs:integer"/>
                                                             </xs:complexType>
                                                         </xs:element>
-                                                        <xs:element name="controllerRemap" minOccurs="0" maxOccurs="1"/>
+                                                        <xs:element name="controllerRemap" minOccurs="0" maxOccurs="1">
+                                                            <xs:complexType mixed="true">
+                                                                <xs:attribute name="id" type="ControllerRemapId" use="required"/>
+                                                            </xs:complexType>
+                                                        </xs:element>
                                                     </xs:all>
                                                     <xs:attribute name="name"/>
                                                     <xs:attribute name="channel" type="MidiChannel"/>
                                                     <xs:attribute name="toggle" type="Boolean"/>
                                                     <xs:attribute name="mono" type="Boolean"/>
-                                                    <xs:attribute name="sustainTranspose" type="Boolean"/>
+                                                    <xs:attribute name="sustainTranspose" type="xs:integer"/>
                                                 </xs:complexType>
                                             </xs:element>
                                         </xs:choice>
