@@ -37,9 +37,23 @@ Section::Section(const char *name, bool noteOffEnter, bool noteOffLeave):
     addPart(p);
 }
 
-SwPart::SwPart(const char *lower, const char *upper, 
+Section::~Section()
+{
+    clear();
+}
+
+void Section::clear()
+{
+    for (std::vector<SwPart *>::iterator i = m_part.begin(); i != m_part.end(); i++)
+        delete *i;
+    m_part.clear();
+    free((void*)m_name);
+    m_name = 0;
+}
+
+SwPart::SwPart(const char *lower, const char *upper,
             uint8_t channel, int transpose, const char *name, bool mono, Transposer *t):
-        m_name(name), m_channel(channel), m_transpose(transpose), 
+        m_name(name), m_channel(channel), m_transpose(transpose),
         m_mono(mono), m_transposer(t)
 {
     m_rangeLower = lower ? stringToNoteNum(lower) : 0;
@@ -47,7 +61,22 @@ SwPart::SwPart(const char *lower, const char *upper,
     m_controllerRemap = new ControllerRemap;
 }
 
-uint8_t SwPart::stringToNoteNum(const char *s) 
+SwPart::~SwPart()
+{
+    clear();
+}
+
+void SwPart::clear()
+{
+    delete m_controllerRemap;
+    m_controllerRemap = 0;
+    delete m_transposer;
+    m_transposer = 0;
+    free((void*)m_name);
+    m_name = 0;
+}
+
+uint8_t SwPart::stringToNoteNum(const char *s)
 {
     const struct NoteOffset {
         char m_char;
@@ -83,7 +112,11 @@ uint8_t SwPart::stringToNoteNum(const char *s)
         num--;
         i++;
     }
-    uint8_t oct = s[i] - '0';
+    uint8_t oct = s[i++] - '0';
+    if (s[i])
+    {
+        oct = 10*oct + (s[i] - '0');
+    }
     num += (uint8_t)12 * oct;
     return num;
 }
@@ -98,6 +131,20 @@ Track::Track(const char *name, bool chain, int startSection): m_name(name), m_ch
         s->m_part[0]->m_channel = i;
         addSection(s);
     }
+}
+
+Track::~Track()
+{
+    clear();
+}
+
+void Track::clear()
+{
+    for (std::vector<Section *>::iterator i = m_section.begin(); i != m_section.end(); i++)
+        delete *i;
+    m_section.clear();
+    free((void*)m_name);
+    m_name = 0;
 }
 
 void Track::dumpToLog(Screen *screen, const char *prefix) const
@@ -275,7 +322,7 @@ void initTracks(std::vector<Track*> &tracks, SetList &setList)
     s->addPart(new SwPart("C0", "A5", 5, 0, "lower"));
     s->addPart(new SwPart("C0", "A5", 5, 12, "lower"));
     t->addSection(s);
-    
+
     s = new Section("Xylo - 4x");
     s->m_part.clear();
     s->addPart(new SwPart("C0", "B9", 2, +24, "upper"));
@@ -307,7 +354,7 @@ void initTracks(std::vector<Track*> &tracks, SetList &setList)
     s->addPart(new SwPart("C0", "A5", 5, 0, "lower"));
     s->addPart(new SwPart("C0", "A5", 5, 12, "lower"));
     t->addSection(s);
-    
+
     s = new Section("Fuzzy");
     s->m_part.clear();
     s->addPart(new SwPart("C5", "B9", 8, -12, "upper"));

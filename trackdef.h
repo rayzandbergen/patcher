@@ -32,6 +32,8 @@ public:
     SwPart(const char *lower = NULL, const char *upper = NULL, 
             uint8_t channel = 255, int transpose = 0, 
             const char *name = NULL, bool mono=false, Transposer *t = NULL);
+    ~SwPart();
+    void clear();
     void dumpToLog(Screen *screen, const char *prefix) const;
 };
 
@@ -46,6 +48,8 @@ public:
     int m_previousTrack;
     int m_previousSection;
     Section(const char *name, bool noteOffEnter = true, bool noteOffLeave = true);
+    ~Section();
+    void clear();
     void addPart(SwPart *s) { m_part.push_back(s); }
     int nofParts(void) const { return m_part.size(); }
     bool next(int *nextTrack, int *nextSection);
@@ -60,6 +64,8 @@ public:
     bool m_chain;
     int m_startSection;
     Track(const char *name, bool chain = false, int startSection = 0);
+    ~Track();
+    void clear();
     void addSection(Section *s) { m_section.push_back(s); }
     int nofSections(void) const { return m_section.size(); }
     void dumpToLog(Screen *screen, const char *prefix) const;
