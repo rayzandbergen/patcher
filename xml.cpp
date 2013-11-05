@@ -8,6 +8,7 @@
 #include <xercesc/util/XMLStringTokenizer.hpp>
 #include <xercesc/util/XMLChar.hpp>
 #include <iostream>
+#include <sstream>
 #include <vector>
 #include <list>
 #include <map>
@@ -107,240 +108,6 @@ public:
     }
 };
 
-// Finds the first node that matches an XPath expression
-DOMNode *findNode(DOMDocument *doc, const DOMElement *node, const char *path)
-{
-    DOMXPathResult *r = xPath(path, doc)->evaluate(node, DOMXPathResult::FIRST_ORDERED_NODE_TYPE, 0);
-    DOMNode *rv = r->getNodeValue();
-    delete r;
-    return rv;
-}
-
-// Finds nodes that match an XPath expression
-DOMXPathResult *findNodes(DOMDocument *doc, const DOMElement *node, const char *path)
-{
-    return xPath(path, doc)->evaluate(node, DOMXPathResult::ORDERED_NODE_SNAPSHOT_TYPE, 0);
-}
-
-// Adds float values to a node as text children
-void addFloatsToNode(DOMDocument *doc, DOMNode *node, XMLStringTokenizer *floatTokens, const char **leafNames)
-{
-    for (size_t i=0; leafNames[i]; i++)
-    {
-        DOMElement *floatValueNode = doc->createElement(xmlStr(leafNames[i]));
-        DOMText *floatText = doc->createTextNode(floatTokens->nextToken());
-        floatValueNode->appendChild(floatText);
-        node->appendChild(floatValueNode);
-    }
-}
-
-// Re-organises the text value of a node (which consists of a list of floats) into
-// properly tagged child nodes
-void untangleFloatsInNode(DOMDocument *doc, DOMNode *node, const char *by, const ConstXmlStringList &byLabel, const char **leafNames)
-{
-    DOMNode *parent = node->getParentNode();
-    DOMNode *newNode = node;
-    XMLStringTokenizer *floatTokens = new XMLStringTokenizer(node->getTextContent());
-    node->setTextContent(0);
-    while (node->hasChildNodes())
-    {
-        node->removeChild(node->getFirstChild());
-    }
-    size_t idx = 0;
-    for (ConstXmlStringList::const_iterator label = byLabel.begin(); label != byLabel.end(); label++, idx++)
-    {
-        if (idx > 0) // first node is re-used, other nodes are created
-        {
-            newNode = doc->createElement(node->getNodeName());
-            parent->insertBefore(newNode, node);
-        }
-        ((DOMElement*)newNode)->setAttribute(xmlStr(by), *label);
-        addFloatsToNode(doc, newNode, floatTokens, leafNames);
-    }
-    delete floatTokens;
-}
-
-// Converts a DOMDocument from mvnx version 3 to version 4
-void fixMvnx(DOMDocument *doc)
-{
-    DOMElement *root = doc->getDocumentElement();
-    DOMNode *mvnx = findNode(doc, root, "/mvnx");
-    ((DOMElement*)mvnx)->setAttribute(xmlStr("version"), xmlStr("4"));
-    DOMXPathResult *subjects = findNodes(doc, (DOMElement*)mvnx, "./subject");
-    for (size_t subjectIdx = 0; subjects->snapshotItem(subjectIdx); subjectIdx++)
-    {
-        DOMNode *subject = subjects->getNodeValue();
-        DOMXPathResult *segments = findNodes(doc, (DOMElement*)subject, "./segments/segment");
-        ConstXmlStringList segmentLabels;
-        for (size_t segmentIdx = 0; segments->snapshotItem(segmentIdx); segmentIdx++)
-        {
-            DOMNode *segment = segments->getNodeValue();
-            const XMLCh *label = ((DOMElement*)segment)->getAttribute(xmlStr("label"));
-            segmentLabels.push_back(label);
-            DOMXPathResult *points = findNodes(doc, (DOMElement*)segment, "./points/point");
-            DOMNode *pointsRemove = findNode(doc, (DOMElement*)segment, "./points");
-            ((DOMElement*)segment)->removeChild(pointsRemove);
-            for (size_t pointIdx = 0; points->snapshotItem(pointIdx); pointIdx++)
-            {
-                DOMNode *point = points->getNodeValue();
-                XMLStringTokenizer *floatTokens = new XMLStringTokenizer(point->getTextContent());
-                point->setTextContent(0);
-                const char *leafName[] = {"x", "y", "z", 0};
-                addFloatsToNode(doc, point, floatTokens, leafName);
-                segment->appendChild(point);
-                delete floatTokens;
-            }
-            delete points;
-        }
-        delete segments;
-        ConstXmlStringList jointLabels;
-        DOMXPathResult *joints = findNodes(doc, (DOMElement*)subject, "./joints/joint");
-        size_t strLenConnector = strlen("connector");
-        for (size_t jointIdx = 0; joints->snapshotItem(jointIdx); jointIdx++)
-        {
-            DOMNode *joint = joints->getNodeValue();
-            const XMLCh *label = ((DOMElement*)joint)->getAttribute(xmlStr("label"));
-            jointLabels.push_back(label);
-            DOMNodeList *connectorList = joint->getChildNodes();
-            NodeList newConnectorList;
-            for (size_t connectorIdx=0; connectorIdx<connectorList->getLength(); connectorIdx++)
-            {
-                DOMNode *connector = connectorList->item(connectorIdx);
-                const XMLCh *cn = connector->getNodeName();
-                if (XMLString::compareNString(cn, xmlStr("connector"), strLenConnector) == 0)
-                {
-                    const XMLCh *id = cn + strLenConnector;
-                    XMLCh *segmentLabel = 0, *pointLabel = 0;
-                    DOMNodeList *childList = connector->getChildNodes();
-                    for (size_t i=0; i<childList->getLength(); i++)
-                    {
-                        DOMNode *node = childList->item(i);
-                        if (node->getNodeType() == DOMNode::TEXT_NODE)
-                        {
-                            XMLStringTokenizer tok(node->getTextContent(), xmlStr(" \r\n\t/"));
-                            while (tok.hasMoreTokens())
-                            {
-                                if (!segmentLabel)
-                                    segmentLabel = tok.nextToken();
-                                else
-                                    pointLabel = tok.nextToken();
-                            }
-                            if (pointLabel)
-                            {
-                                DOMElement *newConnector = doc->createElement(xmlStr("connector"));
-                                newConnector->setAttribute(xmlStr("id"), id);
-                                newConnector->setAttribute(xmlStr("segment"), segmentLabel);
-                                newConnector->setAttribute(xmlStr("point"), pointLabel);
-                                newConnectorList.push_back(newConnector);
-                                break;
-                            }
-                        }
-                    }
-                }
-            } // foreach connector
-            while (joint->hasChildNodes())
-            {
-                joint->removeChild(joint->getFirstChild());
-            }
-            for (NodeList::iterator i = newConnectorList.begin(); i != newConnectorList.end(); i++)
-            {
-                joint->appendChild(*i);
-            }
-        } // foreach joint
-        delete joints;
-        DOMXPathResult *frames = findNodes(doc, (DOMElement*)subject, "./frames/frame");
-        for (size_t frameIdx = 0; frames->snapshotItem(frameIdx); frameIdx++)
-        {
-            DOMNode *frame = frames->getNodeValue();
-#if 0
-            if (frameIdx % 10 == 0)
-            {
-                double percent = 100.0 * frameIdx / frames->getSnapshotLength();
-                std::cout << "fixing " << percent << "%\r";
-                std::cout.flush();
-            }
-#endif
-            DOMNode *com = findNode(doc, (DOMElement*)frame, "./centerOfMass");
-            if (com)
-            {
-                XMLStringTokenizer *floatTokens = new XMLStringTokenizer(com->getTextContent());
-                com->setTextContent(0);
-                const char *leafName[] = {"x", "y", "z", 0};
-                addFloatsToNode(doc, com, floatTokens, leafName);
-                delete floatTokens;
-            }
-            struct {
-                const char *m_name;
-                const char *m_by;
-                const ConstXmlStringList *m_byLabel;
-                const char *m_leafNames[5];
-            } untangleNodes[] =
-            {
-                { "./orientation",          "segment", &segmentLabels, {"w", "x", "y", "z", 0 } },
-                { "./position",             "segment", &segmentLabels, {"x", "y", "z", 0 } },
-                { "./velocity",             "segment", &segmentLabels, {"x", "y", "z", 0 } },
-                { "./acceleration",         "segment", &segmentLabels, {"x", "y", "z", 0 } },
-                { "./angularVelocity",      "segment", &segmentLabels, {"x", "y", "z", 0 } },
-                { "./angularAcceleration",  "segment", &segmentLabels, {"x", "y", "z", 0 } },
-                { "./jointAngle",       "joint",   &jointLabels,   {"angle", "angle", "angle", 0 } },
-                { "./jointAngleXZY",    "joint",   &jointLabels,   {"angle", "angle", "angle", 0 } },
-                { 0, 0, 0, { 0 } }
-            }, *u;
-            for (u = &untangleNodes[0]; u->m_name; u++)
-            {
-                DOMNode *node = findNode(doc, (DOMElement*)frame, u->m_name);
-                if (node)
-                {
-                    untangleFloatsInNode(doc, node, u->m_by, *u->m_byLabel, u->m_leafNames);
-                }
-            }
-        } // foreach frame
-        delete frames;
-    } // foreach subject
-    delete subjects;
-}
-
-void parseTracks(DOMDocument *doc, std::vector<Track*> &trackList)
-{
-    DOMElement *root = doc->getDocumentElement();
-    DOMNode *tracksNode = findNode(doc, root, "/tracks");
-    DOMXPathResult *trackNodes = findNodes(doc, (DOMElement*)tracksNode, "./track");
-    for (size_t trackIdx = 0; trackNodes->snapshotItem(trackIdx); trackIdx++)
-    {
-        DOMNode *trackNode = trackNodes->getNodeValue();
-        const XMLCh *name = ((DOMElement*)trackNode)->getAttribute(xmlStr("name"));
-        Track *track = new Track(XMLString::transcode(name));
-        const XMLCh *sss = ((DOMElement*)trackNode)->getAttribute(xmlStr("startSection"));
-        unsigned int ssi;
-        if (XMLString::textToBin(sss, ssi))
-        {
-            track->m_startSection = ssi;
-        }
-        const XMLCh *chs = ((DOMElement*)trackNode)->getAttribute(xmlStr("chain"));
-        if (0 == XMLString::compareIString(chs, xmlStr("true")))
-        {
-            track->m_chain = true;
-        }
-        DOMXPathResult *sectionNodes = findNodes(doc, (DOMElement*)trackNode, "./section");
-        for (size_t sectionIdx = 0; sectionNodes->snapshotItem(sectionIdx); sectionIdx++)
-        {
-            DOMNode *sectionNode = sectionNodes->getNodeValue();
-            const XMLCh *name = ((DOMElement*)sectionNode)->getAttribute(xmlStr("name"));
-            Section *section = new Section(XMLString::transcode(name));
-            DOMXPathResult *partNodes = findNodes(doc, (DOMElement*)trackNode, "./part");
-            for (size_t partIdx = 0; partNodes->snapshotItem(partIdx); partIdx++)
-            {
-                DOMNode *partNode = partNodes->getNodeValue();
-                const XMLCh *name = ((DOMElement*)partNode)->getAttribute(xmlStr("name"));
-                SwPart *part = new SwPart(XMLString::transcode(name));
-                section->m_part.push_back(part);
-            }
-            track->m_section.push_back(section);
-        }
-        trackList.push_back(track);
-    }
-}
-
 // Serialises a DOMDocument to a file
 void serialise(DOMDocument *doc, const char *outFile)
 {
@@ -357,6 +124,223 @@ void serialise(DOMDocument *doc, const char *outFile)
     delete serializer;
 }
 
+// Finds the first node that matches an XPath expression
+DOMNode *findNode(DOMDocument *doc, const DOMElement *node, const char *path)
+{
+    DOMXPathResult *r = xPath(path, doc)->evaluate(node, DOMXPathResult::FIRST_ORDERED_NODE_TYPE, 0);
+    DOMNode *rv = r->getNodeValue();
+    delete r;
+    return rv;
+}
+
+// Finds nodes that match an XPath expression
+DOMXPathResult *findNodes(DOMDocument *doc, const DOMElement *node, const char *path)
+{
+    return xPath(path, doc)->evaluate(node, DOMXPathResult::ORDERED_NODE_SNAPSHOT_TYPE, 0);
+}
+
+std::stringstream stringStream;
+
+// Puts an XMLString into an std::stream
+std::stringstream &xmlStream(const XMLCh *c)
+{
+    char *s = XMLString::transcode(c);
+    stringStream.clear();
+    stringStream << s;
+    XMLString::release(&s);
+    return stringStream;
+}
+
+// Puts an XMLString into an std::string
+std::string xmlStdString(const XMLCh *c)
+{
+    char *s = XMLString::transcode(c);
+    std::string stdString(s);
+    XMLString::release(&s);
+    return stdString;
+}
+
+// Parses a DOM document into a track list
+void parseTracks(DOMDocument *doc, std::vector<Track*> &trackList)
+{
+    DOMElement *root = doc->getDocumentElement();
+    DOMNode *tracksNode = findNode(doc, root, "/tracks");
+    DOMXPathResult *trackNodes = findNodes(doc, (DOMElement*)tracksNode, "./track");
+    for (size_t trackIdx = 0; trackNodes->snapshotItem(trackIdx); trackIdx++)
+    {
+        DOMNode *trackNode = trackNodes->getNodeValue();
+        char *name = XMLString::transcode(((DOMElement*)trackNode)->getAttribute(xmlStr("name")));
+        Track *track = new Track(strdup(name));
+        XMLString::release(&name);
+        track->clear();
+        xmlStream(((DOMElement*)trackNode)->getAttribute(xmlStr("startSection")))
+                >> track->m_startSection;
+        if (xmlStdString(((DOMElement*)trackNode)->getAttribute(xmlStr("chain"))) == "true")
+        {
+            track->m_chain = true;
+        }
+        DOMXPathResult *sectionNodes = findNodes(doc, (DOMElement*)trackNode, "./section");
+        for (size_t sectionIdx = 0; sectionNodes->snapshotItem(sectionIdx); sectionIdx++)
+        {
+            DOMNode *sectionNode = sectionNodes->getNodeValue();
+            char *name = XMLString::transcode(((DOMElement*)sectionNode)->getAttribute(xmlStr("name")));
+            Section *section = new Section(strdup(name));
+            XMLString::release(&name);
+            section->clear();
+            DOMNode *noteOffNode = findNode(doc, (DOMElement*)sectionNode, "./noteOff");
+            if (noteOffNode)
+            {
+                if (((DOMElement*)noteOffNode)->hasAttribute(xmlStr("enter")))
+                {
+                    std::string no = xmlStdString(((DOMElement*)noteOffNode)->getAttribute(xmlStr("enter")));
+                    section->m_noteOffEnter = no == "true";
+                }
+                if (((DOMElement*)noteOffNode)->hasAttribute(xmlStr("leave")))
+                {
+                    std::string no = xmlStdString(((DOMElement*)noteOffNode)->getAttribute(xmlStr("leave")));
+                    section->m_noteOffLeave = no == "true";
+                }
+            }
+            DOMNode *chainNode = findNode(doc, (DOMElement*)sectionNode, "./chain");
+            if (chainNode)
+            {
+                if (((DOMElement*)chainNode)->hasAttribute(xmlStr("nextSection")))
+                {
+                    xmlStream(((DOMElement*)chainNode)->getAttribute(xmlStr("nextSection")))
+                        >> section->m_nextSection;
+                }
+                if (((DOMElement*)chainNode)->hasAttribute(xmlStr("previousSection")))
+                {
+                    xmlStream(((DOMElement*)chainNode)->getAttribute(xmlStr("previousSection")))
+                        >> section->m_previousSection;
+                }
+                const char *ts[] = {"nextTrack", "previousTrack"};
+                for (size_t i=0; i<2; i++)
+                {
+                    if (((DOMElement*)chainNode)->hasAttribute(xmlStr(ts[i])))
+                    {
+                        int t = 0;
+                        std::string trackStr = xmlStdString(((DOMElement*)chainNode)->getAttribute(xmlStr(ts[i])));
+                        if (trackStr == "next")
+                            t = trackIdx + 1;
+                        else if (trackStr == "current")
+                            t = trackIdx;
+                        else if (trackStr == "previous")
+                            t = trackIdx - 1;
+                        else
+                        {
+                            stringStream.clear();
+                            stringStream << trackStr;
+                            stringStream >> t;
+                        }
+                        if (i == 0)
+                            section->m_nextTrack = t;
+                        else
+                            section->m_previousTrack = t;
+                    }
+                }
+            }
+            DOMXPathResult *partNodes = findNodes(doc, (DOMElement*)sectionNode, "./part");
+            for (size_t partIdx = 0; partNodes->snapshotItem(partIdx); partIdx++)
+            {
+                DOMNode *partNode = partNodes->getNodeValue();
+                SwPart *part = new SwPart;
+                part->clear();
+                {
+                    char *name = XMLString::transcode(((DOMElement*)partNode)->getAttribute(xmlStr("name")));
+                    part->m_name = strdup(name);
+                    XMLString::release(&name);
+                }
+                section->m_part.push_back(part);
+                int channel;
+                xmlStream(((DOMElement*)partNode)->getAttribute(xmlStr("channel")))
+                    >> channel;
+                part->m_channel = channel-1;
+                if (xmlStdString(((DOMElement*)partNode)->getAttribute(xmlStr("toggle"))) == "true")
+                {
+                    part->m_toggler.enable();
+                }
+                if (xmlStdString(((DOMElement*)partNode)->getAttribute(xmlStr("mono"))) == "true")
+                {
+                    part->m_mono = true;
+                }
+                if (((DOMElement*)partNode)->hasAttribute(xmlStr("sustainTranspose")))
+                {
+                    int tp = 0;
+                    xmlStream(((DOMElement*)partNode)->getAttribute(xmlStr("sustainTranspose"))) >> tp;
+                    part->m_transposer = new Transposer(tp);
+                }
+                DOMNode *controllerRemapNode = findNode(doc, (DOMElement*)partNode, "./controllerRemap");
+                if (controllerRemapNode)
+                {
+                    delete part->m_controllerRemap; // default
+                    std::string id = xmlStdString(((DOMElement*)controllerRemapNode)->getAttribute(xmlStr("id")));
+                    if (id == "volQuadratic")
+                        part->m_controllerRemap = new ControllerRemapVolQuadratic;
+                    else if (id == "volReverse")
+                        part->m_controllerRemap = new ControllerRemapVolReverse;
+                    else
+                    {
+                        // huh?
+                    }
+                }
+                DOMNode *rangeNode = findNode(doc, (DOMElement*)partNode, "./range");
+                if (rangeNode)
+                {
+                    if (((DOMElement*)rangeNode)->hasAttribute(xmlStr("lower")))
+                    {
+                        std::string note = xmlStdString(((DOMElement*)rangeNode)->getAttribute(xmlStr("lower")));
+                        part->m_rangeLower = SwPart::stringToNoteNum(note.c_str());
+                    }
+                    if (((DOMElement*)rangeNode)->hasAttribute(xmlStr("upper")))
+                    {
+                        std::string note = xmlStdString(((DOMElement*)rangeNode)->getAttribute(xmlStr("upper")));
+                        part->m_rangeUpper = SwPart::stringToNoteNum(note.c_str());
+                    }
+                }
+                DOMNode *transposeNode = findNode(doc, (DOMElement*)partNode, "./transpose");
+                if (transposeNode)
+                {
+                    if (((DOMElement*)transposeNode)->hasAttribute(xmlStr("offset")))
+                    {
+                        xmlStream(((DOMElement*)transposeNode)->getAttribute(xmlStr("offset")))
+                            >> part->m_transpose;
+                    }
+                    DOMNode *customNode = findNode(doc, (DOMElement*)transposeNode, "./custom");
+                    if (customNode)
+                    {
+                        part->m_transpose += 1000;
+                        memset(part->m_customTranspose, 0, sizeof(part->m_customTranspose));
+                        if (((DOMElement*)customNode)->hasAttribute(xmlStr("offset")))
+                        {
+                            xmlStream(((DOMElement*)customNode)->getAttribute(xmlStr("offset")))
+                                >> part->m_customTransposeOffset;
+                        }
+                        DOMXPathResult *mapNodes = findNodes(doc, (DOMElement*)customNode, "./map");
+                        for (size_t mapIdx = 0; mapNodes->snapshotItem(mapIdx); mapIdx++)
+                        {
+                            DOMNode *mapNode = mapNodes->getNodeValue();
+                            int from;
+                            xmlStream(((DOMElement*)mapNode)->getAttribute(xmlStr("from"))) >> from;
+                            from = (from + 120) % 12;
+                            int to;
+                            xmlStream(((DOMElement*)mapNode)->getAttribute(xmlStr("to"))) >> to;
+                            part->m_customTranspose[from] = to;
+                        }
+                        mapNodes->release();
+                    }
+                }
+            }
+            track->m_section.push_back(section);
+            partNodes->release();
+        }
+        trackList.push_back(track);
+        sectionNodes->release();
+    }
+    trackNodes->release();
+}
+
+// Parses an XML file into a track list
 int importTracks (const char *inFile, std::vector<Track*> &tracks)
 {
     try {
@@ -403,12 +387,15 @@ int importTracks (const char *inFile, std::vector<Track*> &tracks)
 
     delete parser;
     delete errHandler;
-    //xmlStr.clear();
-    //xPath.clear();
+#ifndef EXPORT_TRACKS
+    xmlStr.clear();
+    xPath.clear();
+#endif
     XMLPlatformUtils::Terminate();
     return 0;
 }
 
+// Converts a boolean to an XMLString
 XMLCh *toBool(bool b)
 {
     if (b)
@@ -417,6 +404,7 @@ XMLCh *toBool(bool b)
         return xmlStr("false");
 }
 
+// Adds an attribute to a DOM element
 void addAttribute(DOMElement *n, const char *attrName, int x, int def = -1, int ref = -3)
 {
     if (x != def)
@@ -441,6 +429,8 @@ void addAttribute(DOMElement *n, const char *attrName, int x, int def = -1, int 
     }
 }
 
+#ifdef EXPORT_TRACKS
+// Exports a track list to an XML file
 void exportTracks(const std::vector<Track*> &tracks, const char *filename)
 {
     XMLCh stringBuf[100];
@@ -507,7 +497,7 @@ void exportTracks(const std::vector<Track*> &tracks, const char *filename)
                 }
                 if (part->m_transposer)
                 {
-                    partNode->setAttribute(xmlStr("sustainTranspose"), xmlStr("true"));
+                    addAttribute(partNode, "sustainTranspose", part->m_transposer->m_transpose, 1000, 1000);
                 }
                 if (strcmp(part->m_controllerRemap->name(), "default") != 0)
                 {
@@ -553,4 +543,11 @@ void exportTracks(const std::vector<Track*> &tracks, const char *filename)
     serialise(doc, filename);
     doc->release();
     XMLPlatformUtils::Terminate();
+}
+#endif // EXPORT_TRACKS
+
+void clearTracks(std::vector<Track*> &trackList)
+{
+    for (std::vector<Track *>::iterator i = trackList.begin(); i != trackList.end(); i++)
+        delete *i;
 }
