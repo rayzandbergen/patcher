@@ -17,7 +17,7 @@ LDFLAGS+=-lncursesw
 endif
 
 CFLAGS=$(CXXFLAGS)
-HEADERS=midi.h screen.h dump.h trackdef.h fantom.h now.h monofilter.h transposer.h timestamp.h activity.h patcher.h midi_note.h controller.h toggler.h networkif.h sequencer.h alarm.h
+HEADERS=midi.h screen.h dump.h trackdef.h fantom.h now.h monofilter.h transposer.h timestamp.h activity.h patcher.h midi_note.h controller.h toggler.h networkif.h sequencer.h alarm.h xml.h
 now.h:
 	echo "#define NOW \""`date '+%d %b %Y'`"\"" > $@
 	echo "#define SVN \""`svnversion -n`"\"" >> $@
