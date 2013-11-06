@@ -20,8 +20,9 @@
 #include "patcher.h"
 #include "midi_note.h"
 #include "networkif.h"
-#include "sequencer.h" 
-#include "alarm.h" 
+#include "sequencer.h"
+#include "alarm.h"
+#include "xml.h"
 
 #define VERSION "1.0.0"
 
@@ -106,7 +107,9 @@ public:
     {
         m_info.m_mode = 0;
         m_info.m_offset = 0;
+        importTracks(TRACK_DEF, m_trackList);
         initTracks(m_trackList, m_setList);
+        //exportTracks(m_trackList, "tracks_out.xml");
         m_trackIdx = m_setList[0];
         getTime(&m_debouncePrev);
         m_info.m_previous = m_debouncePrev;
@@ -850,6 +853,26 @@ void Patcher::consumeSysEx(int device)
 
 int main(int argc, char **argv)
 {
+    if (argc == 2)
+    {
+        const char *dir = argv[1];
+        if (-1 == chdir(dir))
+        {
+            fprintf(stderr, "cannot chdir to %s\n", dir);
+            return -3;
+        }
+    }
+#if 0
+    std::vector <Track *>m_trackList;
+    importTracks(TRACK_DEF, m_trackList);
+    //initTracks(m_trackList, m_setList);
+#ifdef EXPORT_TRACKS
+    exportTracks(m_trackList, "tracks_out.xml");
+#endif
+    clearTracks(m_trackList);
+    return 0;
+#endif
+
     int rv = setAlarmHandler();
     if (rv < 0)
         return rv;

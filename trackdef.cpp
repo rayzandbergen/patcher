@@ -217,6 +217,7 @@ void SetList::add(std::vector<Track*> &tracks, const char *trackName)
 
 void initTracks(std::vector<Track*> &tracks, SetList &setList)
 {
+#if 0
     const bool chain = true;
     tracks.push_back(new Track("Overture 1928"));
     tracks.push_back(new Track("Metropolis part I"));
@@ -1361,6 +1362,7 @@ void initTracks(std::vector<Track*> &tracks, SetList &setList)
 
     t->m_chain = true;
     tracks.push_back(t);
+#endif
 /*
  * ************************************************************
  */
