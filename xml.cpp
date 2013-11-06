@@ -170,9 +170,10 @@ void parseTracks(DOMDocument *doc, std::vector<Track*> &trackList)
     {
         DOMNode *trackNode = trackNodes->getNodeValue();
         char *name = XMLString::transcode(((DOMElement*)trackNode)->getAttribute(xmlStr("name")));
-        Track *track = new Track(strdup(name));
-        XMLString::release(&name);
+        Track *track = new Track(0);
         track->clear();
+        track->m_name = strdup(name);
+        XMLString::release(&name);
         xmlStream(((DOMElement*)trackNode)->getAttribute(xmlStr("startSection")))
                 >> track->m_startSection;
         if (xmlStdString(((DOMElement*)trackNode)->getAttribute(xmlStr("chain"))) == "true")
@@ -184,9 +185,10 @@ void parseTracks(DOMDocument *doc, std::vector<Track*> &trackList)
         {
             DOMNode *sectionNode = sectionNodes->getNodeValue();
             char *name = XMLString::transcode(((DOMElement*)sectionNode)->getAttribute(xmlStr("name")));
-            Section *section = new Section(strdup(name));
-            XMLString::release(&name);
+            Section *section = new Section(0);
             section->clear();
+            section->m_name = strdup(name);
+            XMLString::release(&name);
             DOMNode *noteOffNode = findNode(doc, (DOMElement*)sectionNode, "./noteOff");
             if (noteOffNode)
             {
@@ -284,6 +286,9 @@ void parseTracks(DOMDocument *doc, std::vector<Track*> &trackList)
                         // huh?
                     }
                 }
+                if (!part->m_controllerRemap)
+                    part->m_controllerRemap = new ControllerRemap;
+
                 DOMNode *rangeNode = findNode(doc, (DOMElement*)partNode, "./range");
                 if (rangeNode)
                 {
