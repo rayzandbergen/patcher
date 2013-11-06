@@ -585,6 +585,8 @@ void Patcher::show(bool setFaders, bool updateFantomDisplay)
         int x = (partsShown / 4) * 19;
         int y = 7 + partsShown % 4;
         const FantomPart *part = currentPerf()->m_part+partIdx;
+        if (part->m_channel == 255)
+            break; // oops, we're not initialised yet
         if (1 || part->m_channel == m_sectionIdx)
         {
             bool active = m_channelActivity.get(part->m_channel);

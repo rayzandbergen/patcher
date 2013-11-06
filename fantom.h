@@ -34,6 +34,7 @@ public:
     void save(const Dump *d);
     void restore(const Dump *d);
     void dumpToLog(Screen *screen, const char *prefix) const;
+    FantomPart(): m_number(255), m_channel(255) { }
 };
 
 class FantomPerformance
