@@ -21,7 +21,7 @@ public:
     void flushMidi();
     int printLog(const char *fmt, ...);
     void dumpToLog(const uint8_t *data, int n);
-	Screen(int argc, char **argv);
+	Screen();
 	~Screen();
 };
 #endif

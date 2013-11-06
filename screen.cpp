@@ -4,11 +4,9 @@
 #include "screen.h"
 #include "error.h"
 
-Screen::Screen(int argc, char **argv): m_enableMidiLog(true)
+Screen::Screen(): m_enableMidiLog(true)
 {
     int lines = 25;
-    (void) argc;
-    (void) argv;
 #ifdef RASPBIAN
     m_enableMidiLog = false;
 #endif
