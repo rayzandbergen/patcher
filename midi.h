@@ -64,6 +64,7 @@ class Midi {
     Screen *m_screen;
 	struct MidiDevice *m_deviceList;
     int m_deviceIdToDeviceTabIdx[MidiDevice::max];
+    int m_suicideFd;
     int fd(int deviceId) const;
     int cardNameToNum(const char *target) const;
 	int openRaw(const char *portName, int mode) const;

@@ -1,6 +1,7 @@
 #include <sys/select.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/inotify.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -10,6 +11,7 @@
 #include "error.h"
 #include "midi.h"
 #include "alarm.h"
+#include "patcher.h"
 
 namespace {
 
@@ -144,6 +146,7 @@ int Midi::wait(int usecTimeout, int device) const
         maxFd = fd(device);
         FD_SET(maxFd, &fdSet);
     }
+    FD_SET(m_suicideFd, &fdSet);
     struct timeval tv;
     tv.tv_sec = 0;
     tv.tv_usec = usecTimeout;
@@ -173,6 +176,7 @@ int Midi::wait(int usecTimeout, int device) const
             return m_deviceList[i].m_id;
         }
     }
+    throw(Error("non-midi activity", errno));
     return -1;
 }
 
@@ -209,6 +213,12 @@ Midi::Midi(Screen *s): m_screen(s)
 {
     m_deviceList = &deviceList[0];
     openDevices();
+    m_suicideFd = inotify_init();
+    int wd = inotify_add_watch(m_suicideFd, TRACK_DEF, IN_MODIFY);
+    if (wd < 0)
+    {
+        throw(Error("inotify_add_watch", errno));
+    }
 }
 
 uint8_t Midi::getByte(int device)
