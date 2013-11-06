@@ -1,0 +1,2131 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<tracks version="1">
+
+  <track name="Overture 1928">
+    <section name="empty1">
+      <part channel="1">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty2">
+      <part channel="2">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty3">
+      <part channel="3">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty4">
+      <part channel="4">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty5">
+      <part channel="5">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+  </track>
+
+  <track name="Metropolis part I">
+    <section name="empty1">
+      <part channel="1">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty2">
+      <part channel="2">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty3">
+      <part channel="3">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty4">
+      <part channel="4">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty5">
+      <part channel="5">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+  </track>
+
+  <track name="Erotomania">
+    <section name="empty1">
+      <part channel="1">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty2">
+      <part channel="2">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty3">
+      <part channel="3">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty4">
+      <part channel="4">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty5">
+      <part channel="5">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+  </track>
+
+  <track name="Home">
+    <section name="empty1">
+      <part channel="1">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty2">
+      <part channel="2">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty3">
+      <part channel="3">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty4">
+      <part channel="4">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty5">
+      <part channel="5">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+  </track>
+
+  <track name="Pull me under">
+    <section name="empty1">
+      <part channel="1">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty2">
+      <part channel="2">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty3">
+      <part channel="3">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty4">
+      <part channel="4">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty5">
+      <part channel="5">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+  </track>
+
+  <track name="Hell's kitchen">
+    <section name="empty1">
+      <part channel="1">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty2">
+      <part channel="2">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty3">
+      <part channel="3">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty4">
+      <part channel="4">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty5">
+      <part channel="5">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+  </track>
+
+  <track name="As I am">
+    <section name="empty1">
+      <part channel="1">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty2">
+      <part channel="2">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty3">
+      <part channel="3">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty4">
+      <part channel="4">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty5">
+      <part channel="5">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+  </track>
+
+  <track name="Another Day">
+    <section name="empty1">
+      <part channel="1">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty2">
+      <part channel="2">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty3">
+      <part channel="3">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty4">
+      <part channel="4">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty5">
+      <part channel="5">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+  </track>
+
+  <track name="Peruvian Skies" startSection="3">
+    <section name="empty1">
+      <part channel="1">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty2">
+      <part channel="2">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty3">
+      <part channel="3">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty4">
+      <part channel="4">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty5">
+      <part channel="5">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+  </track>
+
+  <track name="Learning to live">
+    <section name="empty1">
+      <part channel="1">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty2">
+      <part channel="2">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty3">
+      <part channel="3">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty4">
+      <part channel="4">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty5">
+      <part channel="5">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+  </track>
+
+  <track name="Fireblossom">
+    <section name="empty1">
+      <part channel="1">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty2">
+      <part channel="2">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty3">
+      <part channel="3">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty4">
+      <part channel="4">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty5">
+      <part channel="5">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+  </track>
+
+  <track name="Under a glass moon">
+    <section name="empty1">
+      <part channel="1">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty2">
+      <part channel="2">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty3">
+      <part channel="3">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty4">
+      <part channel="4">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty5">
+      <part channel="5">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+  </track>
+
+  <track name="Overture 1928 2" startSection="1">
+    <section name="empty1">
+      <part channel="1">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty2">
+      <part channel="2">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty3">
+      <part channel="3">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty4">
+      <part channel="4">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty5">
+      <part channel="5">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+  </track>
+
+  <track name="Lines in the sand 1/2">
+    <section name="empty1">
+      <noteOff enter="true" leave="false"/>
+      <part channel="1">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty2">
+      <noteOff enter="false" leave="true"/>
+      <part channel="2">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty3">
+      <part channel="3">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty4">
+      <part channel="4">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty5">
+      <part channel="5">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+  </track>
+
+  <track name="Lines in the sand 2/2" startSection="2">
+    <section name="empty1">
+      <part channel="1">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty2">
+      <part channel="2">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty3">
+      <part channel="3">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty4">
+      <part channel="4">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty5">
+      <part channel="5">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+  </track>
+
+  <track name="A change of seasons 1/2">
+    <section name="empty1">
+      <part channel="1">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty2">
+      <part channel="2">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty3">
+      <part channel="3">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty4">
+      <part channel="4">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty5">
+      <part channel="5">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+  </track>
+
+  <track name="A change of seasons 2/2">
+    <section name="empty1">
+      <part channel="1">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty2">
+      <part channel="2">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty3">
+      <part channel="3">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty4">
+      <part channel="4">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty5">
+      <part channel="5">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+  </track>
+
+  <track name="Biaxxident">
+    <section name="empty1">
+      <part channel="1">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty2">
+      <part channel="2">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty3">
+      <part channel="3">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty4">
+      <part channel="4">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty5">
+      <part channel="5">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+  </track>
+
+  <track name="Trial of tears">
+    <section name="empty1">
+      <part channel="1">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty2">
+      <part channel="2">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty3">
+      <part channel="3">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty4">
+      <part channel="4">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty5">
+      <part channel="5">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+  </track>
+
+  <track name="Surrounded">
+    <section name="empty1">
+      <part channel="1">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty2">
+      <part channel="2">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty3">
+      <part channel="3">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty4">
+      <part channel="4">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty5">
+      <part channel="5">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+  </track>
+
+  <track name="Take the time">
+    <section name="empty1">
+      <part channel="1">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty2">
+      <part channel="2">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty3">
+      <part channel="3">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty4">
+      <part channel="4">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty5">
+      <part channel="5">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+  </track>
+
+  <track name="Only a matter of time">
+    <section name="empty1">
+      <part channel="1">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty2">
+      <part channel="2">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty3">
+      <part channel="3">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty4">
+      <part channel="4">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="empty5">
+      <part channel="5">
+        <range lower="C0" upper="G10"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+  </track>
+
+  <track chain="true" name="The count of Tuscany">
+    <section name="Intro, strings + EGuitar">
+      <part channel="1" name="lower">
+        <range lower="C0" upper="B4"/>
+        <transpose offset="24"/>
+      </part>
+      <part channel="2" name="upper">
+        <range lower="C5" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+    </section>
+    <section name="Intro 2, sound FX + strings">
+      <part channel="6" name="upper">
+        <range lower="F2" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="7" name="lower">
+        <range lower="C0" upper="E2"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="Xylo - short">
+      <part channel="3" name="upper">
+        <range lower="C4" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="6" name="lower">
+        <range lower="C0" upper="B3"/>
+        <transpose offset="12"/>
+      </part>
+    </section>
+    <section name="unison">
+      <part channel="15" name="upper">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+    </section>
+    <section name="Harmoniser porta">
+      <part channel="10" name="upper">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="11" name="lower">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="-12">
+          <custom offset="1">
+            <map from="0" to="4"/>
+            <map from="1" to="0"/>
+            <map from="2" to="3"/>
+            <map from="3" to="0"/>
+            <map from="4" to="3"/>
+            <map from="5" to="4"/>
+            <map from="6" to="0"/>
+            <map from="7" to="4"/>
+            <map from="8" to="0"/>
+            <map from="9" to="3"/>
+            <map from="10" to="0"/>
+            <map from="11" to="3"/>
+          </custom>
+        </transpose>
+      </part>
+    </section>
+    <section name="Fizz - unison">
+      <part channel="14" name="upper">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+    </section>
+    <section name="Xylo - 6x">
+      <part channel="3" name="upper">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="24"/>
+      </part>
+    </section>
+    <section name="Fizz - 4x">
+      <part channel="4" name="upper">
+        <range lower="C5" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="8" name="lower">
+        <range lower="C0" upper="B4"/>
+        <transpose offset="12"/>
+      </part>
+    </section>
+    <section name="Tron 1a">
+      <part channel="5" name="upper">
+        <range lower="C7" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="6" name="lower">
+        <range lower="C0" upper="B6"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="Organ 1">
+      <part channel="16" name="upper">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="12"/>
+      </part>
+    </section>
+    <section name="Tron 1b">
+      <part channel="5" name="upper">
+        <range lower="C7" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="6" name="lower">
+        <range lower="C0" upper="B6"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="bell-EG">
+      <part channel="12" name="upper">
+        <range lower="G5" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="2" name="upper">
+        <range lower="G5" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="6" name="lower">
+        <range lower="C0" upper="A5"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="6" name="lower">
+        <range lower="C0" upper="A5"/>
+        <transpose offset="12"/>
+      </part>
+    </section>
+    <section name="Xylo - 4x">
+      <part channel="3" name="upper">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="24"/>
+      </part>
+    </section>
+    <section name="Fizz - 3x">
+      <part channel="4" name="upper">
+        <range lower="C5" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="8" name="lower">
+        <range lower="C0" upper="B4"/>
+        <transpose offset="12"/>
+      </part>
+    </section>
+    <section name="Tron 2a">
+      <part channel="5" name="upper">
+        <range lower="C7" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="6" name="lower">
+        <range lower="C0" upper="B6"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="Organ 2">
+      <part channel="16" name="upper">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="12"/>
+      </part>
+    </section>
+    <section name="Tron 2b">
+      <part channel="5" name="upper">
+        <range lower="C7" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="6" name="lower">
+        <range lower="C0" upper="B6"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="bell-EG (2)">
+      <part channel="12" name="upper">
+        <range lower="G5" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="2" name="upper">
+        <range lower="G5" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="6" name="lower">
+        <range lower="C0" upper="A5"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="6" name="lower">
+        <range lower="C0" upper="A5"/>
+        <transpose offset="12"/>
+      </part>
+    </section>
+    <section name="Fuzzy">
+      <part channel="9" name="upper">
+        <range lower="C5" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="9" name="lower">
+        <range lower="C0" upper="B4"/>
+        <transpose offset="24"/>
+      </part>
+      <part channel="3" name="upper">
+        <range lower="C5" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+    </section>
+    <section name="Fizz">
+      <part channel="4" name="upper">
+        <range lower="C5" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="8" name="lower">
+        <range lower="C0" upper="B4"/>
+        <transpose offset="12"/>
+      </part>
+    </section>
+    <section name="Xylo long unison">
+      <chain nextSection="0" nextTrack="next"/>
+      <part channel="3" name="upper">
+        <range lower="C6" upper="B9"/>
+        <transpose offset="-24"/>
+      </part>
+      <part channel="6" name="all">
+        <range lower="C6" upper="B9"/>
+        <transpose offset="-24"/>
+      </part>
+      <part channel="13" name="upper">
+        <range lower="C0" upper="B5"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="String pad">
+      <part channel="6" name="upper">
+        <controllerRemap id="volReverse"/>
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="14" name="upper">
+        <controllerRemap id="volQuadratic"/>
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+  </track>
+
+  <track chain="true" name="The count of Tuscany 2">
+    <section name="String pad bubbles">
+      <chain previousSection="20" previousTrack="previous"/>
+      <part channel="1" name="upper">
+        <controllerRemap id="volReverse"/>
+        <range lower="C0" upper="B5"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="2" name="upper">
+        <controllerRemap id="volQuadratic"/>
+        <range lower="C0" upper="B5"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="3" name="upper">
+        <range lower="C6" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="Piano + strings">
+      <part channel="4" name="piano">
+        <range lower="C7" upper="B9"/>
+        <transpose offset="-24"/>
+      </part>
+      <part channel="5" name="upper">
+        <range lower="C0" upper="B6"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="Strings">
+      <part channel="6" name="strings">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="6" name="upper">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="8" name="choir">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="Final">
+      <part channel="4" name="piano">
+        <range lower="C7" upper="B9"/>
+        <transpose offset="-24"/>
+      </part>
+      <part channel="5" name="upper">
+        <range lower="F2" upper="B6"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="7" name="swamp">
+        <range lower="C0" upper="E2"/>
+        <transpose offset="32"/>
+      </part>
+    </section>
+  </track>
+
+  <track chain="true" name="The Mirror">
+    <section name="String pad intro">
+      <part channel="1" name="strings">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="Organ">
+      <part channel="2" name="organ">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="12"/>
+      </part>
+    </section>
+    <section name="Organ + Guitar unison">
+      <part channel="2" name="organ">
+        <range lower="C0" upper="B4"/>
+        <transpose offset="12"/>
+      </part>
+      <part channel="3" name="solo">
+        <range lower="C5" upper="B9"/>
+        <transpose offset="-24"/>
+      </part>
+    </section>
+    <section name="Thin strings">
+      <part channel="4" name="strings">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="Piano solo 1">
+      <part channel="5" name="piano">
+        <range lower="C5" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="5" name="piano">
+        <range lower="C5" upper="B9"/>
+        <transpose offset="12"/>
+      </part>
+      <part channel="5" name="piano">
+        <range lower="C0" upper="B4"/>
+        <transpose offset="36"/>
+      </part>
+      <part channel="5" name="piano">
+        <range lower="C0" upper="B4"/>
+        <transpose offset="48"/>
+      </part>
+    </section>
+    <section name="Thin strings 2">
+      <part channel="4" name="strings">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="String pad intro 2a">
+      <part channel="1" name="strings">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="Piano solo delay">
+      <part channel="5" name="piano">
+        <range lower="C5" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="5" name="piano">
+        <range lower="C5" upper="B9"/>
+        <transpose offset="12"/>
+      </part>
+      <part channel="5" name="piano">
+        <range lower="F2" upper="B4"/>
+        <transpose offset="36"/>
+      </part>
+      <part channel="5" name="piano">
+        <range lower="F2" upper="B4"/>
+        <transpose offset="48"/>
+      </part>
+      <part channel="10" name="sample" toggle="true">
+        <range lower="C0" upper="E2"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="EPiano">
+      <part channel="6" name="EPiano">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="Piano solo reprise">
+      <part channel="5" name="piano">
+        <range lower="C5" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="5" name="piano">
+        <range lower="C5" upper="B9"/>
+        <transpose offset="12"/>
+      </part>
+      <part channel="5" name="piano">
+        <range lower="C0" upper="B4"/>
+        <transpose offset="36"/>
+      </part>
+      <part channel="5" name="piano">
+        <range lower="C0" upper="B4"/>
+        <transpose offset="48"/>
+      </part>
+    </section>
+    <section name="String pad intro 2b">
+      <part channel="1" name="strings">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="Piano bridge">
+      <part channel="9" name="piano">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="9" name="piano">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="8" name="choir">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+    </section>
+    <section name="Solo delay">
+      <part channel="5" name="piano">
+        <range lower="C5" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="5" name="piano">
+        <range lower="C5" upper="B9"/>
+        <transpose offset="12"/>
+      </part>
+      <part channel="5" name="piano">
+        <range lower="C0" upper="B4"/>
+        <transpose offset="36"/>
+      </part>
+      <part channel="5" name="piano">
+        <range lower="C0" upper="B4"/>
+        <transpose offset="48"/>
+      </part>
+    </section>
+    <section name="outtro">
+      <part channel="7" name="piano">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="7" name="piano">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="12"/>
+      </part>
+      <part channel="1" name="strings">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="1" name="strings">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+    </section>
+    <section name="Solo delay (live ext)">
+      <part channel="5" name="piano">
+        <range lower="C5" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="5" name="piano">
+        <range lower="C5" upper="B9"/>
+        <transpose offset="12"/>
+      </part>
+      <part channel="5" name="piano">
+        <range lower="C0" upper="B4"/>
+        <transpose offset="36"/>
+      </part>
+      <part channel="5" name="piano">
+        <range lower="C0" upper="B4"/>
+        <transpose offset="48"/>
+      </part>
+    </section>
+    <section name="Organ finale">
+      <part channel="2" name="organ">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="12"/>
+      </part>
+    </section>
+  </track>
+
+  <track chain="true" name="Scarred">
+    <section name="String pad intro">
+      <part channel="1" name="strings">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="12"/>
+      </part>
+    </section>
+    <section name="String pad + arp">
+      <part channel="1" name="strings">
+        <range lower="C0" upper="E5"/>
+        <transpose offset="12"/>
+      </part>
+      <part channel="1" name="strings">
+        <range lower="C0" upper="E5"/>
+        <transpose offset="24"/>
+      </part>
+      <part channel="4" name="arp">
+        <range lower="F5" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+    </section>
+    <section name="Thin string">
+      <part channel="10" name="strings">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="10" name="strings">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="12"/>
+      </part>
+      <part channel="10" name="strings">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="Organ">
+      <part channel="3" name="organ">
+        <range lower="C0" upper="B5"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="6" name="tubular">
+        <range lower="C6" upper="B6"/>
+        <transpose offset="-24"/>
+      </part>
+      <part channel="1" name="strings">
+        <range lower="C6" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="1" name="strings">
+        <range lower="C6" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="Thin string">
+      <part channel="10" name="strings">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="10" name="strings">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="12"/>
+      </part>
+      <part channel="10" name="strings">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="Organ">
+      <part channel="3" name="organ">
+        <range lower="C0" upper="B5"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="6" name="tubular">
+        <range lower="C6" upper="B6"/>
+        <transpose offset="-24"/>
+      </part>
+      <part channel="1" name="strings">
+        <range lower="C6" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="1" name="strings">
+        <range lower="C6" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="plain string pad intro">
+      <part channel="1" name="strings">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="12"/>
+      </part>
+    </section>
+    <section name="filtered string pad">
+      <part channel="8" name="filtered strings">
+        <range lower="C0" upper="A4"/>
+        <transpose offset="12"/>
+      </part>
+      <part channel="9" name="wah strings">
+        <range lower="B4" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="8" name="filtered strings">
+        <range lower="B5" upper="B9"/>
+        <transpose offset="12"/>
+      </part>
+      <part channel="1" name="strings">
+        <range lower="C7" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+    </section>
+    <section name="solo bidge">
+      <part channel="1" name="strings">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="12"/>
+      </part>
+    </section>
+    <section name="Unison solo 1">
+      <part channel="5" name="thin strings">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="7" name="thin strings">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="Unison solo 2">
+      <part channel="5" name="thin strings">
+        <range lower="C4" upper="B9"/>
+        <transpose offset="-12">
+          <custom offset="-24">
+            <map from="0" to="0"/>
+            <map from="1" to="-3"/>
+            <map from="2" to="-3"/>
+            <map from="3" to="0"/>
+            <map from="4" to="-3"/>
+            <map from="5" to="0"/>
+            <map from="6" to="-4"/>
+            <map from="7" to="0"/>
+            <map from="8" to="-4"/>
+            <map from="9" to="0"/>
+            <map from="10" to="-4"/>
+            <map from="11" to="-3"/>
+          </custom>
+        </transpose>
+      </part>
+      <part channel="7" name="thin strings">
+        <range lower="C4" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+    </section>
+    <section name="Unison solo cadence">
+      <chain nextSection="0" nextTrack="next"/>
+      <part channel="5" name="thin strings">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="-24"/>
+      </part>
+      <part channel="7" name="thin strings">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+    </section>
+  </track>
+
+  <track chain="true" name="Scarred Solo">
+    <section name="String pad intro">
+      <chain nextSection="0" nextTrack="previous"/>
+      <part channel="1" name="Burning Lead">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+  </track>
+
+  <track chain="true" name="About to crash">
+    <section name="piano intro">
+      <part channel="1" name="piano">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="piano + lead">
+      <part channel="1" name="piano">
+        <range lower="G#5" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="2" name="lead">
+        <range lower="C0" upper="G5"/>
+        <transpose offset="24"/>
+      </part>
+    </section>
+    <section name="piano + strings">
+      <part channel="1" name="piano">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="4" mono="true" name="strings">
+        <range lower="C0" upper="C6"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="piano + voice">
+      <part channel="1" name="piano">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="3" mono="true" name="voice">
+        <range lower="C0" upper="C7"/>
+        <transpose offset="12"/>
+      </part>
+    </section>
+    <section name="piano + strings 2">
+      <part channel="1" name="piano">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="4" name="strings">
+        <range lower="C0" upper="C7"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="syn brass solo">
+      <part channel="5" name="syn brass">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="5" name="syn brass">
+        <range lower="F3" upper="B9"/>
+        <transpose offset="4"/>
+      </part>
+      <part channel="6" name="syn brass">
+        <range lower="D#7" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="organ">
+      <part channel="11" name="organ">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+    </section>
+    <section name="syn string">
+      <part channel="7" name="syn string">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="7" name="syn string">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="12"/>
+      </part>
+      <part channel="8" name="syn string">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+    </section>
+    <section name="syn brass solo 2">
+      <part channel="5" name="syn brass">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="5" name="syn brass">
+        <range lower="F3" upper="B9"/>
+        <transpose offset="4"/>
+      </part>
+      <part channel="6" name="syn brass">
+        <range lower="D#7" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="organ 2">
+      <part channel="11" name="organ">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+    </section>
+    <section name="syn string">
+      <chain nextSection="0" nextTrack="next"/>
+      <part channel="7" name="syn string">
+        <range lower="C0" upper="F6"/>
+        <transpose offset="12"/>
+      </part>
+      <part channel="7" name="syn string">
+        <range lower="C0" upper="F6"/>
+        <transpose offset="24"/>
+      </part>
+      <part channel="8" name="syn string">
+        <range lower="C0" upper="F6"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="9" name="vox">
+        <range lower="G6" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="9" name="vox">
+        <range lower="G6" upper="B9"/>
+        <transpose offset="-24"/>
+      </part>
+    </section>
+  </track>
+
+  <track chain="true" name="The test that stumped them all">
+    <section name="xylo lead">
+      <part channel="1" name="xylo Lead" sustainTranspose="12">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="buzz solo">
+      <part channel="6" name="buzz solo">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="organ">
+      <part channel="2" name="organ Lead">
+        <range lower="C0" upper="B4"/>
+        <transpose offset="24"/>
+      </part>
+      <part channel="3" name="12 string">
+        <range lower="C5" upper="B7"/>
+        <transpose offset="-24"/>
+      </part>
+      <part channel="4" name="Crowd Cheering">
+        <range lower="C8" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="guitar solo">
+      <part channel="6" name="buzz solo">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="8" name="buzz solo">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="12"/>
+      </part>
+    </section>
+    <section name="solo">
+      <part channel="5" name="solo">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="solo 2">
+      <chain nextSection="0" nextTrack="next"/>
+      <part channel="6" name="buzz solo">
+        <range lower="E3" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="7" name="bell attack">
+        <range lower="C0" upper="D3"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+  </track>
+
+  <track chain="true" name="Goodnight Kiss">
+    <section name="phase pad">
+      <part channel="1" name="phase pad">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="6" name="EP stack">
+        <range lower="A4" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="2" name="string pad">
+        <range lower="C0" upper="G4"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="piano">
+      <part channel="3" name="piano">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="string piano">
+      <part channel="3" name="piano">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="4" name="string pad 2">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="orch piano">
+      <part channel="3" name="piano">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="7" name="FS windwood">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="4" name="string pad 2">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="string piano high">
+      <part channel="3" name="piano">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="7" name="FS windwood">
+        <range lower="G4" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="8" name="string pad 2">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="12"/>
+      </part>
+    </section>
+    <section name="choir">
+      <part channel="5" name="choir">
+        <range lower="C5" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="4" name="string pad 2">
+        <range lower="C0" upper="B4"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="walking string">
+      <part channel="8" name="string pad 2">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="arpeggio">
+      <chain nextSection="0" nextTrack="next"/>
+      <part channel="9" name="ethno keys">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="4" name="string pad 2">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+  </track>
+
+  <track chain="true" name="Solitary shell">
+    <section name="soft square lead">
+      <part channel="1" name="square lead">
+        <range lower="B4" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="2" name="square lead">
+        <range lower="G4" upper="A4"/>
+        <transpose offset="36"/>
+      </part>
+      <part channel="3" name="arpeggio">
+        <range lower="C0" upper="F4"/>
+        <transpose offset="36"/>
+      </part>
+    </section>
+    <section name="piano">
+      <part channel="4" name="piano">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="bells">
+      <part channel="4" name="piano">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="10" name="bells">
+        <range lower="C0" upper="B6"/>
+        <transpose offset="12"/>
+      </part>
+    </section>
+    <section name="soft square lead 2">
+      <part channel="1" name="square lead">
+        <range lower="B4" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="2" name="square lead">
+        <range lower="G4" upper="A4"/>
+        <transpose offset="36"/>
+      </part>
+      <part channel="3" name="arpeggio">
+        <range lower="C0" upper="F4"/>
+        <transpose offset="36"/>
+      </part>
+    </section>
+    <section name="piano 2">
+      <part channel="4" name="piano">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="bells 2">
+      <part channel="4" name="piano">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="10" name="bells">
+        <range lower="C0" upper="B6"/>
+        <transpose offset="12"/>
+      </part>
+    </section>
+    <section name="brassy">
+      <part channel="5" name="piano">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="piano 3">
+      <part channel="4" name="piano">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="brassy 2">
+      <chain nextSection="0" nextTrack="next"/>
+      <part channel="5" name="piano">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+  </track>
+
+  <track chain="true" name="Reprise">
+    <section name="piano">
+      <part channel="3" name="piano">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="soft brass + choir">
+      <part channel="1" name="soft brass">
+        <range lower="C5" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="2" name="choir">
+        <range lower="C0" upper="B4"/>
+        <transpose offset="24"/>
+      </part>
+      <part channel="3" name="piano">
+        <range lower="C5" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="3" name="piano">
+        <range lower="C0" upper="B4"/>
+        <transpose offset="24"/>
+      </part>
+    </section>
+    <section name="piano">
+      <part channel="3" name="piano2">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="pizzicato">
+      <part channel="4" name="pizzicato">
+        <range lower="C4" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="5" name="pad">
+        <range lower="C4" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="4" name="pizzicato">
+        <range lower="C0" upper="B3"/>
+        <transpose offset="24"/>
+      </part>
+      <part channel="5" name="pad">
+        <range lower="C0" upper="B3"/>
+        <transpose offset="24"/>
+      </part>
+    </section>
+    <section name="pizzicato + solo">
+      <part channel="4" name="pizzicato">
+        <range lower="C4" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="5" name="pad">
+        <range lower="C4" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="7" name="soft lead">
+        <range lower="C4" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="15" name="EP">
+        <range lower="C4" upper="F#5"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="5" name="pad">
+        <range lower="C0" upper="B3"/>
+        <transpose offset="24"/>
+      </part>
+      <part channel="8" name="soft lead">
+        <range lower="C0" upper="B3"/>
+        <transpose offset="24"/>
+      </part>
+    </section>
+    <section name="piano+string+lead">
+      <part channel="3" name="piano2">
+        <range lower="C0" upper="G4"/>
+        <transpose offset="24"/>
+      </part>
+      <part channel="6" name="pad">
+        <range lower="C0" upper="G4"/>
+        <transpose offset="24"/>
+      </part>
+      <part channel="9" name="lead">
+        <range lower="A4" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="piano+string+choir">
+      <part channel="3" name="piano2">
+        <range lower="C0" upper="G4"/>
+        <transpose offset="24"/>
+      </part>
+      <part channel="6" name="pad">
+        <range lower="C0" upper="G4"/>
+        <transpose offset="24"/>
+      </part>
+      <part channel="2" name="choir">
+        <range lower="A4" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="10" name="bright string">
+        <range lower="A4" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="2" name="choir">
+        <range lower="A4" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="10" name="bright string">
+        <range lower="A4" upper="B9"/>
+        <transpose offset="12"/>
+      </part>
+      <part channel="2" name="choir">
+        <range lower="A4" upper="B9"/>
+        <transpose offset="12"/>
+      </part>
+      <part channel="3" name="piano2">
+        <range lower="A4" upper="B9"/>
+        <transpose offset="12"/>
+      </part>
+    </section>
+    <section name="tubular + picolo">
+      <part channel="11" name="tubular">
+        <range lower="C0" upper="B3"/>
+        <transpose offset="24"/>
+      </part>
+      <part channel="12" name="picolo">
+        <range lower="C4" upper="G5"/>
+        <transpose offset="36"/>
+      </part>
+      <part channel="13" name="EP">
+        <range lower="A5" upper="C9"/>
+        <transpose offset="12"/>
+      </part>
+      <part channel="13" name="EP">
+        <range lower="A5" upper="C9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="10" name="bright string">
+        <range lower="A5" upper="C9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="10" name="bright string">
+        <range lower="A5" upper="C9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="lead 2">
+      <part channel="9" name="lead">
+        <range lower="D4" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="2" name="choir">
+        <range lower="C0" upper="C4"/>
+        <transpose offset="24"/>
+      </part>
+      <part channel="10" name="bright string">
+        <range lower="C0" upper="C4"/>
+        <transpose offset="12"/>
+      </part>
+    </section>
+    <section name="thin string + piano">
+      <part channel="14" name="thin string">
+        <range lower="D4" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="3" name="piano">
+        <range lower="C0" upper="C4"/>
+        <transpose offset="36"/>
+      </part>
+      <part channel="10" name="bright string">
+        <range lower="C0" upper="C4"/>
+        <transpose offset="24"/>
+      </part>
+    </section>
+    <section name="piano solo">
+      <part channel="3" name="piano">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="10" name="bright string">
+        <range lower="C0" upper="G#5"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="soft brass">
+      <part channel="1" name="soft brass">
+        <range lower="F#5" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="1" name="soft brass">
+        <range lower="F#5" upper="B9"/>
+        <transpose offset="-8"/>
+      </part>
+      <part channel="6" name="pad">
+        <range lower="C0" upper="F5"/>
+        <transpose offset="12"/>
+      </part>
+    </section>
+    <section name="soft brass 2">
+      <chain nextSection="0" nextTrack="next"/>
+      <part channel="1" name="soft brass">
+        <range lower="C5" upper="B9"/>
+        <transpose offset="-24"/>
+      </part>
+      <part channel="10" name="bright string">
+        <range lower="C5" upper="B9"/>
+        <transpose offset="-24"/>
+      </part>
+      <part channel="10" name="bright string">
+        <range lower="C5" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="2" name="choir">
+        <range lower="C5" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="2" name="choir">
+        <range lower="C0" upper="B4"/>
+        <transpose offset="12"/>
+      </part>
+      <part channel="10" name="bright string">
+        <range lower="C0" upper="B4"/>
+        <transpose offset="12"/>
+      </part>
+    </section>
+  </track>
+
+  <track name="Losing Time">
+    <section name="grand strings">
+      <part channel="1" name="high">
+        <range lower="C6" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="1" name="high">
+        <range lower="C6" upper="B9"/>
+        <transpose offset="-24"/>
+      </part>
+      <part channel="2" name="high">
+        <range lower="C0" upper="B5"/>
+        <transpose offset="12"/>
+      </part>
+    </section>
+  </track>
+
+  <track chain="true" name="Fatal Tragedy">
+    <section name="piano">
+      <part channel="1" name="piano">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="choir">
+      <part channel="2" name="choir0">
+        <range lower="C0" upper="B5"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="2" name="choir1">
+        <range lower="C0" upper="B5"/>
+        <transpose offset="12"/>
+      </part>
+      <part channel="1" name="piano">
+        <range lower="C6" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="piano">
+      <part channel="1" name="piano">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="organ + EP">
+      <part channel="3" name="organ">
+        <range lower="C5" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="4" name="EP">
+        <range lower="C0" upper="B4"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="1" name="piano">
+        <range lower="C0" upper="B4"/>
+        <transpose offset="-12"/>
+      </part>
+    </section>
+    <section name="organ unison">
+      <part channel="1" name="piano">
+        <range lower="C5" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="6" name="organ">
+        <range lower="C0" upper="B4"/>
+        <transpose offset="36"/>
+      </part>
+    </section>
+    <section name="choir">
+      <part channel="2" name="choir0">
+        <range lower="C0" upper="B5"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="2" name="choir1">
+        <range lower="C0" upper="B5"/>
+        <transpose offset="12"/>
+      </part>
+      <part channel="1" name="piano">
+        <range lower="C6" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="piano">
+      <part channel="1" name="piano">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+    </section>
+    <section name="clavi solo">
+      <part channel="5" name="clavi lo">
+        <range lower="C0" upper="B5"/>
+        <transpose offset="12"/>
+      </part>
+      <part channel="5" name="clavi hi">
+        <range lower="C6" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+    </section>
+    <section name="Harmoniser clavi">
+      <part channel="5" name="upper">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="0"/>
+      </part>
+      <part channel="5" name="lower">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="-12">
+          <custom offset="0">
+            <map from="0" to="4"/>
+            <map from="1" to="5"/>
+            <map from="2" to="0"/>
+            <map from="3" to="0"/>
+            <map from="4" to="3"/>
+            <map from="5" to="0"/>
+            <map from="6" to="4"/>
+            <map from="7" to="4"/>
+            <map from="8" to="0"/>
+            <map from="9" to="3"/>
+            <map from="10" to="3"/>
+            <map from="11" to="5"/>
+          </custom>
+        </transpose>
+      </part>
+      <part channel="5" name="upper">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+      <part channel="5" name="lower">
+        <range lower="C0" upper="B9"/>
+        <transpose offset="-24">
+          <custom offset="0">
+            <map from="0" to="4"/>
+            <map from="1" to="5"/>
+            <map from="2" to="0"/>
+            <map from="3" to="0"/>
+            <map from="4" to="3"/>
+            <map from="5" to="0"/>
+            <map from="6" to="4"/>
+            <map from="7" to="4"/>
+            <map from="8" to="0"/>
+            <map from="9" to="3"/>
+            <map from="10" to="3"/>
+            <map from="11" to="5"/>
+          </custom>
+        </transpose>
+      </part>
+    </section>
+    <section name="clavi solo 2">
+      <part channel="5" name="clavi lo">
+        <range lower="C0" upper="B5"/>
+        <transpose offset="12"/>
+      </part>
+      <part channel="5" name="clavi hi">
+        <range lower="C6" upper="B9"/>
+        <transpose offset="-12"/>
+      </part>
+    </section>
+  </track>
+
+</tracks>
