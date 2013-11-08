@@ -23,6 +23,7 @@
 #include "sequencer.h"
 #include "alarm.h"
 #include "xml.h"
+#include "persistent.h"
 
 #define VERSION "1.0.0"
 
@@ -58,6 +59,7 @@ class Patcher
     SetList m_setList;
     int m_sectionIdx;
     Sequencer m_sequencer;
+    Persist m_persist;
     Track *currentTrack(void) const {
         return m_trackList[m_trackIdx]; }
     FantomPerformance *currentPerf(void) const {
@@ -225,7 +227,13 @@ void Patcher::mergePerformanceData()
 
 void Patcher::eventLoop(void)
 {
-    changeTrack(m_setList[0]);
+    //changeTrack(m_setList[0]);
+    {
+        int t,s;
+        m_persist.restore(&t, &s);
+        changeTrack(t);
+        changeSection(s);
+    }
     for (uint32_t j=0;;j++)
     {
 #ifndef RASPBIAN
@@ -711,6 +719,7 @@ void Patcher::changeSection(uint8_t sectionIdx)
         m_sectionIdx = sectionIdx;
         show(false, true);
         redrawwin(m_screen->m_track);
+        m_persist.store(m_trackIdx, m_sectionIdx);
     }
 }
 
@@ -766,12 +775,12 @@ void Patcher::prevSection(void)
 void Patcher::changeTrack(uint8_t track, bool setFaders)
 {
     //m_screen->printMidi("change track %d\n", track);
-    // TODO: per-track setting, for now default to first section
     m_trackIdx = track;
     m_sectionIdx = currentTrack()->m_startSection; // cannot use changeSection!
     m_midi->putBytes(MidiDevice::FantomOut,
         MidiStatus::programChange|Fantom::programChangeChannel, (uint8_t)m_trackIdx);
     show(setFaders);
+    m_persist.store(m_trackIdx, m_sectionIdx);
 }
 
 void Patcher::toggleInfoMode(uint8_t note)

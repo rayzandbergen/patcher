@@ -27,6 +27,7 @@ set(patcherSources
     src/screen.cpp
     src/transposer.cpp
     src/timestamp.cpp
+    src/persistent.cpp
     now.h
 )
 
