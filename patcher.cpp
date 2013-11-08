@@ -879,7 +879,7 @@ int main(int argc, char **argv)
     if (rv < 0)
         return rv;
 
-    Screen screen(argc, argv);
+    Screen screen;
     try
     {
         wprintw(screen.m_track,
