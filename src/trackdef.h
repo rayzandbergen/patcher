@@ -80,5 +80,5 @@ public:
     void add(std::vector<Track*> &tracks, const char *trackName);
 };
 
-extern void initTracks(std::vector<Track*> &tracks, SetList &setlist);
+extern void initSetList(std::vector<Track*> &tracks, SetList &setlist);
 #endif // TRACKDEF_H

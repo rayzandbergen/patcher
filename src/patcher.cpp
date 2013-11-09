@@ -110,8 +110,7 @@ public:
         m_info.m_mode = 0;
         m_info.m_offset = 0;
         importTracks(TRACK_DEF, m_trackList);
-        initTracks(m_trackList, m_setList);
-        //exportTracks(m_trackList, "tracks_out.xml");
+        initSetList(m_trackList, m_setList);
         m_trackIdx = m_setList[0];
         getTime(&m_debouncePrev);
         m_info.m_previous = m_debouncePrev;
@@ -876,7 +875,6 @@ int main(int argc, char **argv)
 #if 0
     std::vector <Track *>m_trackList;
     importTracks(TRACK_DEF, m_trackList);
-    //initTracks(m_trackList, m_setList);
 #ifdef EXPORT_TRACKS
     exportTracks(m_trackList, "tracks_out.xml");
 #endif
