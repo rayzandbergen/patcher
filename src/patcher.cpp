@@ -106,6 +106,7 @@ public:
     void mergePerformanceData();
     void show(int updateFlags);
     void eventLoop(void);
+    void restoreState(void);
     void loadTrackDefs(void);
     Patcher(Screen *s, Midi *m, Fantom *f):
         debounceTime(Real(0.4)),
@@ -232,15 +233,17 @@ void Patcher::mergePerformanceData()
     }
 }
 
+void Patcher::restoreState(void)
+{
+    int t,s;
+    m_persist.restore(&t, &s);
+    changeTrack(t, UpdateAll);
+    changeSection(s);
+}
+
 void Patcher::eventLoop(void)
 {
     //changeTrack(m_setList[0]);
-    {
-        int t,s;
-        m_persist.restore(&t, &s);
-        changeTrack(t, UpdateAll);
-        changeSection(s);
-    }
     for (uint32_t j=0;;j++)
     {
 #ifndef RASPBIAN
@@ -912,6 +915,7 @@ int main(int argc, char **argv)
         patcher.mergePerformanceData();
         //patcher.dumpTrackList();
         patcher.show(Patcher::UpdateScreen|Patcher::UpdateFaders);
+        patcher.restoreState();
         patcher.eventLoop();
     }
     catch (Error &e)
