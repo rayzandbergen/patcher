@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 2.8.4)
 set(CMAKE_BUILD_TYPE RELEASE)
 
 project(patcher)
+set(RASPBIAN 1)
 
 set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -g")
 set(CMAKE_CXX_FLAGS_RELEASE "-Wall -Wextra -O3")
