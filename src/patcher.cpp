@@ -88,7 +88,7 @@ class Patcher
     void changeSection(uint8_t sectionIdx);
     void nextSection(void);
     void prevSection(void);
-    void changeTrack(uint8_t track, bool setFaders = true);
+    void changeTrack(uint8_t track, int updateFlags);
     void changeTrackByNote(uint8_t note);
     void toggleInfoMode(uint8_t note);
     void showInfo();
@@ -96,10 +96,15 @@ class Patcher
     bool debounced(Real delaySeconds);
     void consumeSysEx(int device);
 public:
+    static const int UpdateNothing = 0;
+    static const int UpdateFaders = 1;
+    static const int UpdateFantomDisplay = 2;
+    static const int UpdateScreen = 4;
+    static const int UpdateAll = 7;
     void dumpTrackList();
     void downloadPerfomanceData(void);
     void mergePerformanceData();
-    void show(bool setFaders = true, bool updateFantomDisplay = false);
+    void show(int updateFlags);
     void eventLoop(void);
     void loadTrackDefs(void);
     Patcher(Screen *s, Midi *m, Fantom *f):
@@ -110,7 +115,6 @@ public:
     {
         m_info.m_mode = 0;
         m_info.m_offset = 0;
-        loadTrackDefs();
         m_trackIdx = m_setList[0];
         getTime(&m_debouncePrev);
         m_info.m_previous = m_debouncePrev;
@@ -156,14 +160,13 @@ void Patcher::downloadPerfomanceData(void)
         d.fclose();
         return;
     }
-    int trackSaved = m_trackIdx;
     char s[20];
     struct timespec ts;
     ts.tv_sec = 0;
     ts.tv_nsec = 10*1000*1000;
     for (int i=0; i<nofTracks(); i++)
     {
-        changeTrack(i, false);
+        changeTrack(i, UpdateNothing);
         nanosleep(&ts, NULL);
         m_fantom->getPerfName(s);
         g_alarm.m_doTimeout = false;
@@ -189,7 +192,6 @@ void Patcher::downloadPerfomanceData(void)
             m_screen->flushMidi();
         }
     }
-    changeTrack(trackSaved);
     if (!d.fopen(fantomPatchFile, O_WRONLY|O_CREAT, S_IRUSR|S_IWUSR))
     {
         throw(Error("open O_WRONLY|O_CREAT", errno));
@@ -236,7 +238,7 @@ void Patcher::eventLoop(void)
     {
         int t,s;
         m_persist.restore(&t, &s);
-        changeTrack(t);
+        changeTrack(t, UpdateAll);
         changeSection(s);
     }
     for (uint32_t j=0;;j++)
@@ -271,7 +273,7 @@ void Patcher::eventLoop(void)
                     for (int i=0; i<16; i++)
                         (void)m_channelActivity.get(i);
                     if (m_channelActivity.isDirty())
-                        show(false);
+                        show(UpdateScreen);
                     break;
                 case MidiStatus::realtimeStart:
                     mvwprintw(m_screen->m_track, 17, 0, "panic on\n");
@@ -308,7 +310,7 @@ void Patcher::eventLoop(void)
                             {
                                 sendEventToFantom(MidiStatus::noteOff, note, velo);
                                 if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
-                                    show(false);
+                                    show(UpdateScreen);
                             }
                             break;
                         }
@@ -333,7 +335,7 @@ void Patcher::eventLoop(void)
                             {
                                 sendEventToFantom(MidiStatus::noteOn, note, velo);
                                 if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
-                                    show(false);
+                                    show(UpdateScreen);
                             }
                             break;
                         }
@@ -346,7 +348,7 @@ void Patcher::eventLoop(void)
                                 m_midi->noteName(note), channelRx, val);
                             sendEventToFantom(MidiStatus::aftertouch, note, val);
                             if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
-                                show(false);
+                                show(UpdateScreen);
                             break;
                         }
                         case MidiStatus::controller:
@@ -367,24 +369,24 @@ void Patcher::eventLoop(void)
                             {
                                 sendEventToFantom(MidiStatus::controller, num, val);
                                 if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
-                                    show(false);
+                                    show(UpdateScreen);
                             }
                             else if (deviceRx == MidiDevice::A30 && num == 0x5b)
                             {
                                 m_metaMode = !!val;
                                 m_midi->putBytes(MidiDevice::BcfOut, MidiStatus::controller|0,
                                     0x59, val ? 127 : 0);
-                                show(false);
+                                show(UpdateScreen);
                             }
                             else if (deviceRx == MidiDevice::BcfIn && num == 0x59)
                             {
                                 m_metaMode = !!val;
-                                show(false);
+                                show(UpdateScreen);
                             }
                             else if (deviceRx == MidiDevice::BcfIn && num == 0x5b)
                             {
                                 m_partOffsetBcf ^= 8;
-                                show();
+                                show(UpdateFaders);
                             }
                             else if (deviceRx == MidiDevice::BcfIn
                                     && num >= 0x51 && num <= 0x58)
@@ -393,7 +395,7 @@ void Patcher::eventLoop(void)
                                 FantomPart *p = currentPerf()->m_part+partNum;
                                 p->m_vol = val;
                                 m_fantom->setVolume(partNum, val);
-                                show(false);
+                                show(UpdateScreen);
                             }
                             else
                             {
@@ -414,12 +416,12 @@ void Patcher::eventLoop(void)
                                 if (num == 5)
                                 {
                                     m_metaMode = 0;
-                                    show(false);
+                                    show(UpdateScreen);
                                 }
                                 else if (num == 6)
                                 {
                                     m_metaMode = 1;
-                                    show(false);
+                                    show(UpdateScreen);
                                 }
                                 else if (currentTrack()->m_chain)
                                 {
@@ -441,7 +443,7 @@ void Patcher::eventLoop(void)
                                 channelRx, num);
                             sendEventToFantom(MidiStatus::channelAftertouch, num);
                             if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
-                                show(false);
+                                show(UpdateScreen);
                             break;
                         }
                         case MidiStatus::pitchBend:
@@ -455,7 +457,7 @@ void Patcher::eventLoop(void)
 #endif
                             sendEventToFantom(MidiStatus::pitchBend, num1, num2);
                             if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
-                                show(false);
+                                show(UpdateScreen);
                             break;
                         }
                         default:
@@ -567,98 +569,102 @@ void Patcher::sendEventToFantom(uint8_t midiStatus,
     }
 }
 
-void Patcher::show(bool setFaders, bool updateFantomDisplay)
+void Patcher::show(int updateFlags)
 {
-    werase(m_screen->m_track);
-    wprintw(m_screen->m_track,
-        "*** Ray's MIDI patcher " VERSION ", rev " SVN ", " NOW " ***\n\n");
-    mvwprintw(m_screen->m_track, 2, 0,
-        "track   %03d \"%s\"\nsection %03d/%03d \"%s\"\n",
-        1+m_trackIdx, currentTrack()->m_name,
-        1+m_sectionIdx, currentTrack()->nofSections(),
-        currentSection()->m_name);
-    mvwprintw(m_screen->m_track, 2, 44,
-        "%03d/%03d within setlist", 1+m_trackIdxWithinSet, m_setList.length());
-    mvwprintw(m_screen->m_track, 5, 0,
-        "performance \"%s\"\n",
-        currentPerf()->m_name);
-    mvwprintw(m_screen->m_track, 3, 44,
-        "next \"%s\"\n", nextTrackName());
-    mvwprintw(m_screen->m_track, 5, 30, "chain mode %s\n",
-        currentTrack()->m_chain ?"on":"off");
-    if (m_metaMode)
-        wattron(m_screen->m_track, COLOR_PAIR(1));
-    mvwprintw(m_screen->m_track, 5, 50, "meta mode %s\n",
-        m_metaMode?"on":"off");
-    if (m_metaMode)
-        wattroff(m_screen->m_track, COLOR_PAIR(1));
-    int partsShown = 0;
-    for (int partIdx=0; partIdx<16;partIdx++)
+    if (updateFlags & UpdateScreen)
     {
-        int x = (partsShown / 4) * 19;
-        int y = 7 + partsShown % 4;
-        const FantomPart *part = currentPerf()->m_part+partIdx;
-        if (part->m_channel == 255)
-            break; // oops, we're not initialised yet
-        if (1 || part->m_channel == m_sectionIdx)
+        werase(m_screen->m_track);
+        wprintw(m_screen->m_track,
+            "*** Ray's MIDI patcher " VERSION ", rev " SVN ", " NOW " ***\n\n");
+        mvwprintw(m_screen->m_track, 2, 0,
+            "track   %03d \"%s\"\nsection %03d/%03d \"%s\"\n",
+            1+m_trackIdx, currentTrack()->m_name,
+            1+m_sectionIdx, currentTrack()->nofSections(),
+            currentSection()->m_name);
+        mvwprintw(m_screen->m_track, 2, 44,
+            "%03d/%03d within setlist", 1+m_trackIdxWithinSet, m_setList.length());
+        mvwprintw(m_screen->m_track, 5, 0,
+            "performance \"%s\"\n",
+            currentPerf()->m_name);
+        mvwprintw(m_screen->m_track, 3, 44,
+            "next \"%s\"\n", nextTrackName());
+        mvwprintw(m_screen->m_track, 5, 30, "chain mode %s\n",
+            currentTrack()->m_chain ?"on":"off");
+        if (m_metaMode)
+            wattron(m_screen->m_track, COLOR_PAIR(1));
+        mvwprintw(m_screen->m_track, 5, 50, "meta mode %s\n",
+            m_metaMode?"on":"off");
+        if (m_metaMode)
+            wattroff(m_screen->m_track, COLOR_PAIR(1));
+        int partsShown = 0;
+        for (int partIdx=0; partIdx<16;partIdx++)
         {
-            bool active = m_channelActivity.get(part->m_channel);
-            if (active)
-                wattron(m_screen->m_track, COLOR_PAIR(1));
-            mvwprintw(m_screen->m_track, y, x,
-                "%2d %2d %s ", partIdx+1, 1+part->m_channel, part->m_preset);
-            if (active)
-                wattroff(m_screen->m_track, COLOR_PAIR(1));
-            partsShown++;
-        }
-    }
-    partsShown = 0;
-    const int colLength = 3;
-    for (int i=0; i<currentSection()->nofParts(); i++)
-    {
-        const SwPart *swPart = currentSection()->m_part[i];
-        for (int j=0; j<16;j++)
-        {
-            const FantomPart *hwPart = currentPerf()->m_part+j;
-            if (swPart->m_channel == hwPart->m_channel)
+            int x = (partsShown / 4) * 19;
+            int y = 7 + partsShown % 4;
+            const FantomPart *part = currentPerf()->m_part+partIdx;
+            if (part->m_channel == 255)
+                break; // oops, we're not initialised yet
+            if (1 || part->m_channel == m_sectionIdx)
             {
-                int x = 0;
-                if (partsShown >= colLength)
-                    x += 40;
-                int y = 6 + 5 + 2 + partsShown % colLength;
-                if (partsShown % colLength == 0)
-                    mvwprintw(m_screen->m_track, 6+5+1, x,
-                        "prt range         patch        vol tps");
-                char keyL[20];
-                keyL[0] = 0;
-                m_midi->noteName(
-                    std::max(hwPart->m_keyRangeLower,
-                    swPart->m_rangeLower), keyL);
-                char keyU[20];
-                keyU[0] = 0;
-                m_midi->noteName(
-                    std::min(hwPart->m_keyRangeUpper,
-                    swPart->m_rangeUpper), keyU);
-                int transpose = swPart->m_transpose +
-                        (int)hwPart->m_transpose +
-                        (int)hwPart->m_oct*12;
-                bool active = m_softPartActivity.get(i);
+                bool active = m_channelActivity.get(part->m_channel);
                 if (active)
                     wattron(m_screen->m_track, COLOR_PAIR(1));
-                assert(hwPart->m_patch.m_name[1] != '[');
                 mvwprintw(m_screen->m_track, y, x,
-                    "%3d [%3s - %4s]  %12s %3d %3d", j+1, keyL, keyU,
-                    hwPart->m_patch.m_name, hwPart->m_vol,transpose);
+                    "%2d %2d %s ", partIdx+1, 1+part->m_channel, part->m_preset);
                 if (active)
                     wattroff(m_screen->m_track, COLOR_PAIR(1));
                 partsShown++;
             }
         }
+        partsShown = 0;
+        const int colLength = 3;
+        for (int i=0; i<currentSection()->nofParts(); i++)
+        {
+            const SwPart *swPart = currentSection()->m_part[i];
+            for (int j=0; j<16;j++)
+            {
+                const FantomPart *hwPart = currentPerf()->m_part+j;
+                if (swPart->m_channel == hwPart->m_channel)
+                {
+                    int x = 0;
+                    if (partsShown >= colLength)
+                        x += 40;
+                    int y = 6 + 5 + 2 + partsShown % colLength;
+                    if (partsShown % colLength == 0)
+                        mvwprintw(m_screen->m_track, 6+5+1, x,
+                            "prt range         patch        vol tps");
+                    char keyL[20];
+                    keyL[0] = 0;
+                    m_midi->noteName(
+                        std::max(hwPart->m_keyRangeLower,
+                        swPart->m_rangeLower), keyL);
+                    char keyU[20];
+                    keyU[0] = 0;
+                    m_midi->noteName(
+                        std::min(hwPart->m_keyRangeUpper,
+                        swPart->m_rangeUpper), keyU);
+                    int transpose = swPart->m_transpose +
+                            (int)hwPart->m_transpose +
+                            (int)hwPart->m_oct*12;
+                    bool active = m_softPartActivity.get(i);
+                    if (active)
+                        wattron(m_screen->m_track, COLOR_PAIR(1));
+                    assert(hwPart->m_patch.m_name[1] != '[');
+                    mvwprintw(m_screen->m_track, y, x,
+                        "%3d [%3s - %4s]  %12s %3d %3d", j+1, keyL, keyU,
+                        hwPart->m_patch.m_name, hwPart->m_vol,transpose);
+                    if (active)
+                        wattroff(m_screen->m_track, COLOR_PAIR(1));
+                    partsShown++;
+                }
+            }
+        }
     }
-    if (setFaders)
+
+    if (updateFlags & UpdateFaders)
         updateBcfFaders();
 
-    if (updateFantomDisplay)
+    if (updateFlags & UpdateFantomDisplay)
     {
         // abuse the fantom screen to print some status info
         char buf[20];
@@ -722,7 +728,7 @@ void Patcher::changeSection(uint8_t sectionIdx)
             allNotesOff();
         }
         m_sectionIdx = sectionIdx;
-        show(false, true);
+        show(UpdateScreen|UpdateFantomDisplay);
         redrawwin(m_screen->m_track);
         m_persist.store(m_trackIdx, m_sectionIdx);
     }
@@ -748,7 +754,7 @@ void Patcher::nextSection(void)
     int newTrack, newSection;
     if (currentSection()->next(&newTrack, &newSection))
     {
-        changeTrack(newTrack);
+        changeTrack(newTrack, UpdateAll);
         changeSection(newSection);
         return;
     }
@@ -766,7 +772,7 @@ void Patcher::prevSection(void)
     int newTrack, newSection;
     if (currentSection()->previous(&newTrack, &newSection))
     {
-        changeTrack(newTrack);
+        changeTrack(newTrack, UpdateAll);
         changeSection(newSection);
         return;
     }
@@ -777,14 +783,14 @@ void Patcher::prevSection(void)
     changeSection(sectionIdx);
 }
 
-void Patcher::changeTrack(uint8_t track, bool setFaders)
+void Patcher::changeTrack(uint8_t track, int updateFlags)
 {
     //m_screen->printMidi("change track %d\n", track);
     m_trackIdx = track;
     m_sectionIdx = currentTrack()->m_startSection; // cannot use changeSection!
     m_midi->putBytes(MidiDevice::FantomOut,
         MidiStatus::programChange|Fantom::programChangeChannel, (uint8_t)m_trackIdx);
-    show(setFaders);
+    show(updateFlags);
     m_persist.store(m_trackIdx, m_sectionIdx);
 }
 
@@ -847,7 +853,7 @@ void Patcher::changeTrackByNote(uint8_t note)
     }
     if (valid)
     {
-        changeTrack((uint8_t)m_trackIdx);
+        changeTrack((uint8_t)m_trackIdx, UpdateAll);
     }
 }
 
@@ -901,10 +907,11 @@ int main(int argc, char **argv)
         Midi midi(&screen);
         Fantom fantom(&screen, &midi);
         Patcher patcher(&screen, &midi, &fantom);
+        patcher.loadTrackDefs();
         patcher.downloadPerfomanceData();
         patcher.mergePerformanceData();
         //patcher.dumpTrackList();
-        patcher.show();
+        patcher.show(Patcher::UpdateScreen|Patcher::UpdateFaders);
         patcher.eventLoop();
     }
     catch (Error &e)
