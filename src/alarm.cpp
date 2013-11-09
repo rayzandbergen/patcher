@@ -29,8 +29,8 @@ int setAlarmHandler()
     struct itimerval it;
     it.it_interval.tv_sec = 0;
     it.it_interval.tv_usec = 0;
-    it.it_value.tv_sec = 1;
-    it.it_value.tv_usec = 0;
+    it.it_value.tv_sec = 2;
+    it.it_value.tv_usec = 500*1000;
     if (setitimer(ITIMER_REAL, &it, 0) < 0)
     {
         perror("setitimer");
