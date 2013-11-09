@@ -25,7 +25,7 @@
 #include "xml.h"
 #include "persistent.h"
 
-#define VERSION "1.0.0"
+#define VERSION "1.1.0"
 
 // events shown in the midi logger window
 #define LOG_NOTE
