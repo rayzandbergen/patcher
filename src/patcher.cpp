@@ -101,6 +101,7 @@ public:
     void mergePerformanceData();
     void show(bool setFaders = true, bool updateFantomDisplay = false);
     void eventLoop(void);
+    void loadTrackDefs(void);
     Patcher(Screen *s, Midi *m, Fantom *f):
         debounceTime(Real(0.4)),
         m_screen(s), m_midi(m), m_fantom(f),
@@ -109,13 +110,18 @@ public:
     {
         m_info.m_mode = 0;
         m_info.m_offset = 0;
-        importTracks(TRACK_DEF, m_trackList);
-        initSetList(m_trackList, m_setList);
+        loadTrackDefs();
         m_trackIdx = m_setList[0];
         getTime(&m_debouncePrev);
         m_info.m_previous = m_debouncePrev;
     };
 };
+
+void Patcher::loadTrackDefs(void)
+{
+    importTracks(TRACK_DEF, m_trackList);
+    initSetList(m_trackList, m_setList);
+}
 
 void Patcher::dumpTrackList()
 {
