@@ -33,8 +33,6 @@ Section::Section(const char *name, bool noteOffEnter, bool noteOffLeave):
         m_nextTrack(-1), m_nextSection(-1),
         m_previousTrack(-1), m_previousSection(-1)
 {
-    SwPart *p = new SwPart(NULL, NULL);
-    addPart(p);
 }
 
 Section::~Section()
@@ -51,8 +49,9 @@ void Section::clear()
     m_name = 0;
 }
 
-SwPart::SwPart(const char *lower, const char *upper,
-            uint8_t channel, int transpose, const char *name, bool mono, Transposer *t):
+SwPart::SwPart(const char *name, uint8_t channel, int transpose,
+            const char *lower, const char *upper,
+            bool mono, Transposer *t):
         m_name(name), m_channel(channel), m_transpose(transpose),
         m_mono(mono), m_transposer(t)
 {
@@ -123,14 +122,6 @@ uint8_t SwPart::stringToNoteNum(const char *s)
 
 Track::Track(const char *name, bool chain, int startSection): m_name(name), m_chain(chain), m_startSection(startSection)
 {
-    for (int i=0; i<5; i++)
-    {
-        char buf[20];
-        sprintf(buf, "empty%d", i+1);
-        Section *s = new Section(strdup(buf));
-        s->m_part[0]->m_channel = i;
-        addSection(s);
-    }
 }
 
 Track::~Track()

@@ -29,9 +29,9 @@ public:
     bool inRange(uint8_t noteNum) const
         { return noteNum >= m_rangeLower && noteNum <= m_rangeUpper; }
     static uint8_t stringToNoteNum(const char *s);
-    SwPart(const char *lower = NULL, const char *upper = NULL, 
-            uint8_t channel = 255, int transpose = 0, 
-            const char *name = NULL, bool mono=false, Transposer *t = NULL);
+    SwPart(const char *name, uint8_t channel = 255, int transpose = 0,
+            const char *lower = NULL, const char *upper = NULL,
+            bool mono=false, Transposer *t = NULL);
     ~SwPart();
     void clear();
     void dumpToLog(Screen *screen, const char *prefix) const;
