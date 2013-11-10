@@ -182,7 +182,7 @@ void parseTracks(DOMDocument *doc, std::vector<Track*> &trackList)
         for (size_t sectionIdx = 0; sectionNodes->snapshotItem(sectionIdx); sectionIdx++)
         {
             DOMNode *sectionNode = sectionNodes->getNodeValue();
-            char *name = XMLString::transcode(((DOMElement*)sectionNode)->getAttribute(xmlStr("name")));
+            name = XMLString::transcode(((DOMElement*)sectionNode)->getAttribute(xmlStr("name")));
             Section *section = new Section(strdup(name));
             XMLString::release(&name);
             DOMNode *noteOffNode = findNode(doc, (DOMElement*)sectionNode, "./noteOff");
@@ -244,7 +244,7 @@ void parseTracks(DOMDocument *doc, std::vector<Track*> &trackList)
                 DOMNode *partNode = partNodes->getNodeValue();
                 SwPart *part;
                 {
-                    char *name = XMLString::transcode(((DOMElement*)partNode)->getAttribute(xmlStr("name")));
+                    name = XMLString::transcode(((DOMElement*)partNode)->getAttribute(xmlStr("name")));
                     part = new SwPart(strdup(name));
                     XMLString::release(&name);
                 }
