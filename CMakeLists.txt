@@ -5,13 +5,17 @@ set(CMAKE_BUILD_TYPE RELEASE)
 
 project(patcher)
 set(RASPBIAN 1)
+#set(mudflap 1)
 
 set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -Wshadow -g")
 set(CMAKE_CXX_FLAGS_RELEASE "-Wall -Wextra -Wshadow -O3")
+if (mudflap)
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fmudflap -DNO_TIMEOUT")
+endif()
 
 include_directories(src ${CMAKE_CURRENT_BINARY_DIR})
 
-set(patcherSources 
+set(patcherSources
     src/fantom.cpp
     src/monofilter.cpp
     src/patcher.cpp
@@ -50,6 +54,10 @@ if(RASPBIAN)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DRASPBIAN")
 else()
     set(patcherlibs "${patcherlibs} -lcurses")
+endif()
+
+if (mudflap)
+    set(patcherlibs "${patcherlibs} -lmudflap")
 endif()
 
 set_target_properties(patcher PROPERTIES LINK_FLAGS ${patcherlibs})
