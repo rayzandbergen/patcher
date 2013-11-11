@@ -883,9 +883,6 @@ int main(int argc, char **argv)
 #if 0
     std::vector <Track *>m_trackList;
     importTracks(TRACK_DEF, m_trackList);
-#ifdef EXPORT_TRACKS
-    exportTracks(m_trackList, "tracks_out.xml");
-#endif
     clearTracks(m_trackList);
     return 0;
 #endif
