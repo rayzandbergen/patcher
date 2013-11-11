@@ -731,6 +731,7 @@
 
   <track chain="true" name="The count of Tuscany">
     <section name="Intro, strings + EGuitar">
+      <chain previousSection="last" previousTrack="next"/>
       <part channel="1" name="lower">
         <range lower="C0" upper="B4"/>
         <transpose offset="24"/>
@@ -1001,6 +1002,7 @@
       </part>
     </section>
     <section name="Final">
+      <chain nextSection="0" nextTrack="previous"/>
       <part channel="4" name="piano">
         <range lower="C7" upper="B9"/>
         <transpose offset="-24"/>
