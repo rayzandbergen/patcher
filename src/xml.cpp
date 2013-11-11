@@ -319,7 +319,6 @@ void fixChain(std::vector<Track*> &tracks)
         for (size_t s=0; s<track->m_section.size(); s++)
         {
             Section *section = track->m_section[s];
-            size_t sLast = tracks[tPrev]->m_section.size()-1; // last of previous track
             size_t sNext = s+1 < track->m_section.size() ? s+1 : 0; // wraparound
             size_t sPrev = s > 0 ? s-1 : track->m_section.size()-1; // wraparound
             switch (section->m_nextTrack)
@@ -360,6 +359,7 @@ void fixChain(std::vector<Track*> &tracks)
                     if (section->m_previousTrack >= (int)tracks.size() || section->m_previousTrack < 0)
                         section->m_previousTrack = t;
             }
+            size_t sLast = tracks[section->m_nextTrack]->m_section.size()-1;
             switch (section->m_nextSection)
             {
                 case TrackDef::Unspecified:
@@ -374,9 +374,10 @@ void fixChain(std::vector<Track*> &tracks)
                     throw(1); // internal error
                     break;
                 default:
-                    if (section->m_nextSection >= (int)track->m_section.size() || section->m_nextSection < 0)
-                        section->m_nextSection = s;
+                    if (section->m_nextSection > (int)sLast || section->m_nextSection < 0)
+                        section->m_nextSection = s <= (int)sLast ? s : (int)sLast;
             }
+            sLast = tracks[section->m_previousTrack]->m_section.size()-1;
             switch (section->m_previousSection)
             {
                 case TrackDef::Unspecified:
@@ -391,8 +392,8 @@ void fixChain(std::vector<Track*> &tracks)
                     throw(1); // internal error
                     break;
                 default:
-                    if (section->m_previousSection >= (int)track->m_section.size() || section->m_previousSection < 0)
-                        section->m_previousSection = s;
+                    if (section->m_previousSection > (int)sLast || section->m_previousSection < 0)
+                        section->m_previousSection = s <= (int)sLast ? s : (int)sLast;
             }
         }
     }
