@@ -1508,6 +1508,7 @@
 
   <track chain="true" name="The test that stumped them all">
     <section name="xylo lead">
+      <chain previousSection="last" previousTrack="previous"/>
       <part channel="1" name="xylo Lead" sustainTranspose="12">
         <range lower="C0" upper="B9"/>
         <transpose offset="0"/>
@@ -1564,6 +1565,7 @@
 
   <track chain="true" name="Goodnight Kiss">
     <section name="phase pad">
+      <chain previousSection="last" previousTrack="previous"/>
       <part channel="1" name="phase pad">
         <range lower="C0" upper="B9"/>
         <transpose offset="0"/>
@@ -1652,6 +1654,7 @@
 
   <track chain="true" name="Solitary shell">
     <section name="soft square lead">
+      <chain previousSection="last" previousTrack="previous"/>
       <part channel="1" name="square lead">
         <range lower="B4" upper="B9"/>
         <transpose offset="0"/>
@@ -1734,6 +1737,7 @@
 
   <track chain="true" name="Reprise">
     <section name="piano">
+      <chain previousSection="last" previousTrack="previous"/>
       <part channel="3" name="piano">
         <range lower="C0" upper="B9"/>
         <transpose offset="0"/>
@@ -1964,6 +1968,7 @@
 
   <track name="Losing Time">
     <section name="grand strings">
+      <chain previousSection="last" previousTrack="previous"/>
       <part channel="1" name="high">
         <range lower="C6" upper="B9"/>
         <transpose offset="-12"/>
