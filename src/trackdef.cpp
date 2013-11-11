@@ -6,32 +6,12 @@
 #include "fantom.h"
 #include "error.h"
 
-bool Section::next(int *nextTrack, int *nextSection)
-{
-    if (m_nextTrack >= 0 && m_nextSection >= 0)
-    {
-        *nextTrack = m_nextTrack;
-        *nextSection = m_nextSection;
-        return true;
-    }
-    return false;
-}
-
-bool Section::previous(int *nextTrack, int *nextSection)
-{
-    if (m_previousTrack >= 0 && m_previousSection >= 0)
-    {
-        *nextTrack = m_previousTrack;
-        *nextSection = m_previousSection;
-        return true;
-    }
-    return false;
-}
-
 Section::Section(const char *name, bool noteOffEnter, bool noteOffLeave):
         m_name(name), m_noteOffEnter(noteOffEnter), m_noteOffLeave(noteOffLeave),
-        m_nextTrack(-1), m_nextSection(-1),
-        m_previousTrack(-1), m_previousSection(-1)
+        m_nextTrack(TrackDef::Unspecified),
+        m_nextSection(TrackDef::Unspecified),
+        m_previousTrack(TrackDef::Unspecified),
+        m_previousSection(TrackDef::Unspecified)
 {
 }
 
@@ -188,7 +168,7 @@ void SwPart::dumpToLog(Screen *screen, const char *prefix) const
 
 void SetList::add(std::vector<Track*> &tracks, const char *trackName)
 {
-    int addIdx = -1;
+    int addIdx = TrackDef::Unspecified;
     for (int i=0; i<(int)tracks.size(); i++)
     {
         if (strncasecmp(trackName, tracks[i]->m_name, strlen(trackName)) == 0)
@@ -197,7 +177,7 @@ void SetList::add(std::vector<Track*> &tracks, const char *trackName)
             break;
         }
     }
-    if (addIdx == -1)
+    if (addIdx == TrackDef::Unspecified)
     {
         printf("cannot find track %s by name\n", trackName);
         exit(1);

@@ -728,7 +728,7 @@ void Patcher::changeSection(uint8_t sectionIdx)
         }
         m_sectionIdx = sectionIdx;
         show(UpdateScreen|UpdateFantomDisplay);
-        redrawwin(m_screen->m_track);
+        redrawwin(m_screen->m_track); // TODO why is this here?
         m_persist.store(m_trackIdx, m_sectionIdx);
     }
 }
@@ -749,37 +749,34 @@ void Patcher::nextSection(void)
 {
     if (!debounced(debounceTime))
         return;
-    int sectionIdx = m_sectionIdx;
-    int newTrack, newSection;
-    if (currentSection()->next(&newTrack, &newSection))
+    int newTrack = currentSection()->m_nextTrack;
+    int newSection = currentSection()->m_nextSection;
+    if (newTrack != m_trackIdx)
     {
         changeTrack(newTrack, UpdateAll);
         changeSection(newSection);
-        return;
     }
-    sectionIdx++;
-    if (sectionIdx >= currentTrack()->nofSections())
-        sectionIdx = 0;
-    changeSection(sectionIdx);
+    else if (newSection != m_sectionIdx)
+    {
+        changeSection(newSection);
+    }
 }
 
 void Patcher::prevSection(void)
 {
     if (!debounced(debounceTime))
         return;
-    int sectionIdx = m_sectionIdx;
-    int newTrack, newSection;
-    if (currentSection()->previous(&newTrack, &newSection))
+    int newTrack = currentSection()->m_previousTrack;
+    int newSection = currentSection()->m_previousSection;
+    if (newTrack != m_trackIdx)
     {
         changeTrack(newTrack, UpdateAll);
         changeSection(newSection);
-        return;
     }
-    if (sectionIdx == 0)
-        sectionIdx = currentTrack()->nofSections()-1;
-    else
-        sectionIdx--;
-    changeSection(sectionIdx);
+    else if (newSection != m_sectionIdx)
+    {
+        changeSection(newSection);
+    }
 }
 
 void Patcher::changeTrack(uint8_t track, int updateFlags)

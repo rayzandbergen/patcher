@@ -10,6 +10,13 @@
 #include "screen.h"
 
 class FantomPart;
+namespace TrackDef {
+    static const int Unspecified = -1;
+    static const int Previous = -2;
+    static const int Current = -3;
+    static const int Next = -4;
+    static const int Last = -5;
+};
 
 class SwPart {
 public:
@@ -53,8 +60,6 @@ public:
     void clear();
     void addPart(SwPart *s) { m_part.push_back(s); }
     int nofParts(void) const { return m_part.size(); }
-    bool next(int *nextTrack, int *nextSection);
-    bool previous(int *nextTrack, int *nextSection);
     void dumpToLog(Screen *screen, const char *prefix) const;
 };
 

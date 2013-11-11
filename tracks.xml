@@ -956,23 +956,11 @@
         <transpose offset="0"/>
       </part>
     </section>
-    <section name="String pad">
-      <part channel="6" name="upper">
-        <controllerRemap id="volReverse"/>
-        <range lower="C0" upper="B9"/>
-        <transpose offset="0"/>
-      </part>
-      <part channel="14" name="upper">
-        <controllerRemap id="volQuadratic"/>
-        <range lower="C0" upper="B9"/>
-        <transpose offset="0"/>
-      </part>
-    </section>
   </track>
 
   <track chain="true" name="The count of Tuscany 2">
     <section name="String pad bubbles">
-      <chain previousSection="20" previousTrack="previous"/>
+      <chain previousSection="last" previousTrack="previous"/>
       <part channel="1" name="upper">
         <controllerRemap id="volReverse"/>
         <range lower="C0" upper="B5"/>
@@ -1217,6 +1205,7 @@
 
   <track chain="true" name="Scarred">
     <section name="String pad intro">
+      <chain previousSection="last" previousTrack="next"/>
       <part channel="1" name="strings">
         <range lower="C0" upper="B9"/>
         <transpose offset="12"/>
@@ -1380,7 +1369,8 @@
 
   <track chain="true" name="Scarred Solo">
     <section name="String pad intro">
-      <chain nextSection="0" nextTrack="previous"/>
+      <chain nextSection="0" nextTrack="previous" 
+             previousSection="last" previousTrack="previous"/>
       <part channel="1" name="Burning Lead">
         <range lower="C0" upper="B9"/>
         <transpose offset="0"/>

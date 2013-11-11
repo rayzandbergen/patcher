@@ -202,15 +202,26 @@ void parseTracks(DOMDocument *doc, std::vector<Track*> &trackList)
             DOMNode *chainNode = findNode(doc, (DOMElement*)sectionNode, "./chain");
             if (chainNode)
             {
-                if (((DOMElement*)chainNode)->hasAttribute(xmlStr("nextSection")))
+                const char *ss[] = {"nextSection", "previousSection"};
+                for (size_t i=0; i<2; i++)
                 {
-                    xmlStream(((DOMElement*)chainNode)->getAttribute(xmlStr("nextSection")))
-                        >> section->m_nextSection;
-                }
-                if (((DOMElement*)chainNode)->hasAttribute(xmlStr("previousSection")))
-                {
-                    xmlStream(((DOMElement*)chainNode)->getAttribute(xmlStr("previousSection")))
-                        >> section->m_previousSection;
+                    if (((DOMElement*)chainNode)->hasAttribute(xmlStr(ss[i])))
+                    {
+                        int s = 0;
+                        std::string trackStr = xmlStdString(((DOMElement*)chainNode)->getAttribute(xmlStr(ss[i])));
+                        if (trackStr == "last")
+                            s = TrackDef::Last;
+                        else
+                        {
+                            stringStream.clear();
+                            stringStream << trackStr;
+                            stringStream >> s;
+                        }
+                        if (i == 0)
+                            section->m_nextSection = s;
+                        else
+                            section->m_previousSection = s;
+                    }
                 }
                 const char *ts[] = {"nextTrack", "previousTrack"};
                 for (size_t i=0; i<2; i++)
@@ -220,11 +231,11 @@ void parseTracks(DOMDocument *doc, std::vector<Track*> &trackList)
                         int t = 0;
                         std::string trackStr = xmlStdString(((DOMElement*)chainNode)->getAttribute(xmlStr(ts[i])));
                         if (trackStr == "next")
-                            t = trackIdx + 1;
+                            t = TrackDef::Next;
                         else if (trackStr == "current")
-                            t = trackIdx;
+                            t = TrackDef::Current;
                         else if (trackStr == "previous")
-                            t = trackIdx - 1;
+                            t = TrackDef::Previous;
                         else
                         {
                             stringStream.clear();
@@ -340,6 +351,95 @@ void parseTracks(DOMDocument *doc, std::vector<Track*> &trackList)
     trackNodes->release();
 }
 
+void fixChain(std::vector<Track*> &tracks)
+{
+    for (size_t t=0; t<tracks.size(); t++)
+    {
+        Track *track = tracks[t];
+        size_t tPrev = t > 0 ? t-1 : t; // clamped
+        size_t tNext = t+1 < tracks.size() ? t+1 : t; // clamped
+        for (size_t s=0; s<track->m_section.size(); s++)
+        {
+            Section *section = track->m_section[s];
+            size_t sLast = tracks[tPrev]->m_section.size()-1; // last of previous track
+            size_t sNext = s+1 < track->m_section.size() ? s+1 : 0; // wraparound
+            size_t sPrev = s > 0 ? s-1 : track->m_section.size()-1; // wraparound
+            switch (section->m_nextTrack)
+            {
+                case TrackDef::Next:
+                    section->m_nextTrack = tNext;
+                    break;
+                case TrackDef::Unspecified:
+                case TrackDef::Current:
+                    section->m_nextTrack = t;
+                    break;
+                case TrackDef::Previous:
+                    section->m_nextTrack = tPrev;
+                    break;
+                case TrackDef::Last:
+                    throw(1); // internal error
+                    break;
+                default:
+                    if (section->m_nextTrack >= (int)tracks.size() || section->m_nextTrack < 0)
+                        section->m_nextTrack = t;
+            }
+            switch (section->m_previousTrack)
+            {
+                case TrackDef::Next:
+                    section->m_previousTrack = tNext;
+                    break;
+                case TrackDef::Unspecified:
+                case TrackDef::Current:
+                    section->m_previousTrack = t;
+                    break;
+                case TrackDef::Previous:
+                    section->m_previousTrack = tPrev;
+                    break;
+                case TrackDef::Last:
+                    throw(1); // internal error
+                    break;
+                default:
+                    if (section->m_previousTrack >= (int)tracks.size() || section->m_previousTrack < 0)
+                        section->m_previousTrack = t;
+            }
+            switch (section->m_nextSection)
+            {
+                case TrackDef::Unspecified:
+                    section->m_nextSection = sNext;
+                    break;
+                case TrackDef::Last:
+                    section->m_nextSection = sLast;
+                    break;
+                case TrackDef::Previous:
+                case TrackDef::Next:
+                case TrackDef::Current:
+                    throw(1); // internal error
+                    break;
+                default:
+                    if (section->m_nextSection >= (int)track->m_section.size() || section->m_nextSection < 0)
+                        section->m_nextSection = s;
+            }
+            switch (section->m_previousSection)
+            {
+                case TrackDef::Unspecified:
+                    section->m_previousSection = sPrev;
+                    break;
+                case TrackDef::Last:
+                    section->m_previousSection = sLast;
+                    break;
+                case TrackDef::Previous:
+                case TrackDef::Next:
+                case TrackDef::Current:
+                    throw(1); // internal error
+                    break;
+                default:
+                    if (section->m_previousSection >= (int)track->m_section.size() || section->m_previousSection < 0)
+                        section->m_previousSection = s;
+            }
+        }
+    }
+}
+
 // Parses an XML file into a track list
 int importTracks (const char *inFile, std::vector<Track*> &tracks)
 {
@@ -392,6 +492,7 @@ int importTracks (const char *inFile, std::vector<Track*> &tracks)
     xPath.clear();
 #endif
     XMLPlatformUtils::Terminate();
+    fixChain(tracks);
     return 0;
 }
 

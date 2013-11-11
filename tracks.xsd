@@ -17,6 +17,11 @@
             <xs:pattern value="([0-9]+)|(previous)|(current)|(next)"/>
         </xs:restriction>
     </xs:simpleType>
+    <xs:simpleType name="SectionIndex">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="([0-9]+)|(last)"/>
+        </xs:restriction>
+    </xs:simpleType>
     <xs:simpleType name="MidiChannel">
         <xs:restriction base="xs:positiveInteger">
             <xs:maxInclusive value="16"/>
@@ -46,9 +51,9 @@
                                             <xs:element name="chain" minOccurs="0" maxOccurs="1">
                                                 <xs:complexType mixed="true">
                                                     <xs:attribute name="nextTrack" type="TrackIndex"/>
-                                                    <xs:attribute name="nextSection" type="xs:nonNegativeInteger"/>
+                                                    <xs:attribute name="nextSection" type="SectionIndex"/>
                                                     <xs:attribute name="previousTrack" type="TrackIndex"/>
-                                                    <xs:attribute name="previousSection" type="xs:nonNegativeInteger"/>
+                                                    <xs:attribute name="previousSection" type="SectionIndex"/>
                                                 </xs:complexType>
                                             </xs:element>
                                             <xs:element name="part" minOccurs="1" maxOccurs="64">
