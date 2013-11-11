@@ -309,7 +309,7 @@ void parseTracks(DOMDocument *doc, std::vector<Track*> &trackList)
                     DOMNode *customNode = findNode(doc, (DOMElement*)transposeNode, "./custom");
                     if (customNode)
                     {
-                        part->m_transpose += 1000;
+                        part->m_customTransposeEnabled = true;
                         memset(part->m_customTranspose, 0, sizeof(part->m_customTranspose));
                         if (((DOMElement*)customNode)->hasAttribute(xmlStr("offset")))
                         {
@@ -516,9 +516,9 @@ void exportTracks(const std::vector<Track*> &tracks, const char *filename)
 
                 DOMElement *tpNode = doc->createElement(xmlStr("transpose"));
                 partNode->appendChild(tpNode);
-                if (part->m_transpose >= 500)
+                if (part->m_customTransposeEnabled)
                 {
-                    addAttribute(tpNode, "offset", part->m_transpose - 1000);
+                    addAttribute(tpNode, "offset", part->m_transpose);
                     DOMElement *customNode = doc->createElement(xmlStr("custom"));
                     tpNode->appendChild(customNode);
                     addAttribute(customNode, "offset", part->m_customTransposeOffset);

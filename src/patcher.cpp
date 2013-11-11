@@ -500,14 +500,10 @@ void Patcher::sendEventToFantom(uint8_t midiStatus,
             {
                 continue;
             }
-            int transpose;
-            if (swPart->m_transpose < 500)
-                transpose = swPart->m_transpose;
-            else
-                transpose = (swPart->m_transpose - 1000) +
-                    swPart->m_customTranspose[
+            data1Out = data1 + swPart->m_transpose;
+            if (swPart->m_customTransposeEnabled)
+                data1Out += swPart->m_customTranspose[
                     (data1 + 12 + swPart->m_customTransposeOffset) % 12];
-            data1Out = data1 + transpose;
             if (data1Out > 127)
                 data1Out = 127;
             if (swPart->m_mono)

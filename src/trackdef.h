@@ -16,6 +16,7 @@ public:
     const char *m_name;
     uint8_t m_channel;
     int m_transpose;
+    bool m_customTransposeEnabled;
     int m_customTranspose[12];
     int m_customTransposeOffset;
     uint8_t m_rangeLower;

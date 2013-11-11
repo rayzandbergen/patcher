@@ -53,7 +53,7 @@ SwPart::SwPart(const char *name, uint8_t channel, int transpose,
             const char *lower, const char *upper,
             bool mono, Transposer *t):
         m_name(name), m_channel(channel), m_transpose(transpose),
-        m_mono(mono), m_transposer(t)
+        m_customTransposeEnabled(false), m_mono(mono), m_transposer(t)
 {
     m_rangeLower = lower ? stringToNoteNum(lower) : 0;
     m_rangeUpper = upper ? stringToNoteNum(upper): 127;
