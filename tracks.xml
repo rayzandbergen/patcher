@@ -1966,7 +1966,7 @@
     </section>
   </track>
 
-  <track name="Losing Time">
+  <track chain="true" name="Losing Time">
     <section name="grand strings">
       <chain previousSection="last" previousTrack="previous"/>
       <part channel="1" name="high">
