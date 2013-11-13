@@ -3,7 +3,7 @@ now=`date "+%Y%m%d-%H%M"`
 archive="patcher$now.tar.gz"
 echo $archive;
 make clean
-rm -rf tags fantom_cache.bin CMakeCache.txt cmake_install.cmake Makefile
+rm -rf doc tags fantom_cache.bin CMakeCache.txt cmake_install.cmake Makefile
 ./stamp.sh now.h
 cd ..
 tar --exclude='patcher/CMakeFiles/*' \
