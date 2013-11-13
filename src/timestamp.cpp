@@ -1,3 +1,8 @@
+/*! \file timestamp.cpp
+ *  \brief Contains functions to handle timestamps.
+ *
+ *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
+ */
 #include "patcher.h"
 #include "timestamp.h"
 

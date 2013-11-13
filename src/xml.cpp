@@ -1,5 +1,5 @@
 /*! \file xml.cpp
- *  \brief Contains functions to read track definitions from an XML file, and clean them up again.
+ *  \brief Contains functions to read track definitions from an XML file.
  *
  *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
  */
@@ -17,6 +17,7 @@
 #include <vector>
 #include <list>
 #include <map>
+#include "error.h"
 
 XERCES_CPP_NAMESPACE_USE
 
@@ -175,7 +176,7 @@ void parseTracks(DOMDocument *doc, std::vector<Track*> &trackList, SetList &setL
                         int s = 0;
                         std::string trackStr = xmlStdString(((DOMElement*)chainNode)->getAttribute(xmlStr(ss[i])));
                         if (trackStr == "last")
-                            s = TrackDef::Last;
+                            s = TrackDef::LastSection;
                         else
                         {
                             stringStream.clear();
@@ -196,11 +197,11 @@ void parseTracks(DOMDocument *doc, std::vector<Track*> &trackList, SetList &setL
                         int t = 0;
                         std::string trackStr = xmlStdString(((DOMElement*)chainNode)->getAttribute(xmlStr(ts[i])));
                         if (trackStr == "next")
-                            t = TrackDef::Next;
+                            t = TrackDef::NextTrack;
                         else if (trackStr == "current")
-                            t = TrackDef::Current;
+                            t = TrackDef::CurrentTrack;
                         else if (trackStr == "previous")
-                            t = TrackDef::Previous;
+                            t = TrackDef::PreviousTrack;
                         else
                         {
                             stringStream.clear();
@@ -326,97 +327,6 @@ void parseTracks(DOMDocument *doc, std::vector<Track*> &trackList, SetList &setL
     trackNodes->release();
 }
 
-//! \brief Fix chain info in a track list
-void fixChain(std::vector<Track*> &tracks)
-{
-    for (size_t t=0; t<tracks.size(); t++)
-    {
-        Track *track = tracks[t];
-        size_t tPrev = t > 0 ? t-1 : t; // clamped
-        size_t tNext = t+1 < tracks.size() ? t+1 : t; // clamped
-        for (size_t s=0; s<track->m_section.size(); s++)
-        {
-            Section *section = track->m_section[s];
-            size_t sNext = s+1 < track->m_section.size() ? s+1 : 0; // wraparound
-            size_t sPrev = s > 0 ? s-1 : track->m_section.size()-1; // wraparound
-            switch (section->m_nextTrack)
-            {
-                case TrackDef::Next:
-                    section->m_nextTrack = tNext;
-                    break;
-                case TrackDef::Unspecified:
-                case TrackDef::Current:
-                    section->m_nextTrack = t;
-                    break;
-                case TrackDef::Previous:
-                    section->m_nextTrack = tPrev;
-                    break;
-                case TrackDef::Last:
-                    throw(1); // internal error
-                    break;
-                default:
-                    if (section->m_nextTrack >= (int)tracks.size() || section->m_nextTrack < 0)
-                        section->m_nextTrack = t;
-            }
-            switch (section->m_previousTrack)
-            {
-                case TrackDef::Next:
-                    section->m_previousTrack = tNext;
-                    break;
-                case TrackDef::Unspecified:
-                case TrackDef::Current:
-                    section->m_previousTrack = t;
-                    break;
-                case TrackDef::Previous:
-                    section->m_previousTrack = tPrev;
-                    break;
-                case TrackDef::Last:
-                    throw(1); // internal error
-                    break;
-                default:
-                    if (section->m_previousTrack >= (int)tracks.size() || section->m_previousTrack < 0)
-                        section->m_previousTrack = t;
-            }
-            size_t sLast = tracks[section->m_nextTrack]->m_section.size()-1;
-            switch (section->m_nextSection)
-            {
-                case TrackDef::Unspecified:
-                    section->m_nextSection = sNext;
-                    break;
-                case TrackDef::Last:
-                    section->m_nextSection = sLast;
-                    break;
-                case TrackDef::Previous:
-                case TrackDef::Next:
-                case TrackDef::Current:
-                    throw(1); // internal error
-                    break;
-                default:
-                    if (section->m_nextSection > (int)sLast || section->m_nextSection < 0)
-                        section->m_nextSection = (int)(s <= sLast ? s : sLast);
-            }
-            sLast = tracks[section->m_previousTrack]->m_section.size()-1;
-            switch (section->m_previousSection)
-            {
-                case TrackDef::Unspecified:
-                    section->m_previousSection = sPrev;
-                    break;
-                case TrackDef::Last:
-                    section->m_previousSection = sLast;
-                    break;
-                case TrackDef::Previous:
-                case TrackDef::Next:
-                case TrackDef::Current:
-                    throw(1); // internal error
-                    break;
-                default:
-                    if (section->m_previousSection > (int)sLast || section->m_previousSection < 0)
-                        section->m_previousSection = (int)(s <= sLast ? s : sLast);
-            }
-        }
-    }
-}
-
 //! \brief Parse an XML file into a track list and a \a SetList.
 int importTracks (const char *inFile, std::vector<Track*> &tracks, SetList &setList)
 {
@@ -424,11 +334,11 @@ int importTracks (const char *inFile, std::vector<Track*> &tracks, SetList &setL
         XMLPlatformUtils::Initialize();
     }
     catch (const XMLException& toCatch) {
+        Error e("XMLException during init: ");
         char* message = XMLString::transcode(toCatch.getMessage());
-        std::cout << "Error during initialization! :\n"
-                  << message << "\n";
+        e.stream() << message;
         XMLString::release(&message);
-        return 1;
+        throw(e);
     }
 
     XercesDOMParser* parser = new XercesDOMParser();
@@ -444,22 +354,21 @@ int importTracks (const char *inFile, std::vector<Track*> &tracks, SetList &setL
         parseTracks(doc, tracks, setList);
     }
     catch (const XMLException& toCatch) {
+        Error e("XMLException: ");
         char* message = XMLString::transcode(toCatch.getMessage());
-        std::cout << "Exception message is: \n"
-                  << message << "\n";
+        e.stream() << message;
         XMLString::release(&message);
-        return -1;
+        throw(e);
     }
     catch (const DOMException& toCatch) {
+        Error e("DOMException: ");
         char* message = XMLString::transcode(toCatch.msg);
-        std::cout << "Exception message is: \n"
-                  << message << "\n";
+        e.stream() << message;
         XMLString::release(&message);
-        return -1;
+        throw(e);
     }
     catch (...) {
-        std::cout << "Unexpected Exception \n" ;
-        return -1;
+        throw(Error("xerces-c: unexpected exception"));
     }
 
     delete parser;
@@ -505,12 +414,3 @@ void addAttribute(DOMElement *n, const char *attrName, int x, int def = -1, int 
     }
 }
 
-/*! \brief Clean up a track list.
- *
- * Not really needed, only for memory leak checks.
- */
-void clearTracks(std::vector<Track*> &trackList)
-{
-    for (std::vector<Track *>::iterator i = trackList.begin(); i != trackList.end(); i++)
-        delete *i;
-}

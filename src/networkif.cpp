@@ -1,9 +1,14 @@
+/*! \file networkif.cpp
+ *  \brief Contains a function to obtain network interface addresses.
+ *
+ *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
+ */
 #include "networkif.h"
 #include <stdio.h>
 #include <iostream>
 #include <sstream>
-/* This function runs "ifconfig" and parses the output */
-/* to show only network interfaces and their addresses */
+/*! \brief This function runs "ifconfig" and parses the output to show only network interfaces and their addresses
+ */
 std::string getNetworkInterfaceAddresses()
 {
     /* use C-style streams for the pipe, then parse the
@@ -23,7 +28,7 @@ std::string getNetworkInterfaceAddresses()
         if (!fgets(lineBuffer, sizeof(lineBuffer), fp))
             break;
         std::string line(lineBuffer);
-        /* if the line does not start with whitespace, 
+        /* if the line does not start with whitespace,
            then it is an interface name */
         size_t ifLen = line.find_first_of(" \t\n");
         if (ifLen != 0)
@@ -36,17 +41,17 @@ std::string getNetworkInterfaceAddresses()
         if (addrOffset != line.npos && interface.compare("lo"))
         {
             nofInterfaces++;
-            size_t addrBegin = 
+            size_t addrBegin =
                 line.find_first_of("0123456789", addrOffset);
-            size_t addrEnd = 
+            size_t addrEnd =
                 line.find_first_not_of("0123456789.", addrBegin);
             address = line.substr(addrBegin, addrEnd-addrBegin);
             deviceString << interface << ": " << address << " *** ";
         }
     }
     pclose(fp);
-    return nofInterfaces > 0 ? 
-              deviceString.str() 
+    return nofInterfaces > 0 ?
+              deviceString.str()
             : std::string("no network *** ");
 }
 

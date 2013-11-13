@@ -1,3 +1,8 @@
+/*! \file activity.h
+ *  \brief Contains an object to keep activity flags.
+ *
+ *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
+ */
 #ifndef ACTIVITY_H
 #define ACTIVITY_H
 #include "timestamp.h"

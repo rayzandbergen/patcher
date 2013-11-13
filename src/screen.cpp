@@ -1,3 +1,8 @@
+/*! \file screen.cpp
+ *  \brief Contains an object that wraps a curses(3X) screen.
+ *
+ *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
+ */
 #include <unistd.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -89,7 +94,7 @@ void Screen::flushMidi()
         wrefresh(m_midiLog);
 }
 
-int Screen::vprintf(int id, const char *fmt, va_list ap)
+int Screen::vprintf(Id id, const char *fmt, va_list ap)
 {
     switch (id)
     {

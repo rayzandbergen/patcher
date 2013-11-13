@@ -1,13 +1,17 @@
+/*! \file toggler.h
+ *  \brief Contains a Toggler object.
+ *
+ *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
+ */
 #ifndef TOGGLER_H
 #define TOGGLER_H
 #include <stdint.h>
 #include "midi.h"
-/*
- * This class transposes only when sustain is active.
+/*! \brief This class toggles on note on events.
  */
 class Toggler
 {
-    enum NoteStatus { On, Hanging, On2, Off }; 
+    enum NoteStatus { On, Hanging, On2, Off };
     bool m_enabled;
     NoteStatus m_noteStatus[128];
 public:

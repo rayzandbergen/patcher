@@ -1,10 +1,14 @@
+/*! \file persistent.h
+ *  \brief Contains functions to store persistent data in shared memory.
+ *
+ *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
+ */
 #ifndef PERSISTENT_H
 #define PERSISTENT_H
 
-class MemoryMap; // actual shared memory layout
+class MemoryMap;
 
-// This class uses shared memory to store
-// information persistently between patcher runs.
+//! \brief This class uses shared memory to store information persistently between patcher runs.
 class Persist
 {
     MemoryMap *m_memMap;

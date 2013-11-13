@@ -1,3 +1,8 @@
+/*! \file toggler.cpp
+ *  \brief Contains a Toggler object.
+ *
+ *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
+ */
 #include <stdint.h>
 #include "transposer.h"
 #include "toggler.h"

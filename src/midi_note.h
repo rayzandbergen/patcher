@@ -1,6 +1,12 @@
+/*! \file midi_note.h
+ *  \brief Contains a list of all MIDI notes wrapped in an enum.
+ *
+ *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
+ */
 #ifndef MIDI_NOTE_H
 #define MIDI_NOTE_H
 namespace MidiNote {
+    //! \brief All permissible MIDI notes.
     enum {
         /*   0 */ C0,
         /*   1 */ Db0,
@@ -129,8 +135,8 @@ namespace MidiNote {
         /* 124 */ E10,
         /* 125 */ F10,
         /* 126 */ Gb10,
-        /* 127 */ G10
-
+        /* 127 */ G10,
+        max
     };
 };
 #endif // MIDI_NOTE_H

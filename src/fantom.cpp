@@ -1,6 +1,15 @@
+/*! \file fantom.h
+ *  \brief Contains classes to store patches/parts/performances (Roland-speak) from the Fantom.
+ *
+ *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
+ */
 #include "fantom.h"
 #include "error.h"
 
+/*  \brief Construct the preset name for \a this.
+ *
+ *  param[in] patchReadAllowed  True if the patch may be read. Fantom disallows download of some GM sounds.
+ */
 void FantomPart::constructPreset(bool &patchReadAllowed)
 {
     patchReadAllowed = false;
@@ -51,7 +60,11 @@ void FantomPart::constructPreset(bool &patchReadAllowed)
     }
 }
 
-void FantomPart::save(const Dump *d) 
+/*! \brief Save \a this to a \a Dump object.
+ *
+ * param[in] d object to dump to.
+ */
+void FantomPart::save(const Dump *d)
 {
     d->save(m_channel);
     d->save(m_bankSelectMsb);
@@ -68,6 +81,10 @@ void FantomPart::save(const Dump *d)
     m_patch.save(d);
 }
 
+/*! \brief Restore \a this from a \a Dump object.
+ *
+ * param[in] d object to read from.
+ */
 void FantomPart::restore(const Dump *d)
 {
     d->restore(m_channel);
@@ -85,6 +102,11 @@ void FantomPart::restore(const Dump *d)
     m_patch.restore(d);
 }
 
+/*! \brief Dump \a this to \a Screen.
+ *
+ * param[in] screen Screen object to dump to
+ * param[in] prefix Print prefix.
+ */
 void FantomPart::dumpToLog(Screen *screen, const char *prefix) const
 {
     screen->printLog("%s.preset:%s\n", prefix, m_preset);
@@ -99,14 +121,22 @@ void FantomPart::dumpToLog(Screen *screen, const char *prefix) const
     screen->printLog("%s.fadeWidthUpper:%d\n", prefix, m_fadeWidthUpper);
 }
 
-void FantomPerformance::save(const Dump *d) 
+/*! \brief Save \a this to a \a Dump object.
+ *
+ * param[in] d object to dump to.
+ */
+void FantomPerformance::save(const Dump *d)
 {
     d->save((const char*)m_name);
     for (int i=0; i<16; i++)
         m_part[i].save(d);
 }
 
-void FantomPerformance::restore(const Dump *d) 
+/*! \brief Restore \a this from a \a Dump object.
+ *
+ * param[in] d object to read from.
+ */
+void FantomPerformance::restore(const Dump *d)
 {
     d->restore((char*)m_name);
     for (int i=0; i<16; i++)

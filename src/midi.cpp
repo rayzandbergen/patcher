@@ -1,3 +1,8 @@
+/*! \file midi.h
+ *  \brief Contains objects that handle all MIDI traffic.
+ *
+ *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
+ */
 #include <sys/select.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -15,25 +20,27 @@
 
 namespace {
 
-enum { in = 100, out };
-
-MidiDevice deviceList[] = 
+/*! \brief My setup.
+ */
+MidiDevice deviceList[] =
 {
-    { "Anniv",   0, 0, 0, in,  MidiDevice::A30,       "A30", "Roland A30",        0 },
-    { "Anniv",   0, 0, 0, out, MidiDevice::FantomOut, "Fan", "Roland Fantom XR",  0 },
-    { "Anniv",   0, 0, 1, in,  MidiDevice::Fcb1010,   "FCB", "Behringer FCB1010", 0 },
-    { "Anniv",   0, 0, 1, out, MidiDevice::none,      "---", "-",                 0 },
-    { "Anniv",   0, 0, 2, in,  MidiDevice::FantomIn,  "Fan", "Roland Fantom XR",  0 },
-    { "Anniv",   0, 0, 2, out, MidiDevice::none,      "---", "-",                 0 },
-    { "Anniv",   0, 0, 3, in,  MidiDevice::none,      "---", "-",                 0 },
-    { "Anniv",   0, 0, 3, out, MidiDevice::none,      "---", "-",                 0 },
-    { "BCF2000", 0, 0, 0, in,  MidiDevice::BcfIn,     "BCF", "Behringer BCF2000", 0 },
-    { "BCF2000", 0, 0, 0, out, MidiDevice::BcfOut,    "BCF", "Behringer BCF2000", 0 },
-    { 0,         0, 0, 0, 0,   0,                     0,     0,                   0 },
+    { "Anniv",   0, 0, 0, MidiDirection::in,  MidiDevice::A30,       "A30", "Roland A30",        0 },
+    { "Anniv",   0, 0, 0, MidiDirection::out, MidiDevice::FantomOut, "Fan", "Roland Fantom XR",  0 },
+    { "Anniv",   0, 0, 1, MidiDirection::in,  MidiDevice::Fcb1010,   "FCB", "Behringer FCB1010", 0 },
+    { "Anniv",   0, 0, 1, MidiDirection::out, MidiDevice::none,      "---", "-",                 0 },
+    { "Anniv",   0, 0, 2, MidiDirection::in,  MidiDevice::FantomIn,  "Fan", "Roland Fantom XR",  0 },
+    { "Anniv",   0, 0, 2, MidiDirection::out, MidiDevice::none,      "---", "-",                 0 },
+    { "Anniv",   0, 0, 3, MidiDirection::in,  MidiDevice::none,      "---", "-",                 0 },
+    { "Anniv",   0, 0, 3, MidiDirection::out, MidiDevice::none,      "---", "-",                 0 },
+    { "BCF2000", 0, 0, 0, MidiDirection::in,  MidiDevice::BcfIn,     "BCF", "Behringer BCF2000", 0 },
+    { "BCF2000", 0, 0, 0, MidiDirection::out, MidiDevice::BcfOut,    "BCF", "Behringer BCF2000", 0 },
+    { 0,         0, 0, 0, MidiDirection::none,MidiDevice::none,      0,     0,                   0 },
 };
 
 };
 
+/*  \brief Map from DevId to file descriptor
+ */
 int Midi::fd(int deviceId) const
 {
     if (deviceId > MidiDevice::none && deviceId < MidiDevice::max)
@@ -41,6 +48,8 @@ int Midi::fd(int deviceId) const
     return -1;
 }
 
+/*  \brief Obtain file descriptors for all devices.
+ */
 void Midi::openDevices(void)
 {
     MidiDevice *dIn = m_deviceList;
@@ -81,12 +90,17 @@ void Midi::openDevices(void)
     }
     for (int i=MidiDevice::none+1; i<MidiDevice::max; i++)
     {
-        m_screen->printMidi("dev = %d, devIdx = %d, fd = %d\n", 
+        m_screen->printMidi("dev = %d, devIdx = %d, fd = %d\n",
             i, m_deviceIdToDeviceTabIdx[i], fd(i));
     }
     m_screen->flushMidi();
 }
 
+/*  \brief Convert a note number to a string.
+ *
+ *  \param[in] num   MIDI note number.
+ *  \param[OUT] s    string buffer, must be at least 5 bytes.
+ */
 void Midi::noteName(uint8_t num, char *s)
 {
     const char *str[] = {
@@ -97,6 +111,11 @@ void Midi::noteName(uint8_t num, char *s)
     sprintf(s, "%s%d", str[num], oct);
 }
 
+/*  \brief Convert a note number to a string in a static buffer.
+ *
+ *  \param[in] num   MIDI note number.
+ *  \return static string buffer.
+ */
 const char *Midi::noteName(uint8_t num)
 {
     static char buf[5];
@@ -104,14 +123,20 @@ const char *Midi::noteName(uint8_t num)
     return buf;
 }
 
+/*! \brief Open a raw midi device.
+ *
+ * \param[in] portName  ALSA port name.
+ * \param[in] mode      open(2) flag.
+ * \return file descriptor, or -1 on error.
+ */
 int Midi::openRaw(const char *portName, int mode) const
 {
    // abandoned once we have the file descriptor
-   snd_rawmidi_t *rawMidi1, *rawMidi2; 
+   snd_rawmidi_t *rawMidi1, *rawMidi2;
    int status;
-   if ((status = 
+   if ((status =
         snd_rawmidi_open(&rawMidi1, &rawMidi2, portName, 0)) < 0) {
-        m_screen->printMidi("cannot open MIDI port %s: %s", 
+        m_screen->printMidi("cannot open MIDI port %s: %s",
                 portName, snd_strerror(status));
     return -1;
    }
@@ -123,6 +148,14 @@ int Midi::openRaw(const char *portName, int mode) const
     return pfds.fd;
 }
 
+/*! \brief wait for activity on one or all devices.
+ *
+ * If there is any activity on the suicide-fd then this function throws an exception
+ * which will presumably kill this process.
+ *
+ * \param[in] usecTimeout    timeout in usec, if specified.
+ * \param[in] device         specified device ID to wait for, if specified, otherwise any activity.
+ */
 int Midi::wait(int usecTimeout, int device) const
 {
     fd_set fdSet;
@@ -132,7 +165,7 @@ int Midi::wait(int usecTimeout, int device) const
     {
         for (int i=0; m_deviceList[i].m_longDescr;i++)
         {
-            if (m_deviceList[i].m_direction == in && m_deviceList[i].m_id != MidiDevice::none)
+            if (m_deviceList[i].m_direction == MidiDirection::in && m_deviceList[i].m_id != MidiDevice::none)
             {
                 FD_SET(m_deviceList[i].m_fd, &fdSet);
                 if (m_deviceList[i].m_fd > maxFd)
@@ -153,7 +186,7 @@ int Midi::wait(int usecTimeout, int device) const
     m_screen->flushMidi();
     int e;
     bool interrupted = false;
-    do 
+    do
     {
         e = select(maxFd+1, &fdSet, NULL, NULL, usecTimeout> 0 ? &tv : NULL);
         interrupted = e == -1 && errno == EINTR;
@@ -164,8 +197,8 @@ int Midi::wait(int usecTimeout, int device) const
     }
     for (int i=0; m_deviceList[i].m_longDescr;i++)
     {
-        if (m_deviceList[i].m_id != MidiDevice::none && 
-            m_deviceList[i].m_direction == in && 
+        if (m_deviceList[i].m_id != MidiDevice::none &&
+            m_deviceList[i].m_direction == MidiDirection::in &&
             FD_ISSET(m_deviceList[i].m_fd, &fdSet))
         {
 #if 0
@@ -180,6 +213,11 @@ int Midi::wait(int usecTimeout, int device) const
     return -1;
 }
 
+/*! \brief Map an ALSA card name to a card number.
+ *
+ * \param[in] target        Card name to look for.
+ * \return                  The card number.
+ */
 int Midi::cardNameToNum(const char *target) const
 {
     const char *proc = "/proc/asound/cards";
@@ -209,6 +247,10 @@ int Midi::cardNameToNum(const char *target) const
     return hwNum;
 }
 
+/*! \brief Construct a \a Midi object
+ *
+ * \param[in] s     A \a Screen object to log to.
+ */
 Midi::Midi(Screen *s): m_screen(s)
 {
     m_deviceList = &deviceList[0];
@@ -221,6 +263,13 @@ Midi::Midi(Screen *s): m_screen(s)
     }
 }
 
+/*! \brief Get a byte from a MIDI device.
+ *
+ * This function blocks, and an \a Alarm may cause an exception.
+ *
+ * \param[in] device    Device ID.
+ * \return              MIDI byte.
+ */
 uint8_t Midi::getByte(int device)
 {
     if (device < 0)
@@ -235,11 +284,20 @@ uint8_t Midi::getByte(int device)
         {
             throw(Error("read", errno));
         }
-        perror("read");
+        m_screen->printMidi("read: %s\n", strerror(errno));
     }
     return buf;
 }
 
+/*! \brief Write a byte string to a file descriptor.
+ *
+ * This function wraps the write(2) function, so that an \a Alarm
+ * may cause an exception.
+ *
+ * \param[in] device    Device ID.
+ * \param[in] buf       Byte buffer.
+ * \param[in] count     Number of bytes to be written.
+ */
 static void writeChecked(int fd, const void *buf, size_t count)
 {
     for (;;)
@@ -261,6 +319,11 @@ static void writeChecked(int fd, const void *buf, size_t count)
     }
 }
 
+/*! \brief Write a byte to a MIDI device.
+ *
+ * \param[in]   device  MIDI device.
+ * \param[in]   b1      byte to be written.
+ */
 void Midi::putByte(int device, uint8_t b1)
 {
     int fDescr = fd(device);
@@ -268,6 +331,12 @@ void Midi::putByte(int device, uint8_t b1)
         writeChecked(fDescr, &b1, 1);
 }
 
+/*! \brief Write a byte string to a MIDI device.
+ *
+ * \param[in]   device  MIDI device.
+ * \param[in]   b       byte buffer.
+ * \param[in]   n       byte buffer size.
+ */
 void Midi::putBytes(int device, const uint8_t *b, int n)
 {
     int fDescr = fd(device);
@@ -275,6 +344,12 @@ void Midi::putBytes(int device, const uint8_t *b, int n)
         writeChecked(fDescr, b, n);
 }
 
+/*! \brief Write 2 bytes to a MIDI device.
+ *
+ * \param[in]   device  MIDI device.
+ * \param[in]   b1      first byte.
+ * \param[in]   b2      second byte.
+ */
 void Midi::putBytes(int device, uint8_t b1, uint8_t b2)
 {
     int fDescr = fd(device);
@@ -287,6 +362,13 @@ void Midi::putBytes(int device, uint8_t b1, uint8_t b2)
     }
 }
 
+/*! \brief Write 3 bytes to a MIDI device.
+ *
+ * \param[in]   device  MIDI device.
+ * \param[in]   b1      first byte.
+ * \param[in]   b2      second byte.
+ * \param[in]   b3      third byte.
+ */
 void Midi::putBytes(int device, uint8_t b1, uint8_t b2, uint8_t b3)
 {
     int fDescr = fd(device);
@@ -300,14 +382,26 @@ void Midi::putBytes(int device, uint8_t b1, uint8_t b2, uint8_t b3)
     }
 }
 
+/*! \brief Return true if given status byte is MIDI note data.
+ *
+ * \param[in]   status  status byte to be checked.
+ * \return      true if given status byte id MIDI note data.
+ */
 bool Midi::isNote(uint8_t status)
 {
     status &= 0xf0;
-    return status == MidiStatus::noteOff 
-        || status == MidiStatus::noteOn 
+    return status == MidiStatus::noteOff
+        || status == MidiStatus::noteOn
         || status == MidiStatus::aftertouch;
 }
 
+/*! \brief Return true if input is a MIDI note on message.
+ *
+ * \param[in]   status  status byte to be checked.
+ * \param[in]   data1   not used.
+ * \param[in]   data2   MIDI data 2.
+ * \return      true if given message is a MIDI note on message.
+ */
 bool Midi::isNoteOn(uint8_t status, uint8_t data1, uint8_t data2)
 {
     (void)data1;
@@ -315,21 +409,29 @@ bool Midi::isNoteOn(uint8_t status, uint8_t data1, uint8_t data2)
     return status == MidiStatus::noteOn && data2 != 0;
 }
 
+/*! \brief Return true if input is a MIDI note off message.
+ *
+ * \param[in]   status  status byte to be checked.
+ * \param[in]   data1   not used.
+ * \param[in]   data2   MIDI data 2.
+ * \return      true if given message is a MIDI note off message.
+ */
 bool Midi::isNoteOff(uint8_t status, uint8_t data1, uint8_t data2)
 {
     (void)data1;
     status &= 0xf0;
-    return (status == MidiStatus::noteOn && data2 == 0) 
+    return (status == MidiStatus::noteOn && data2 == 0)
          || status == MidiStatus::noteOff;
 }
 
+/*! \brief Return true if input status is a MIDI controller.
+ *
+ * \param[in]   status  status byte to be checked.
+ * \return      true if given status is a MIDI controller.
+ */
 bool Midi::isController(uint8_t status)
 {
     status &= 0xf0;
     return status == MidiStatus::controller;
-}
-
-Midi::~Midi(void)
-{
 }
 

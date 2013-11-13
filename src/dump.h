@@ -1,3 +1,8 @@
+/*! \file dump.h
+ *  \brief Contains an object to make binary dumps of other objects.
+ *
+ *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
+ */
 #ifndef DUMP_H
 #define DUMP_H
 #include <stdint.h>

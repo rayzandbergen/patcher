@@ -1,7 +1,13 @@
+/*! \file sequencer.h
+ *  \brief Contains an unused sequencer object.
+ *
+ *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
+ */
 #ifndef SEQUENCER_H
 #define SEQUENCER_H
 #include <iostream>
 #include <fstream>
+//! \brief This class is not used.
 class Sequencer
 {
 private:

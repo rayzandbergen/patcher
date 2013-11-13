@@ -1,3 +1,8 @@
+/*! \file trackdef.cpp
+ *  \brief Contains objects to handle track definitions.
+ *
+ *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
+ */
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
@@ -78,8 +83,7 @@ uint8_t SwPart::stringToNoteNum(const char *s)
             num = noteOffset[i].m_offset;
             break;
         }
-    if (num == 255)
-        throw(Error("SwPart::stringToNoteNum internal error"));
+    ASSERT(num != 255);
     uint8_t i = 1;
     if (s[i] == '#')
     {
@@ -166,12 +170,12 @@ void SwPart::dumpToLog(Screen *screen, const char *prefix) const
     }
 }
 
-void SetList::add(std::vector<Track*> &tracks, const char *trackName)
+void SetList::add(TrackList &trackList, const char *trackName)
 {
     int addIdx = TrackDef::Unspecified;
-    for (int i=0; i<(int)tracks.size(); i++)
+    for (int i=0; i<(int)trackList.size(); i++)
     {
-        if (strncasecmp(trackName, tracks[i]->m_name, strlen(trackName)) == 0)
+        if (strncasecmp(trackName, trackList[i]->m_name, strlen(trackName)) == 0)
         {
             addIdx = i;
             break;
@@ -179,10 +183,110 @@ void SetList::add(std::vector<Track*> &tracks, const char *trackName)
     }
     if (addIdx == TrackDef::Unspecified)
     {
-        printf("cannot find track %s by name\n", trackName);
-        exit(1);
+        Error e;
+        e.stream() << "SetList::add() cannot find track " << trackName << " by name";
+        throw(e);
     }
     add(addIdx);
-    //printf("added track %d to setlist: %s\n", addIdx, trackName);
 }
 
+//! \brief Fix chain info in a track list
+void fixChain(TrackList &trackList)
+{
+    for (size_t t=0; t<trackList.size(); t++)
+    {
+        Track *track = trackList[t];
+        size_t tPrev = t > 0 ? t-1 : t; // clamped
+        size_t tNext = t+1 < trackList.size() ? t+1 : t; // clamped
+        for (size_t s=0; s<track->m_section.size(); s++)
+        {
+            Section *section = track->m_section[s];
+            size_t sNext = s+1 < track->m_section.size() ? s+1 : 0; // wraparound
+            size_t sPrev = s > 0 ? s-1 : track->m_section.size()-1; // wraparound
+            switch (section->m_nextTrack)
+            {
+                case TrackDef::NextTrack:
+                    section->m_nextTrack = tNext;
+                    break;
+                case TrackDef::Unspecified:
+                case TrackDef::CurrentTrack:
+                    section->m_nextTrack = t;
+                    break;
+                case TrackDef::PreviousTrack:
+                    section->m_nextTrack = tPrev;
+                    break;
+                case TrackDef::LastSection:
+                    INTERNAL_ERROR;
+                    break;
+                default:
+                    if (section->m_nextTrack >= (int)trackList.size() || section->m_nextTrack < 0)
+                        section->m_nextTrack = t;
+            }
+            switch (section->m_previousTrack)
+            {
+                case TrackDef::NextTrack:
+                    section->m_previousTrack = tNext;
+                    break;
+                case TrackDef::Unspecified:
+                case TrackDef::CurrentTrack:
+                    section->m_previousTrack = t;
+                    break;
+                case TrackDef::PreviousTrack:
+                    section->m_previousTrack = tPrev;
+                    break;
+                case TrackDef::LastSection:
+                    INTERNAL_ERROR;
+                    break;
+                default:
+                    if (section->m_previousTrack >= (int)trackList.size() || section->m_previousTrack < 0)
+                        section->m_previousTrack = t;
+            }
+            size_t sLast = trackList[section->m_nextTrack]->m_section.size()-1;
+            switch (section->m_nextSection)
+            {
+                case TrackDef::Unspecified:
+                    section->m_nextSection = sNext;
+                    break;
+                case TrackDef::LastSection:
+                    section->m_nextSection = sLast;
+                    break;
+                case TrackDef::PreviousTrack:
+                case TrackDef::NextTrack:
+                case TrackDef::CurrentTrack:
+                    INTERNAL_ERROR;
+                    break;
+                default:
+                    if (section->m_nextSection > (int)sLast || section->m_nextSection < 0)
+                        section->m_nextSection = (int)(s <= sLast ? s : sLast);
+            }
+            sLast = trackList[section->m_previousTrack]->m_section.size()-1;
+            switch (section->m_previousSection)
+            {
+                case TrackDef::Unspecified:
+                    section->m_previousSection = sPrev;
+                    break;
+                case TrackDef::LastSection:
+                    section->m_previousSection = sLast;
+                    break;
+                case TrackDef::PreviousTrack:
+                case TrackDef::NextTrack:
+                case TrackDef::CurrentTrack:
+                    INTERNAL_ERROR;
+                    break;
+                default:
+                    if (section->m_previousSection > (int)sLast || section->m_previousSection < 0)
+                        section->m_previousSection = (int)(s <= sLast ? s : sLast);
+            }
+        } // FOREACH section
+    } // FOREACH track
+}
+
+/*! \brief Clean up a track list.
+ *
+ * Not really needed, only for memory leak checks.
+ */
+void clear(TrackList &trackList)
+{
+    for (TrackList::iterator i = trackList.begin(); i != trackList.end(); i++)
+        delete *i;
+}

@@ -1,3 +1,8 @@
+/*! \file dump.cpp
+ *  \brief Contains an object to make binary dumps of other objects.
+ *
+ *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
+ */
 #include <stdlib.h>
 #include <string.h>
 #include "dump.h"

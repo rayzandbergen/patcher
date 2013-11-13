@@ -1,9 +1,13 @@
+/*! \file transposer.h
+ *  \brief Contains an object that transposes only when sustain is active.
+ *
+ *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
+ */
 #ifndef TRANSPOSER_H
 #define TRANSPOSER_H
 #include <stdint.h>
 #include "midi.h"
-/*
- * This class transposes only when sustain is active.
+/*! \brief This class transposes only when sustain is active.
  */
 class Transposer
 {

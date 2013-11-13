@@ -1,7 +1,12 @@
+/*! \file activity.cpp
+ *  \brief Contains an object to keep activity flags.
+ *
+ *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
+ */
 #include <stdio.h>
 #include "timestamp.h"
 #include "activity.h"
-#include "assert.h"
+#include "error.h"
 
 Activity::Activity()
 {
@@ -14,7 +19,7 @@ Activity::Activity()
 
 void Activity::set(int idx)
 {
-    assert(idx < nofSlots);
+    ASSERT(idx < nofSlots);
     if (!m_active[idx])
     {
         m_dirty = true;
@@ -25,7 +30,7 @@ void Activity::set(int idx)
 
 bool Activity::get(int idx)
 {
-    assert(idx < nofSlots);
+    ASSERT(idx < nofSlots);
     if (!m_active[idx])
         return false;
 

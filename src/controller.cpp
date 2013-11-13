@@ -1,3 +1,8 @@
+/*! \file controller.cpp
+ *  \brief Contains an object remap MIDI Controller messages.
+ *
+ *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
+ */
 #include "controller.h"
 
 Real ControllerRemap::interpolate(Real x, Real x0, Real y0, Real x1, Real y1) const
@@ -22,7 +27,7 @@ void ControllerRemap::value(uint8_t controller, uint8_t val, uint8_t *controller
     *valOut = (uint8_t)interpolate((Real)val, m_x0, m_y0, m_x1, m_y1);
 }
 
-Real ControllerRemapVolQuadratic::interpolate(Real x, 
+Real ControllerRemapVolQuadratic::interpolate(Real x,
     Real x0, Real y0, Real x1, Real y1) const
 {
     Real f = (x - x0)/(x1-x0);

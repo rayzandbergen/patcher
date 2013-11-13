@@ -1,3 +1,8 @@
+/*! \file screen.h
+ *  \brief Contains an object that wraps a curses(3X) screen.
+ *
+ *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
+ */
 #ifndef SCREEN_H
 #define SCREEN_H
 #define GCC_PRINTF
@@ -10,12 +15,12 @@
 #include <stdint.h>
 class Screen
 {
+    enum Id { track, midi, debug };
 	WINDOW *m_midiLog;
-    int vprintf(int id, const char *fmt, va_list);
+    int vprintf(Id id, const char *fmt, va_list);
     FILE *m_fpLog;
     bool m_enableMidiLog;
 public:
-    enum Id { track, midi, debug };
 	WINDOW *m_track;
     int printMidi(const char *fmt, ...);
     void flushMidi();

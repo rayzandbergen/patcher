@@ -3,6 +3,7 @@
  *
  *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
  */
+#include <iostream>
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -10,7 +11,6 @@
 #include <string.h>
 #include <vector>
 #include <ctype.h>
-#include <assert.h>
 #include "trackdef.h"
 #include "screen.h"
 #include "midi.h"
@@ -66,6 +66,7 @@ private:
     Sequencer m_sequencer;              //!< Global \a Sequencer object.
     Persist m_persist;                  //!< Global \a Persist object.
     bool m_metaMode;                    //!< Meta mode switch.
+    WINDOW *win() const { return m_screen->m_track; } //!< Convenience function to get to track window.
     Track *currentTrack() const {
         return m_trackList[m_trackIdx]; } //!< The current \a Track.
     FantomPerformance *currentPerf() const {
@@ -198,7 +199,7 @@ void Patcher::downloadPerfomanceData()
         m_screen->printMidi("%3.0f%% reading '%s'\n", 100.0*(i+1.0)/nofTracks(), s);
         m_screen->flushMidi();
         strcpy(m_perf[i].m_name, s);
-        for (int j=0; j<16; j++)
+        for (int j=0; j<FantomPerformance::NofParts; j++)
         {
             FantomPart *hwPart = m_perf[i].m_part+j;
             //nanosleep(&ts, NULL);
@@ -245,7 +246,7 @@ void Patcher::mergePerformanceData()
             for (size_t sp = 0; sp < section->m_part.size(); sp++)
             {
                 SwPart *swPart = section->m_part[sp];
-                for (int hp = 0; hp < 16; hp++)
+                for (int hp = 0; hp < FantomPerformance::NofParts; hp++)
                 {
                     const FantomPart *hwPart = perf->m_part + hp;
                     if (swPart->m_channel == hwPart->m_channel)
@@ -280,7 +281,7 @@ void Patcher::eventLoop()
     for (uint32_t j=0;;j++)
     {
 #ifndef RASPBIAN
-        mvwprintw(m_screen->m_track, 1, 69, "%09d\n", j);
+        mvwprintw(win(), 1, 69, "%09d\n", j);
 #endif
         m_channelActivity.clean();
         m_softPartActivity.clean();
@@ -306,14 +307,14 @@ void Patcher::eventLoop()
                     // active sensing, single byte, dropped
                     // BUT we abuse the periodic nature of this message
                     // to do a screen update
-                    for (int i=0; i<16; i++)
+                    for (int i=0; i<NofMidiChannels; i++)
                         (void)m_channelActivity.get(i);
                     if (m_channelActivity.isDirty())
                         show(UpdateScreen);
                     break;
                 case MidiStatus::realtimeStart:
-                    mvwprintw(m_screen->m_track, 17, 0, "panic on\n");
-                    for (int channel=0; channel<16; channel++)
+                    mvwprintw(win(), 17, 0, "panic on\n");
+                    for (int channel=0; channel<NofMidiChannels; channel++)
                     {
                         m_midi->putBytes(MidiDevice::FantomOut,
                             MidiStatus::controller|channel, MidiController::allNotesOff, 0);
@@ -322,7 +323,7 @@ void Patcher::eventLoop()
                     }
                     break;
                 case MidiStatus::realtimeStop:
-                    mvwprintw(m_screen->m_track, 17, 0, "panic off\n");
+                    mvwprintw(win(), 17, 0, "panic off\n");
                     break;
                 case MidiStatus::sysEx:
                     consumeSysEx(deviceRx);
@@ -506,17 +507,17 @@ void Patcher::eventLoop()
             } // END status byte switch
         } // END of MIDI message
         m_screen->flushMidi();
-        wnoutrefresh(m_screen->m_track);
+        wnoutrefresh(win());
         doupdate();
         if (m_metaMode && m_info.m_enabled)
             showInfo();
     }
 }
 
-/*! \biref Send a MIDI event to the Fantom
+/*! \brief Send a MIDI event to the Fantom
  *
  *  This function does all the processing required by the current \a Section
- *  before sending it off to the Fantom.
+ *  before sending the event off to the Fantom.
  *
  *  \param [in] midiStatus  MIDI status byte
  *  \param [in] data1       MIDI data byte 1
@@ -550,7 +551,6 @@ void Patcher::sendEventToFantom(uint8_t midiStatus,
                 data1Out = 127;
             if (swPart->m_mono)
             {
-                //swPart->m_monoFilter.m_screen = m_screen;
                 if (isNoteOn && !swPart->m_monoFilter
                         .passNoteOn(data1, data2))
                 {
@@ -607,7 +607,7 @@ void Patcher::sendEventToFantom(uint8_t midiStatus,
             m_channelActivity.set(swPart->m_channel);
             m_softPartActivity.set(i);
         }
-    }
+    } // FOREACH part in current section
 }
 
 /*! \brief Update the \a Screen, BCF faders, and the Fantom display.
@@ -631,31 +631,31 @@ void Patcher::show(int updateFlags)
  */
 void Patcher::updateScreen()
 {
-    werase(m_screen->m_track);
-    wprintw(m_screen->m_track,
+    werase(win());
+    wprintw(win(),
         "*** Ray's MIDI patcher " VERSION ", rev " SVN ", " NOW " ***\n\n");
-    mvwprintw(m_screen->m_track, 2, 0,
+    mvwprintw(win(), 2, 0,
         "track   %03d \"%s\"\nsection %03d/%03d \"%s\"\n",
         1+m_trackIdx, currentTrack()->m_name,
         1+m_sectionIdx, currentTrack()->nofSections(),
         currentSection()->m_name);
-    mvwprintw(m_screen->m_track, 2, 44,
+    mvwprintw(win(), 2, 44,
         "%03d/%03d within setlist", 1+m_trackIdxWithinSet, m_setList.length());
-    mvwprintw(m_screen->m_track, 5, 0,
+    mvwprintw(win(), 5, 0,
         "performance \"%s\"\n",
         currentPerf()->m_name);
-    mvwprintw(m_screen->m_track, 3, 44,
+    mvwprintw(win(), 3, 44,
         "next \"%s\"\n", nextTrackName());
-    mvwprintw(m_screen->m_track, 5, 30, "chain mode %s\n",
+    mvwprintw(win(), 5, 30, "chain mode %s\n",
         currentTrack()->m_chain ?"on":"off");
     if (m_metaMode)
-        wattron(m_screen->m_track, COLOR_PAIR(1));
-    mvwprintw(m_screen->m_track, 5, 50, "meta mode %s\n",
+        wattron(win(), COLOR_PAIR(1));
+    mvwprintw(win(), 5, 50, "meta mode %s\n",
         m_metaMode?"on":"off");
     if (m_metaMode)
-        wattroff(m_screen->m_track, COLOR_PAIR(1));
+        wattroff(win(), COLOR_PAIR(1));
     int partsShown = 0;
-    for (int partIdx=0; partIdx<16;partIdx++)
+    for (int partIdx=0; partIdx<FantomPerformance::NofParts;partIdx++)
     {
         int x = (partsShown / 4) * 19;
         int y = 7 + partsShown % 4;
@@ -666,11 +666,11 @@ void Patcher::updateScreen()
         {
             bool active = m_channelActivity.get(part->m_channel);
             if (active)
-                wattron(m_screen->m_track, COLOR_PAIR(1));
-            mvwprintw(m_screen->m_track, y, x,
+                wattron(win(), COLOR_PAIR(1));
+            mvwprintw(win(), y, x,
                 "%2d %2d %s ", partIdx+1, 1+part->m_channel, part->m_preset);
             if (active)
-                wattroff(m_screen->m_track, COLOR_PAIR(1));
+                wattroff(win(), COLOR_PAIR(1));
             partsShown++;
         }
     }
@@ -679,7 +679,7 @@ void Patcher::updateScreen()
     for (int i=0; i<currentSection()->nofParts(); i++)
     {
         const SwPart *swPart = currentSection()->m_part[i];
-        for (int j=0; j<16;j++)
+        for (int j=0; j<FantomPerformance::NofParts;j++)
         {
             const FantomPart *hwPart = currentPerf()->m_part+j;
             if (swPart->m_channel == hwPart->m_channel)
@@ -689,7 +689,7 @@ void Patcher::updateScreen()
                     x += 40;
                 int y = 6 + 5 + 2 + partsShown % colLength;
                 if (partsShown % colLength == 0)
-                    mvwprintw(m_screen->m_track, 6+5+1, x,
+                    mvwprintw(win(), 6+5+1, x,
                         "prt range         patch        vol tps");
                 char keyL[20];
                 keyL[0] = 0;
@@ -706,13 +706,13 @@ void Patcher::updateScreen()
                         (int)hwPart->m_oct*12;
                 bool active = m_softPartActivity.get(i);
                 if (active)
-                    wattron(m_screen->m_track, COLOR_PAIR(1));
-                assert(hwPart->m_patch.m_name[1] != '[');
-                mvwprintw(m_screen->m_track, y, x,
+                    wattron(win(), COLOR_PAIR(1));
+                ASSERT(hwPart->m_patch.m_name[1] != '[');
+                mvwprintw(win(), y, x,
                     "%3d [%3s - %4s]  %12s %3d %3d", j+1, keyL, keyU,
                     hwPart->m_patch.m_name, hwPart->m_vol,transpose);
                 if (active)
-                    wattroff(m_screen->m_track, COLOR_PAIR(1));
+                    wattroff(win(), COLOR_PAIR(1));
                 partsShown++;
             }
         }
@@ -733,13 +733,13 @@ void Patcher::updateFantomDisplay()
  *
  * This function slides the motorised BCF faders into positions that
  * show the current hardware part volumes.
- * The octave shift is set as well, at the turning knobs. The BCF 
- * can only show 8 parts at a time, so one of the BCF's buttons is 
+ * The octave shift is set as well, at the turning knobs. The BCF
+ * can only show 8 parts at a time, so one of the BCF's buttons is
  * used to switch between part 1-8 and 9-16.
  */
 void Patcher::updateBcfFaders()
 {
-    for (int i=0; i<16;i++)
+    for (int i=0; i<FantomPerformance::NofParts;i++)
     {
         const FantomPart *hwPart = currentPerf()->m_part+i;
         if (i >= m_partOffsetBcf && i< m_partOffsetBcf + 8)
@@ -759,8 +759,8 @@ void Patcher::updateBcfFaders()
  */
 void Patcher::allNotesOff()
 {
-    bool channelsCleared[16];
-    for (int i=0; i<16; i++)
+    bool channelsCleared[NofMidiChannels];
+    for (int i=0; i<NofMidiChannels; i++)
         channelsCleared[i] = false;
     for (int i=0; i<currentSection()->nofParts(); i++)
     {
@@ -800,7 +800,7 @@ void Patcher::changeSection(uint8_t sectionIdx)
         }
         m_sectionIdx = sectionIdx;
         show(UpdateScreen|UpdateFantomDisplay);
-        redrawwin(m_screen->m_track); // TODO why is this here?
+        redrawwin(win()); // TODO why is this here?
         m_persist.store(m_trackIdx, m_sectionIdx);
     }
 }
@@ -995,33 +995,30 @@ void Patcher::consumeSysEx(int device)
 
 int main(int argc, char **argv)
 {
-    if (argc == 2)
-    {
-        const char *dir = argv[1];
-        if (-1 == chdir(dir))
-        {
-            fprintf(stderr, "cannot chdir to %s\n", dir);
-            return -3;
-        }
-    }
-#if 0
-    // debug: see if we have memory leaks if we read 
-    // the config file and then clean up again.
-
-    std::vector <Track *>trackList;
-    SetList setList;
-    importTracks(TRACK_DEF, trackList, setList);
-    clearTracks(trackList);
-    return 0;
-#endif
-
-    int rv = setAlarmHandler();
-    if (rv < 0)
-        return rv;
-
-    Screen screen;
     try
     {
+        if (argc == 2)
+        {
+            const char *dir = argv[1];
+            if (-1 == chdir(dir))
+            {
+                Error e;
+                e.stream() << "cannot change dir to " << dir;
+                throw(e);
+            }
+        }
+#if 0
+        // debug: see if we have memory leaks if we read
+        // the config file and then clean up again.
+
+        std::vector <Track *>trackList;
+        SetList setList;
+        importTracks(TRACK_DEF, trackList, setList);
+        clear(trackList);
+        return 0;
+#endif
+        setAlarmHandler();
+        Screen screen;
         wprintw(screen.m_track,
             "*** initialising ***\n\n");
         wrefresh(screen.m_track);
@@ -1032,20 +1029,20 @@ int main(int argc, char **argv)
         patcher.downloadPerfomanceData();
         patcher.mergePerformanceData();
         //patcher.dumpTrackList();
-        patcher.show(Patcher::UpdateScreen|Patcher::UpdateFaders);
         patcher.restoreState();
+        patcher.show(Patcher::UpdateScreen|Patcher::UpdateFaders);
         patcher.eventLoop();
     }
-    catch (Error &e)
+    catch (Error e)
     {
         endwin();
-        fprintf(stderr, "** %s\n", e.m_message);
-        return -1;
+        std::cerr << "** " << e.what() << std::endl;
+        return e.exitCode();
     }
     catch (...)
     {
         endwin();
-        fprintf(stderr, "unhandled exception\n");
+        std::cerr << "unhandled exception" << std::endl;
     }
-    return -2;
+    return -127;
 }

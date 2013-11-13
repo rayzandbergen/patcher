@@ -1,3 +1,8 @@
+/*! \file sequencer.cpp
+ *  \brief Contains an unused sequencer object.
+ *
+ *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
+ */
 #include "sequencer.h"
 #include <ctime>
 void Sequencer::enable()

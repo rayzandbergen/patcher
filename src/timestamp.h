@@ -1,3 +1,8 @@
+/*! \file timestamp.h
+ *  \brief Contains function prototypes to handle timestamps.
+ *
+ *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
+ */
 #ifndef TIMESTAMP_H
 #define TIMESTAMP_H
 #include <time.h>

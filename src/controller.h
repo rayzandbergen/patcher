@@ -1,3 +1,8 @@
+/*! \file controller.h
+ *  \brief Contains an object remap MIDI Controller messages.
+ *
+ *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
+ */
 #ifndef CONTROLLER_REMAP_H
 #define CONTROLLER_REMAP_H
 #include "stdint.h"
@@ -11,9 +16,9 @@ protected:
     Real m_x0, m_y0, m_x1, m_y1;
 public:
     virtual const char *name() const { return "default"; }
-    void value(uint8_t controller, uint8_t val, 
+    void value(uint8_t controller, uint8_t val,
         uint8_t *controllerOut, uint8_t *valOut) const;
-    virtual Real interpolate(Real x, Real x0, Real y0, 
+    virtual Real interpolate(Real x, Real x0, Real y0,
         Real x1, Real y1) const;
     ControllerRemap(
         uint8_t from = 255, uint8_t to = 255,
@@ -27,10 +32,10 @@ class ControllerRemapVolQuadratic: public ControllerRemap {
 public:
     virtual const char *name() const { return "volQuadratic"; }
     ControllerRemapVolQuadratic(): ControllerRemap(
-        MidiController::continuousController16, 
-        MidiController::mainVolume 
+        MidiController::continuousController16,
+        MidiController::mainVolume
     ) { }
-    virtual Real interpolate(Real x, Real x0, Real y0, 
+    virtual Real interpolate(Real x, Real x0, Real y0,
         Real x1, Real y1) const;
 };
 
@@ -38,7 +43,7 @@ class ControllerRemapVolReverse: public ControllerRemap {
 public:
     virtual const char *name() const { return "volReverse"; }
     ControllerRemapVolReverse(): ControllerRemap(
-        MidiController::continuousController16, 
+        MidiController::continuousController16,
         MidiController::mainVolume,
         0, 127, 127, 0) { };
 };
