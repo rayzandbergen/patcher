@@ -35,78 +35,95 @@
     <xs:element name="tracks">
         <xs:complexType mixed="true">
             <xs:sequence>
-                <xs:element name="track" minOccurs="1" maxOccurs="64">
+                <xs:element name="trackDefinitions">
                     <xs:complexType mixed="true">
                         <xs:sequence>
-                            <xs:element name="section" minOccurs="1" maxOccurs="64">
+                            <xs:element name="track" minOccurs="1" maxOccurs="64">
                                 <xs:complexType mixed="true">
-                                    <xs:sequence minOccurs="1" maxOccurs="3">
-                                        <xs:choice>
-                                            <xs:element name="noteOff" minOccurs="0" maxOccurs="1">
-                                                <xs:complexType mixed="true">
-                                                    <xs:attribute name="enter" type="Boolean"/>
-                                                    <xs:attribute name="leave" type="Boolean"/>
-                                                </xs:complexType>
-                                            </xs:element>
-                                            <xs:element name="chain" minOccurs="0" maxOccurs="1">
-                                                <xs:complexType mixed="true">
-                                                    <xs:attribute name="nextTrack" type="TrackIndex"/>
-                                                    <xs:attribute name="nextSection" type="SectionIndex"/>
-                                                    <xs:attribute name="previousTrack" type="TrackIndex"/>
-                                                    <xs:attribute name="previousSection" type="SectionIndex"/>
-                                                </xs:complexType>
-                                            </xs:element>
-                                            <xs:element name="part" minOccurs="1" maxOccurs="64">
-                                                <xs:complexType mixed="true">
-                                                    <xs:all>
-                                                        <xs:element name="range">
+                                    <xs:sequence>
+                                        <xs:element name="section" minOccurs="1" maxOccurs="64">
+                                            <xs:complexType mixed="true">
+                                                <xs:sequence minOccurs="1" maxOccurs="3">
+                                                    <xs:choice>
+                                                        <xs:element name="noteOff" minOccurs="0" maxOccurs="1">
                                                             <xs:complexType mixed="true">
-                                                                <xs:attribute name="lower" type="MidiNote"/>
-                                                                <xs:attribute name="upper" type="MidiNote"/>
+                                                                <xs:attribute name="enter" type="Boolean"/>
+                                                                <xs:attribute name="leave" type="Boolean"/>
                                                             </xs:complexType>
                                                         </xs:element>
-                                                        <xs:element name="transpose">
+                                                        <xs:element name="chain" minOccurs="0" maxOccurs="1">
                                                             <xs:complexType mixed="true">
-                                                                <xs:sequence minOccurs="0">
-                                                                    <xs:element name="custom">
+                                                                <xs:attribute name="nextTrack" type="TrackIndex"/>
+                                                                <xs:attribute name="nextSection" type="SectionIndex"/>
+                                                                <xs:attribute name="previousTrack" type="TrackIndex"/>
+                                                                <xs:attribute name="previousSection" type="SectionIndex"/>
+                                                            </xs:complexType>
+                                                        </xs:element>
+                                                        <xs:element name="part" minOccurs="1" maxOccurs="64">
+                                                            <xs:complexType mixed="true">
+                                                                <xs:all>
+                                                                    <xs:element name="range">
+                                                                        <xs:complexType mixed="true">
+                                                                            <xs:attribute name="lower" type="MidiNote"/>
+                                                                            <xs:attribute name="upper" type="MidiNote"/>
+                                                                        </xs:complexType>
+                                                                    </xs:element>
+                                                                    <xs:element name="transpose">
                                                                         <xs:complexType mixed="true">
                                                                             <xs:sequence minOccurs="0">
-                                                                                <xs:element name="map" maxOccurs="12">
+                                                                                <xs:element name="custom">
                                                                                     <xs:complexType mixed="true">
-                                                                                        <xs:attribute name="from" type="xs:integer" use="required"/>
-                                                                                        <xs:attribute name="to" type="xs:integer" use="required"/>
+                                                                                        <xs:sequence minOccurs="0">
+                                                                                            <xs:element name="map" maxOccurs="12">
+                                                                                                <xs:complexType mixed="true">
+                                                                                                    <xs:attribute name="from" type="xs:integer" use="required"/>
+                                                                                                    <xs:attribute name="to" type="xs:integer" use="required"/>
+                                                                                                </xs:complexType>
+                                                                                            </xs:element>
+                                                                                        </xs:sequence>
+                                                                                        <xs:attribute name="offset" type="xs:integer"/>
                                                                                     </xs:complexType>
                                                                                 </xs:element>
                                                                             </xs:sequence>
                                                                             <xs:attribute name="offset" type="xs:integer"/>
                                                                         </xs:complexType>
                                                                     </xs:element>
-                                                                </xs:sequence>
-                                                                <xs:attribute name="offset" type="xs:integer"/>
+                                                                    <xs:element name="controllerRemap" minOccurs="0" maxOccurs="1">
+                                                                        <xs:complexType mixed="true">
+                                                                            <xs:attribute name="id" type="ControllerRemapId" use="required"/>
+                                                                        </xs:complexType>
+                                                                    </xs:element>
+                                                                </xs:all>
+                                                                <xs:attribute name="name"/>
+                                                                <xs:attribute name="channel" type="MidiChannel"/>
+                                                                <xs:attribute name="toggle" type="Boolean"/>
+                                                                <xs:attribute name="mono" type="Boolean"/>
+                                                                <xs:attribute name="sustainTranspose" type="xs:integer"/>
                                                             </xs:complexType>
                                                         </xs:element>
-                                                        <xs:element name="controllerRemap" minOccurs="0" maxOccurs="1">
-                                                            <xs:complexType mixed="true">
-                                                                <xs:attribute name="id" type="ControllerRemapId" use="required"/>
-                                                            </xs:complexType>
-                                                        </xs:element>
-                                                    </xs:all>
-                                                    <xs:attribute name="name"/>
-                                                    <xs:attribute name="channel" type="MidiChannel"/>
-                                                    <xs:attribute name="toggle" type="Boolean"/>
-                                                    <xs:attribute name="mono" type="Boolean"/>
-                                                    <xs:attribute name="sustainTranspose" type="xs:integer"/>
-                                                </xs:complexType>
-                                            </xs:element>
-                                        </xs:choice>
+                                                    </xs:choice>
+                                                </xs:sequence>
+                                                <xs:attribute name="name" use="required"/>
+                                            </xs:complexType>
+                                        </xs:element>
                                     </xs:sequence>
+                                    <xs:attribute name="name" use="required"/>
+                                    <xs:attribute name="startSection" type="xs:nonNegativeInteger"/>
+                                    <xs:attribute name="chain" type="Boolean"/>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="setList">
+                    <xs:complexType mixed="true">
+                        <xs:sequence>
+                            <xs:element name="track" minOccurs="1" maxOccurs="64">
+                                <xs:complexType mixed="true">
                                     <xs:attribute name="name" use="required"/>
                                 </xs:complexType>
                             </xs:element>
                         </xs:sequence>
-                        <xs:attribute name="name" use="required"/>
-                        <xs:attribute name="startSection" type="xs:nonNegativeInteger"/>
-                        <xs:attribute name="chain" type="Boolean"/>
                     </xs:complexType>
                 </xs:element>
             </xs:sequence>

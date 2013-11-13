@@ -1,3 +1,8 @@
+/*! \file xml.cpp
+ *  \brief Contains functions to read track definitions from an XML file, and clean them up again.
+ *
+ *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
+ */
 #include "xml.h"
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/dom/DOM.hpp>
@@ -18,8 +23,10 @@ XERCES_CPP_NAMESPACE_USE
 typedef std::vector<DOMNode*> NodeList;
 typedef std::list<const XMLCh*> ConstXmlStringList;
 
-// This class template caches T objects that are created from string constants.
-// It is used to create cache classes for XMLCh strings and DOMXPathExpressions.
+/*! \brief This class template caches T objects that are created from string constants.
+ *
+    It is used to create cache classes for XMLCh strings and DOMXPathExpressions.
+*/
 template <class T> class XMLCache
 {
     std::map<const char *, T *> m_map;
@@ -47,8 +54,8 @@ public:
     }
 };
 
-// This class caches XMLCh strings to avoid repeated conversions
-// of the same string constants.
+/*! \brief This class caches XMLCh strings to avoid repeated conversions of the same string constants.
+ */
 class XMLStringCache: public XMLCache<XMLCh>
 {
 public:
@@ -65,8 +72,8 @@ public:
 
 static XMLStringCache xmlStr;
 
-// This class caches DOMXPathExpression instances to avoid repeated constructions
-// from the same staring constants.
+/*! \brief This class caches DOMXPathExpression instances to avoid repeated constructions from the same staring constants.
+ */
 class XPathCache: public XMLCache<DOMXPathExpression>
 {
 public:
@@ -82,7 +89,7 @@ public:
 
 static XPathCache xPath;
 
-// Finds the first node that matches an XPath expression
+//! \brief Find the first node that matches an XPath expression.
 DOMNode *findNode(DOMDocument *doc, const DOMElement *node, const char *path)
 {
     DOMXPathResult *r = xPath(path, doc)->evaluate(node, DOMXPathResult::FIRST_ORDERED_NODE_TYPE, 0);
@@ -91,7 +98,7 @@ DOMNode *findNode(DOMDocument *doc, const DOMElement *node, const char *path)
     return rv;
 }
 
-// Finds nodes that match an XPath expression
+//! \brief Find nodes that match an XPath expression.
 DOMXPathResult *findNodes(DOMDocument *doc, const DOMElement *node, const char *path)
 {
     return xPath(path, doc)->evaluate(node, DOMXPathResult::ORDERED_NODE_SNAPSHOT_TYPE, 0);
@@ -99,7 +106,7 @@ DOMXPathResult *findNodes(DOMDocument *doc, const DOMElement *node, const char *
 
 std::stringstream stringStream;
 
-// Puts an XMLString into an std::stream
+//! \brief Put an XMLString into an std::stream
 std::stringstream &xmlStream(const XMLCh *c)
 {
     char *s = XMLString::transcode(c);
@@ -109,7 +116,7 @@ std::stringstream &xmlStream(const XMLCh *c)
     return stringStream;
 }
 
-// Puts an XMLString into an std::string
+//! \brief Put an XMLString into an std::string.
 std::string xmlStdString(const XMLCh *c)
 {
     char *s = XMLString::transcode(c);
@@ -118,12 +125,12 @@ std::string xmlStdString(const XMLCh *c)
     return stdString;
 }
 
-// Parses a DOM document into a track list
-void parseTracks(DOMDocument *doc, std::vector<Track*> &trackList)
+//! \brief Parse a DOM document into a track list and a \a SetList.
+void parseTracks(DOMDocument *doc, std::vector<Track*> &trackList, SetList &setList)
 {
     DOMElement *root = doc->getDocumentElement();
-    DOMNode *tracksNode = findNode(doc, root, "/tracks");
-    DOMXPathResult *trackNodes = findNodes(doc, (DOMElement*)tracksNode, "./track");
+    DOMNode *trackDefNode = findNode(doc, root, "/tracks/trackDefinitions");
+    DOMXPathResult *trackNodes = findNodes(doc, (DOMElement*)trackDefNode, "./track");
     for (size_t trackIdx = 0; trackNodes->snapshotItem(trackIdx); trackIdx++)
     {
         DOMNode *trackNode = trackNodes->getNodeValue();
@@ -307,8 +314,19 @@ void parseTracks(DOMDocument *doc, std::vector<Track*> &trackList)
         sectionNodes->release();
     }
     trackNodes->release();
+    DOMNode *setlistNode = findNode(doc, root, "/tracks/setList");
+    trackNodes = findNodes(doc, (DOMElement*)setlistNode, "./track");
+    for (size_t trackIdx = 0; trackNodes->snapshotItem(trackIdx); trackIdx++)
+    {
+        DOMNode *trackNode = trackNodes->getNodeValue();
+        char *name = XMLString::transcode(((DOMElement*)trackNode)->getAttribute(xmlStr("name")));
+        setList.add(trackList, name);
+        XMLString::release(&name);
+    }
+    trackNodes->release();
 }
 
+//! \brief Fix chain info in a track list
 void fixChain(std::vector<Track*> &tracks)
 {
     for (size_t t=0; t<tracks.size(); t++)
@@ -375,7 +393,7 @@ void fixChain(std::vector<Track*> &tracks)
                     break;
                 default:
                     if (section->m_nextSection > (int)sLast || section->m_nextSection < 0)
-                        section->m_nextSection = s <= (int)sLast ? s : (int)sLast;
+                        section->m_nextSection = (int)(s <= sLast ? s : sLast);
             }
             sLast = tracks[section->m_previousTrack]->m_section.size()-1;
             switch (section->m_previousSection)
@@ -393,14 +411,14 @@ void fixChain(std::vector<Track*> &tracks)
                     break;
                 default:
                     if (section->m_previousSection > (int)sLast || section->m_previousSection < 0)
-                        section->m_previousSection = s <= (int)sLast ? s : (int)sLast;
+                        section->m_previousSection = (int)(s <= sLast ? s : sLast);
             }
         }
     }
 }
 
-// Parses an XML file into a track list
-int importTracks (const char *inFile, std::vector<Track*> &tracks)
+//! \brief Parse an XML file into a track list and a \a SetList.
+int importTracks (const char *inFile, std::vector<Track*> &tracks, SetList &setList)
 {
     try {
         XMLPlatformUtils::Initialize();
@@ -423,7 +441,7 @@ int importTracks (const char *inFile, std::vector<Track*> &tracks)
     try {
         parser->parse(inFile);
         DOMDocument *doc = parser->getDocument();
-        parseTracks(doc, tracks);
+        parseTracks(doc, tracks, setList);
     }
     catch (const XMLException& toCatch) {
         char* message = XMLString::transcode(toCatch.getMessage());
@@ -453,7 +471,7 @@ int importTracks (const char *inFile, std::vector<Track*> &tracks)
     return 0;
 }
 
-// Converts a boolean to an XMLString
+//! \brief Convert a boolean to an XMLString.
 XMLCh *toBool(bool b)
 {
     if (b)
@@ -462,7 +480,7 @@ XMLCh *toBool(bool b)
         return xmlStr("false");
 }
 
-// Adds an attribute to a DOM element
+//! \brief Adds an attribute to a DOM element.
 void addAttribute(DOMElement *n, const char *attrName, int x, int def = -1, int ref = -3)
 {
     if (x != def)
@@ -487,6 +505,10 @@ void addAttribute(DOMElement *n, const char *attrName, int x, int def = -1, int 
     }
 }
 
+/*! \brief Clean up a track list.
+ *
+ * Not really needed, only for memory leak checks.
+ */
 void clearTracks(std::vector<Track*> &trackList)
 {
     for (std::vector<Track *>::iterator i = trackList.begin(); i != trackList.end(); i++)

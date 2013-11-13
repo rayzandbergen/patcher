@@ -1,3 +1,8 @@
+/*! \file patcher.cpp
+ *  \brief Contains the \a Patcher object and the main entrypoint.
+ *
+ *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
+ */
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -6,7 +11,6 @@
 #include <vector>
 #include <ctype.h>
 #include <assert.h>
-
 #include "trackdef.h"
 #include "screen.h"
 #include "midi.h"
@@ -25,96 +29,107 @@
 #include "xml.h"
 #include "persistent.h"
 
-#define VERSION "1.1.0"
+#define VERSION "1.2.0"     //!< global version number
 
-// events shown in the midi logger window
-#define LOG_NOTE
-#define LOG_CONTROLLER
-#define LOG_PROGRAM_CHANGE
-#define LOG_PITCHBEND
+#define LOG_NOTE            //!< Log note data in MIDI logger window if defined.
+#define LOG_CONTROLLER      //!< Log controller data in MIDI logger window if defined.
+#define LOG_PROGRAM_CHANGE  //!< Log program change data in MIDI logger window if defined.
+#define LOG_PITCHBEND       //!< Log pitch bend data in MIDI logger window if defined.
 
-// in meta mode note numbers are used to select a track
 namespace MetaNote
 {
+    //! \brief In meta mode, these note numbers are used to select a track.
     enum {
-        info = MidiNote::E4,      //      toggle info mode
-        up = MidiNote::D4,        //      move to next track in setlist
-        down = MidiNote::C4,      //      move to previous track in setlist
-        select = MidiNote::C5     //      select directly
+        info = MidiNote::E4,      //!< Toggle info mode.
+        up = MidiNote::D4,        //!< Move to next track in setlist.
+        down = MidiNote::C4,      //!< Move to previous track in setlist.
+        select = MidiNote::C5     //!< Select directly.
     };
 };
 
+//! \brief The Patcher object is the object that does all the heavy lifting.
 class Patcher
 {
-    const Real debounceTime;
-    Activity m_channelActivity;
-    Activity m_softPartActivity;
-    Screen *m_screen;
-    std::vector <Track *>m_trackList;
-    Midi *m_midi;
-    Fantom *m_fantom;
-    FantomPerformance *m_perf;
-    int m_trackIdx;
-    int m_trackIdxWithinSet;
-    SetList m_setList;
-    int m_sectionIdx;
-    Sequencer m_sequencer;
-    Persist m_persist;
-    Track *currentTrack(void) const {
-        return m_trackList[m_trackIdx]; }
-    FantomPerformance *currentPerf(void) const {
-        return &m_perf[m_trackIdx]; }
-    Section *currentSection(void) const {
-        return currentTrack()->m_section[m_sectionIdx]; }
-    int nofTracks(void) const { return m_trackList.size(); }
-    const char *nextTrackName(void) {
+private:
+    const Real debounceTime;            //!< \brief Debounce time in seconds, used to debounce track and section changes.
+    Activity m_channelActivity;         //!< Per-channel \a Activity.
+    Activity m_softPartActivity;        //!< Per-\a SwPart \a Activity.
+    Screen *m_screen;                   //!< Pointer to global \a Screen object.
+    std::vector <Track *>m_trackList;   //!< Global \a Track list.
+    Midi *m_midi;                       //!< Pointer to global \a Midi object.
+    Fantom *m_fantom;                   //!< Pointer to global \a Fantom object.
+    FantomPerformance *m_perf;          //!< Array of pointers to \a FantomPerformance objects.
+    int m_trackIdx;                     //!< Current track index
+    int m_trackIdxWithinSet;            //!< Current track index within \a SetList.
+    SetList m_setList;                  //!< Global \a SetList object.
+    int m_sectionIdx;                   //!< Current section index.
+    Sequencer m_sequencer;              //!< Global \a Sequencer object.
+    Persist m_persist;                  //!< Global \a Persist object.
+    bool m_metaMode;                    //!< Meta mode switch.
+    Track *currentTrack() const {
+        return m_trackList[m_trackIdx]; } //!< The current \a Track.
+    FantomPerformance *currentPerf() const {
+        return &m_perf[m_trackIdx]; } //!< The current \a FantomPerformance.
+    Section *currentSection() const {
+        return currentTrack()->m_section[m_sectionIdx]; } //!< The current \a Section.
+    int nofTracks() const { return m_trackList.size(); } //!< The number of \a Tracks.
+    const char *nextTrackName() {
         if (m_trackIdxWithinSet+1 < m_setList.length())
             return m_trackList[m_setList[m_trackIdxWithinSet+1]]->m_name;
         else
             return "<none>";
-    }
-    int m_metaMode;
+    } //!< The name of the next \a Track.
     struct {
-        int m_mode;
-        struct timespec m_previous;
-        size_t m_offset;
-        std::string m_text;
-    } m_info;
-    int m_partOffsetBcf;
-    struct timespec m_debouncePrev;
+        bool m_enabled;                                 //!< Enable switch for info mode.
+        struct timespec m_previous;                     //!< Previous time the Fantom display was updated.
+        size_t m_offset;                                //!< Scroll offset.
+        std::string m_text;                             //!< Info text to be displayed.
+    } m_info;                                           //!< Fantom info display state.
+    int m_partOffsetBcf;                                //!< Either 0 or 8, since BCF only has 8 sliders to show 16 parameters
+    struct timespec m_debouncePrev;                     //!< Absolute time of the latest \a debounced() call.
     void sendEventToFantom(uint8_t midiStatus,
                 uint8_t data1, uint8_t data2 = 255);
-    void allNotesOff(void);
+    void allNotesOff();
     void changeSection(uint8_t sectionIdx);
-    void nextSection(void);
-    void prevSection(void);
+    void nextSection();
+    void prevSection();
     void changeTrack(uint8_t track, int updateFlags);
     void changeTrackByNote(uint8_t note);
     void toggleInfoMode(uint8_t note);
     void showInfo();
-    void updateBcfFaders(void);
+    void updateBcfFaders();
+    void updateFantomDisplay();
+    void updateScreen();
     bool debounced(Real delaySeconds);
     void consumeSysEx(int device);
 public:
-    static const int UpdateNothing = 0;
-    static const int UpdateFaders = 1;
-    static const int UpdateFantomDisplay = 2;
-    static const int UpdateScreen = 4;
-    static const int UpdateAll = 7;
+    static const int UpdateNothing = 0;                 //!< Bit flag: update nothing.
+    static const int UpdateFaders = 1;                  //!< Bit flag: update BCF faders.
+    static const int UpdateFantomDisplay = 2;           //!< Bit flag: update Fantom display.
+    static const int UpdateScreen = 4;                  //!< Bit flag: update the \a Screen.
+    static const int UpdateAll = 7;                     //!< Bit flag: update all.
     void dumpTrackList();
-    void downloadPerfomanceData(void);
+    void downloadPerfomanceData();
     void mergePerformanceData();
     void show(int updateFlags);
-    void eventLoop(void);
-    void restoreState(void);
-    void loadTrackDefs(void);
+    void eventLoop();
+    void restoreState();
+    void loadTrackDefs();
+    /*! \brief constructor for Patcher
+     *
+     *  This will set up an empty Patcher object.
+     *
+     *  \param [in] s   An initialised \a Screen object.
+     *  \param [in] m   An initialised \a Midi object.
+     *  \param [in] f   An initialised \a Fantom object.
+    */
     Patcher(Screen *s, Midi *m, Fantom *f):
         debounceTime(Real(0.4)),
         m_screen(s), m_midi(m), m_fantom(f),
         m_trackIdx(0), m_trackIdxWithinSet(0), m_sectionIdx(0),
-        m_metaMode(0), m_partOffsetBcf(0)
+        m_metaMode(false), m_partOffsetBcf(0)
     {
-        m_info.m_mode = 0;
+        m_info.m_enabled = false;
         m_info.m_offset = 0;
         m_trackIdx = m_setList[0];
         getTime(&m_debouncePrev);
@@ -122,12 +137,15 @@ public:
     };
 };
 
-void Patcher::loadTrackDefs(void)
+/*! \brief Load track definitions from file into the track list and the set list.
+ */
+void Patcher::loadTrackDefs()
 {
-    importTracks(TRACK_DEF, m_trackList);
-    initSetList(m_trackList, m_setList);
+    importTracks(TRACK_DEF, m_trackList, m_setList);
 }
 
+/*! \brief Dump the track list to a log file, debug only.
+ */
 void Patcher::dumpTrackList()
 {
     char prefix[100];
@@ -138,7 +156,13 @@ void Patcher::dumpTrackList()
     }
 }
 
-void Patcher::downloadPerfomanceData(void)
+/*! \brief Download performance data from the Fantom.
+ *
+ * If there is a cache file, it is used instead, since downloading
+ * all the performance data through MIDI is time consuming.
+ * Conversely, a successful download will write a fresh cache file.
+ */
+void Patcher::downloadPerfomanceData()
 {
     const char *fantomPatchFile = "fantom_cache.bin";
 
@@ -207,9 +231,10 @@ void Patcher::downloadPerfomanceData(void)
     }
 }
 
+/*! \brief Add links from software parts to hardware parts, based on matching channels.
+ */
 void Patcher::mergePerformanceData()
 {
-    // add links from swParts to hwParts, based on matching channels
     for (int t = 0; t < nofTracks(); t++)
     {
         const Track *track = m_trackList[t];
@@ -233,7 +258,11 @@ void Patcher::mergePerformanceData()
     }
 }
 
-void Patcher::restoreState(void)
+/*! \brief Restore state from a Persist object.
+ *
+ *  The state consists of the currenct track and current section.
+ */
+void Patcher::restoreState()
 {
     int t,s;
     m_persist.restore(&t, &s);
@@ -241,7 +270,11 @@ void Patcher::restoreState(void)
     changeSection(s);
 }
 
-void Patcher::eventLoop(void)
+/*! \brief Run the event loop.
+ *
+ *  This function processes incoming events. It never returns.
+ */
+void Patcher::eventLoop()
 {
     //changeTrack(m_setList[0]);
     for (uint32_t j=0;;j++)
@@ -418,12 +451,12 @@ void Patcher::eventLoop(void)
                             {
                                 if (num == 5)
                                 {
-                                    m_metaMode = 0;
+                                    m_metaMode = false;
                                     show(UpdateScreen);
                                 }
                                 else if (num == 6)
                                 {
-                                    m_metaMode = 1;
+                                    m_metaMode = true;
                                     show(UpdateScreen);
                                 }
                                 else if (currentTrack()->m_chain)
@@ -475,11 +508,20 @@ void Patcher::eventLoop(void)
         m_screen->flushMidi();
         wnoutrefresh(m_screen->m_track);
         doupdate();
-        if (m_metaMode && m_info.m_mode)
+        if (m_metaMode && m_info.m_enabled)
             showInfo();
     }
 }
 
+/*! \biref Send a MIDI event to the Fantom
+ *
+ *  This function does all the processing required by the current \a Section
+ *  before sending it off to the Fantom.
+ *
+ *  \param [in] midiStatus  MIDI status byte
+ *  \param [in] data1       MIDI data byte 1
+ *  \param [in] data2       MIDI data byte 2, not sent if left to 255
+ */
 void Patcher::sendEventToFantom(uint8_t midiStatus,
                 uint8_t data1, uint8_t data2)
 {
@@ -568,112 +610,134 @@ void Patcher::sendEventToFantom(uint8_t midiStatus,
     }
 }
 
+/*! \brief Update the \a Screen, BCF faders, and the Fantom display.
+ * \param [in] updateFlags  Bit field of things to be updated.
+ */
 void Patcher::show(int updateFlags)
 {
     if (updateFlags & UpdateScreen)
-    {
-        werase(m_screen->m_track);
-        wprintw(m_screen->m_track,
-            "*** Ray's MIDI patcher " VERSION ", rev " SVN ", " NOW " ***\n\n");
-        mvwprintw(m_screen->m_track, 2, 0,
-            "track   %03d \"%s\"\nsection %03d/%03d \"%s\"\n",
-            1+m_trackIdx, currentTrack()->m_name,
-            1+m_sectionIdx, currentTrack()->nofSections(),
-            currentSection()->m_name);
-        mvwprintw(m_screen->m_track, 2, 44,
-            "%03d/%03d within setlist", 1+m_trackIdxWithinSet, m_setList.length());
-        mvwprintw(m_screen->m_track, 5, 0,
-            "performance \"%s\"\n",
-            currentPerf()->m_name);
-        mvwprintw(m_screen->m_track, 3, 44,
-            "next \"%s\"\n", nextTrackName());
-        mvwprintw(m_screen->m_track, 5, 30, "chain mode %s\n",
-            currentTrack()->m_chain ?"on":"off");
-        if (m_metaMode)
-            wattron(m_screen->m_track, COLOR_PAIR(1));
-        mvwprintw(m_screen->m_track, 5, 50, "meta mode %s\n",
-            m_metaMode?"on":"off");
-        if (m_metaMode)
-            wattroff(m_screen->m_track, COLOR_PAIR(1));
-        int partsShown = 0;
-        for (int partIdx=0; partIdx<16;partIdx++)
-        {
-            int x = (partsShown / 4) * 19;
-            int y = 7 + partsShown % 4;
-            const FantomPart *part = currentPerf()->m_part+partIdx;
-            if (part->m_channel == 255)
-                break; // oops, we're not initialised yet
-            if (1 || part->m_channel == m_sectionIdx)
-            {
-                bool active = m_channelActivity.get(part->m_channel);
-                if (active)
-                    wattron(m_screen->m_track, COLOR_PAIR(1));
-                mvwprintw(m_screen->m_track, y, x,
-                    "%2d %2d %s ", partIdx+1, 1+part->m_channel, part->m_preset);
-                if (active)
-                    wattroff(m_screen->m_track, COLOR_PAIR(1));
-                partsShown++;
-            }
-        }
-        partsShown = 0;
-        const int colLength = 3;
-        for (int i=0; i<currentSection()->nofParts(); i++)
-        {
-            const SwPart *swPart = currentSection()->m_part[i];
-            for (int j=0; j<16;j++)
-            {
-                const FantomPart *hwPart = currentPerf()->m_part+j;
-                if (swPart->m_channel == hwPart->m_channel)
-                {
-                    int x = 0;
-                    if (partsShown >= colLength)
-                        x += 40;
-                    int y = 6 + 5 + 2 + partsShown % colLength;
-                    if (partsShown % colLength == 0)
-                        mvwprintw(m_screen->m_track, 6+5+1, x,
-                            "prt range         patch        vol tps");
-                    char keyL[20];
-                    keyL[0] = 0;
-                    m_midi->noteName(
-                        std::max(hwPart->m_keyRangeLower,
-                        swPart->m_rangeLower), keyL);
-                    char keyU[20];
-                    keyU[0] = 0;
-                    m_midi->noteName(
-                        std::min(hwPart->m_keyRangeUpper,
-                        swPart->m_rangeUpper), keyU);
-                    int transpose = swPart->m_transpose +
-                            (int)hwPart->m_transpose +
-                            (int)hwPart->m_oct*12;
-                    bool active = m_softPartActivity.get(i);
-                    if (active)
-                        wattron(m_screen->m_track, COLOR_PAIR(1));
-                    assert(hwPart->m_patch.m_name[1] != '[');
-                    mvwprintw(m_screen->m_track, y, x,
-                        "%3d [%3s - %4s]  %12s %3d %3d", j+1, keyL, keyU,
-                        hwPart->m_patch.m_name, hwPart->m_vol,transpose);
-                    if (active)
-                        wattroff(m_screen->m_track, COLOR_PAIR(1));
-                    partsShown++;
-                }
-            }
-        }
-    }
+        updateScreen();
 
     if (updateFlags & UpdateFaders)
         updateBcfFaders();
 
     if (updateFlags & UpdateFantomDisplay)
+        updateFantomDisplay();
+}
+
+/*! \brief Update the \a Screen.
+ *
+ * This function updates the main curses() \a Screen.
+ */
+void Patcher::updateScreen()
+{
+    werase(m_screen->m_track);
+    wprintw(m_screen->m_track,
+        "*** Ray's MIDI patcher " VERSION ", rev " SVN ", " NOW " ***\n\n");
+    mvwprintw(m_screen->m_track, 2, 0,
+        "track   %03d \"%s\"\nsection %03d/%03d \"%s\"\n",
+        1+m_trackIdx, currentTrack()->m_name,
+        1+m_sectionIdx, currentTrack()->nofSections(),
+        currentSection()->m_name);
+    mvwprintw(m_screen->m_track, 2, 44,
+        "%03d/%03d within setlist", 1+m_trackIdxWithinSet, m_setList.length());
+    mvwprintw(m_screen->m_track, 5, 0,
+        "performance \"%s\"\n",
+        currentPerf()->m_name);
+    mvwprintw(m_screen->m_track, 3, 44,
+        "next \"%s\"\n", nextTrackName());
+    mvwprintw(m_screen->m_track, 5, 30, "chain mode %s\n",
+        currentTrack()->m_chain ?"on":"off");
+    if (m_metaMode)
+        wattron(m_screen->m_track, COLOR_PAIR(1));
+    mvwprintw(m_screen->m_track, 5, 50, "meta mode %s\n",
+        m_metaMode?"on":"off");
+    if (m_metaMode)
+        wattroff(m_screen->m_track, COLOR_PAIR(1));
+    int partsShown = 0;
+    for (int partIdx=0; partIdx<16;partIdx++)
     {
-        // abuse the fantom screen to print some status info
-        char buf[20];
-        sprintf(buf, " [ %d / %d ]",
-            1+m_sectionIdx, currentTrack()->nofSections());
-        m_fantom->setPartName(0, buf);
+        int x = (partsShown / 4) * 19;
+        int y = 7 + partsShown % 4;
+        const FantomPart *part = currentPerf()->m_part+partIdx;
+        if (part->m_channel == 255)
+            break; // oops, we're not initialised yet
+        if (1 || part->m_channel == m_sectionIdx)
+        {
+            bool active = m_channelActivity.get(part->m_channel);
+            if (active)
+                wattron(m_screen->m_track, COLOR_PAIR(1));
+            mvwprintw(m_screen->m_track, y, x,
+                "%2d %2d %s ", partIdx+1, 1+part->m_channel, part->m_preset);
+            if (active)
+                wattroff(m_screen->m_track, COLOR_PAIR(1));
+            partsShown++;
+        }
+    }
+    partsShown = 0;
+    const int colLength = 3;
+    for (int i=0; i<currentSection()->nofParts(); i++)
+    {
+        const SwPart *swPart = currentSection()->m_part[i];
+        for (int j=0; j<16;j++)
+        {
+            const FantomPart *hwPart = currentPerf()->m_part+j;
+            if (swPart->m_channel == hwPart->m_channel)
+            {
+                int x = 0;
+                if (partsShown >= colLength)
+                    x += 40;
+                int y = 6 + 5 + 2 + partsShown % colLength;
+                if (partsShown % colLength == 0)
+                    mvwprintw(m_screen->m_track, 6+5+1, x,
+                        "prt range         patch        vol tps");
+                char keyL[20];
+                keyL[0] = 0;
+                m_midi->noteName(
+                    std::max(hwPart->m_keyRangeLower,
+                    swPart->m_rangeLower), keyL);
+                char keyU[20];
+                keyU[0] = 0;
+                m_midi->noteName(
+                    std::min(hwPart->m_keyRangeUpper,
+                    swPart->m_rangeUpper), keyU);
+                int transpose = swPart->m_transpose +
+                        (int)hwPart->m_transpose +
+                        (int)hwPart->m_oct*12;
+                bool active = m_softPartActivity.get(i);
+                if (active)
+                    wattron(m_screen->m_track, COLOR_PAIR(1));
+                assert(hwPart->m_patch.m_name[1] != '[');
+                mvwprintw(m_screen->m_track, y, x,
+                    "%3d [%3s - %4s]  %12s %3d %3d", j+1, keyL, keyU,
+                    hwPart->m_patch.m_name, hwPart->m_vol,transpose);
+                if (active)
+                    wattroff(m_screen->m_track, COLOR_PAIR(1));
+                partsShown++;
+            }
+        }
     }
 }
 
-void Patcher::updateBcfFaders(void)
+/*! \brief Abuse the Fantom screen to show the current section.
+ */
+void Patcher::updateFantomDisplay()
+{
+    char buf[20];
+    sprintf(buf, " [ %d / %d ]",
+        1+m_sectionIdx, currentTrack()->nofSections());
+    m_fantom->setPartName(0, buf);
+}
+
+/*! \brief Update the BCF faders.
+ *
+ * This function slides the motorised BCF faders into positions that
+ * show the current hardware part volumes.
+ * The octave shift is set as well, at the turning knobs. The BCF 
+ * can only show 8 parts at a time, so one of the BCF's buttons is 
+ * used to switch between part 1-8 and 9-16.
+ */
+void Patcher::updateBcfFaders()
 {
     for (int i=0; i<16;i++)
     {
@@ -689,10 +753,12 @@ void Patcher::updateBcfFaders(void)
     }
 }
 
-void Patcher::allNotesOff(void)
+/*! \brief Send all notes off on all channels in use by the current \a Section.
+ *
+ * Sustain controller is reset as well.
+ */
+void Patcher::allNotesOff()
 {
-    // send all notes off on all channels in use by the
-    // current section
     bool channelsCleared[16];
     for (int i=0; i<16; i++)
         channelsCleared[i] = false;
@@ -715,9 +781,15 @@ void Patcher::allNotesOff(void)
     }
 }
 
+/*! \brief Change to a new \a Section.
+ *
+ * This function will also handle 'all notes off' and screen / BCF updates.
+ *
+ * \param [in] section   The section number to switch to.
+ */
 void Patcher::changeSection(uint8_t sectionIdx)
 {
-    if (/*sectionIdx >= 0 && */sectionIdx <
+    if (sectionIdx <
         m_trackList[m_trackIdx]->nofSections())
 
     {
@@ -733,6 +805,13 @@ void Patcher::changeSection(uint8_t sectionIdx)
     }
 }
 
+/*! \brief Check if debounce delay has expired.
+ *
+ * This function returns true if the previous call to this function is
+ * more than delaySeconds ago.
+ *
+ * \param [in] delaySeconds  The minimum delay in seconds.
+ */
 bool Patcher::debounced(Real delaySeconds)
 {
     struct timespec now;
@@ -745,7 +824,15 @@ bool Patcher::debounced(Real delaySeconds)
     return rv;
 }
 
-void Patcher::nextSection(void)
+/*! \brief Change to next \a Section.
+ *
+ * This function switches to the next \a Section and possibly even to the
+ * next \a Track, according this \a Section's chaining settings.
+ * This also handles debouncing, since the FCB has a tendency to send
+ * multiple events on a single pedal press.
+ *
+ */
+void Patcher::nextSection()
 {
     if (!debounced(debounceTime))
         return;
@@ -762,7 +849,12 @@ void Patcher::nextSection(void)
     }
 }
 
-void Patcher::prevSection(void)
+/*! \brief Change to previous \a Section.
+ *
+ * Similar to \a Patcher::nextSection().
+ *
+ */
+void Patcher::prevSection()
 {
     if (!debounced(debounceTime))
         return;
@@ -779,6 +871,8 @@ void Patcher::prevSection(void)
     }
 }
 
+/*! \brief Switch to a new \a Track.
+ */
 void Patcher::changeTrack(uint8_t track, int updateFlags)
 {
     //m_screen->printMidi("change track %d\n", track);
@@ -790,18 +884,32 @@ void Patcher::changeTrack(uint8_t track, int updateFlags)
     m_persist.store(m_trackIdx, m_sectionIdx);
 }
 
+/*! \brief Toggle the info mode.
+ *
+ * In info mode, the Fantom display is used to display the available
+ * network interface addresses. This is useful if you cannot find the
+ * Pi on the network.
+ *
+ * \param [in] note     MIDI note. Only toggle if it matches \a MetaNote::info.
+ */
 void Patcher::toggleInfoMode(uint8_t note)
 {
     if (note == MetaNote::info)
     {
-        m_info.m_mode = !m_info.m_mode;
-        if (m_info.m_mode)
+        m_info.m_enabled = !m_info.m_enabled;
+        if (m_info.m_enabled)
         {
             m_info.m_text = getNetworkInterfaceAddresses();
         }
     }
 }
 
+/*! \brief Update the info display on the Fantom.
+ *
+ * This function must be called periodically, since the info to be
+ * displayed must be scrolled through, as there is only one line
+ * available on the Fantom display.
+ */
 void Patcher::showInfo()
 {
     struct timespec now;
@@ -826,6 +934,12 @@ void Patcher::showInfo()
     }
 }
 
+/*! \brief Switch to \a Track indicated by note number.
+ *
+ * See \a MetaNote::select.
+ *
+ * param [in] note  MIDI note number.
+ */
 void Patcher::changeTrackByNote(uint8_t note)
 {
     bool valid = false;
@@ -853,6 +967,11 @@ void Patcher::changeTrackByNote(uint8_t note)
     }
 }
 
+/*! \brief Consume a sysEx message from a device.
+ *
+ * This function will consume bytes until an EOX is seen.
+ * \param [in] device   The MIDI device number.
+ */
 void Patcher::consumeSysEx(int device)
 {
     m_screen->printMidi("sysEx ");
@@ -869,6 +988,11 @@ void Patcher::consumeSysEx(int device)
     m_screen->printMidi("\n");
 }
 
+/*! \brief The main entrypoint of the patcher.
+ *
+ * There is only one optional command line argument: The directory to which to change.
+ */
+
 int main(int argc, char **argv)
 {
     if (argc == 2)
@@ -881,9 +1005,13 @@ int main(int argc, char **argv)
         }
     }
 #if 0
-    std::vector <Track *>m_trackList;
-    importTracks(TRACK_DEF, m_trackList);
-    clearTracks(m_trackList);
+    // debug: see if we have memory leaks if we read 
+    // the config file and then clean up again.
+
+    std::vector <Track *>trackList;
+    SetList setList;
+    importTracks(TRACK_DEF, trackList, setList);
+    clearTracks(trackList);
     return 0;
 #endif
 
