@@ -7,19 +7,26 @@
 #include <string.h>
 #include <sstream>
 /*! \brief Error exception class
- *
  */
 class Error
 {
     int m_exitCode;                         //!<    The exit code for the process.
-    std::stringstream m_sstream;            //!<    The error message.
-    std::string m_string;                   //!<    Temporary storage for the error message.
+    std::stringstream m_sstream;            //!<    Stream access to the error message.
+    std::string m_tempString;               //!<    Temporary string buffer.
 public:
     //! \brief Copy constructor.
-    Error(const Error &rhs): m_exitCode(-1)
+    Error(const Error &rhs)
     {
         m_exitCode = rhs.m_exitCode;
         m_sstream << rhs.m_sstream.rdbuf();
+    }
+    //! \brief Assignment operator.
+    Error &operator=(const Error &rhs)
+    {
+        m_exitCode = rhs.m_exitCode;
+        m_sstream << rhs.m_sstream.rdbuf();
+        // m_tempString not copied
+        return *this;
     }
     //! \brief Default constructor.
     Error(): m_exitCode(-1) { };
@@ -28,7 +35,7 @@ public:
     {
         m_sstream << s;
     }
-    //! \brief Construct with errno expanded to a message.
+    //! \brief Construct with errno expanded to a message, like perror(3).
     Error(const char *s, int errNo): m_exitCode(-1)
     {
         m_sstream << s << ": " << strerror(errNo);
@@ -41,13 +48,15 @@ public:
     //! \brief Get error message as a c-string.
     const char *what()
     {
-        m_string = m_sstream.str(); // must go through this std::string ...
-        return m_string.c_str();
+        m_tempString = m_sstream.str();
+        return m_tempString.c_str();
     }
     //! \brief Return a string stream to write an error message to.
     std::stringstream &stream() { return m_sstream; }
-    //! \brief Return the exit code for the process.
+    //! \brief Get the exit code for the process.
     int exitCode() const { return m_exitCode; }
+    //! \brief Set the exit code for the process.
+    int &exitCode() { return m_exitCode; }
 };
 
 //! \brief Signal an internal error.
