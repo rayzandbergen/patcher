@@ -380,37 +380,3 @@ int importTracks (const char *inFile, std::vector<Track*> &tracks, SetList &setL
     return 0;
 }
 
-//! \brief Convert a boolean to an XMLString.
-XMLCh *toBool(bool b)
-{
-    if (b)
-        return xmlStr("true");
-    else
-        return xmlStr("false");
-}
-
-//! \brief Adds an attribute to a DOM element.
-void addAttribute(DOMElement *n, const char *attrName, int x, int def = -1, int ref = -3)
-{
-    if (x != def)
-    {
-        const char *s = 0;
-        if (x == ref)
-            s = "current";
-        else if (x == ref-1)
-            s = "previous";
-        else if (x == ref+1)
-            s = "next";
-        if (s)
-        {
-            n->setAttribute(xmlStr(attrName), xmlStr(s));
-        }
-        else
-        {
-            XMLCh stringBuf[100];
-            XMLString::binToText(x, stringBuf, 99, 10);
-            n->setAttribute(xmlStr(attrName), stringBuf);
-        }
-    }
-}
-
