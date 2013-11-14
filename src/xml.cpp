@@ -254,9 +254,7 @@ void parseTracks(DOMDocument *doc, TrackList &trackList, SetList &setList)
                     else if (id == "volReverse")
                         part->m_controllerRemap = new ControllerRemapVolReverse;
                     else
-                    {
-                        // huh?
-                    }
+                        throw(Error("unknown controllerRemap id"));
                 }
                 if (!part->m_controllerRemap)
                     part->m_controllerRemap = new ControllerRemap;
