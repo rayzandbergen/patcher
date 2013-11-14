@@ -37,7 +37,7 @@ MidiDevice deviceList[] =
     { 0,         0, 0, 0, MidiDirection::none,MidiDevice::none,      0,     0,                   0 },
 };
 
-};
+}
 
 /*  \brief Map from DevId to file descriptor
  */

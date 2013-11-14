@@ -45,7 +45,7 @@ namespace MetaNote
         down = MidiNote::C4,      //!< Move to previous track in setlist.
         select = MidiNote::C5     //!< Select directly.
     };
-};
+}
 
 //! \brief The Patcher object is the object that does all the heavy lifting.
 class Patcher

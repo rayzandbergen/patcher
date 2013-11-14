@@ -32,7 +32,7 @@ namespace MidiStatus
         activeSensing = 0xfe,
         sysReset = 0xff
     };
-};
+}
 
 namespace MidiController
 {
@@ -50,13 +50,13 @@ namespace MidiController
         resetAllControllers = 121,
         allNotesOff = 123
     };
-};
+}
 
 namespace MidiDirection
 {
     //! \brief Direction of MIDI data, as seen from Pi.
     enum InOut { none, in = 100, out };
-};
+}
 
 //! \brief State of a single MIDI device.
 struct MidiDevice

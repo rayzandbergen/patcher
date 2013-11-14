@@ -21,7 +21,7 @@ namespace TrackDef {
     static const int CurrentTrack = -3;
     static const int NextTrack = -4;
     static const int LastSection = -5;
-};
+}
 
 /*! \brief Contains all the parameters needed to manipulate events on a single MIDI channel.
  *

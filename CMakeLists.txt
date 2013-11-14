@@ -7,7 +7,7 @@ project(patcher)
 set(RASPBIAN 1)
 #set(mudflap 1)
 
-set(GCC_WARNINGS "-Wall -Wextra -Wshadow -Wstrict-aliasing=1")
+set(GCC_WARNINGS "-std=c++98 -pedantic -Wall -Wextra -Wshadow -Wstrict-aliasing=1")
 set(CMAKE_CXX_FLAGS_DEBUG "${GCC_WARNINGS} -g")
 set(CMAKE_CXX_FLAGS_RELEASE "${GCC_WARNINGS} -O3")
 if (mudflap)

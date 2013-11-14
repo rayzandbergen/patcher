@@ -138,5 +138,5 @@ namespace MidiNote {
         /* 127 */ G10,
         max
     };
-};
+}
 #endif // MIDI_NOTE_H
