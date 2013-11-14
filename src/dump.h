@@ -10,10 +10,12 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+/*! \brief This object reads and writes binary dumps of other objects.
+ */
 class Dump
 {
-    int m_fd;
-    public:
+    int m_fd;       //!<    File descriptor for reading/writing.
+public:
     template <class T> void save(T &x) const
     {
         write(m_fd, (const void*)&x, sizeof(x));

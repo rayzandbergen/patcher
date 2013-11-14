@@ -6,12 +6,13 @@
 #ifndef ACTIVITY_H
 #define ACTIVITY_H
 #include "timestamp.h"
+//! \brief This class administers a list of activity flags.
 class Activity
 {
-    static const int nofSlots = 16;
-    bool m_active[nofSlots];
-    struct timespec m_t0[nofSlots];
-    bool m_dirty;
+    static const int nofSlots = 16;     //!<    Number of slots.
+    bool m_active[nofSlots];            //!<    Activity flags.
+    struct timespec m_t0[nofSlots];     //!<    Time of last activity.
+    bool m_dirty;                       //!<    Dirty flag, set if any change in activity since last \a clean().
 public:
     void clean() { m_dirty = false; }
     bool isDirty() const { return m_dirty; }

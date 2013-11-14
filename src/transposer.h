@@ -7,15 +7,18 @@
 #define TRANSPOSER_H
 #include <stdint.h>
 #include "midi.h"
+#include "midi_note.h"
 /*! \brief This class transposes only when sustain is active.
  */
 class Transposer
 {
-    bool m_noteState[128];
-    bool m_sustain;
-    public:
+    bool m_noteState[MidiNote::max];    //!<    Sustain status for each MIDI note.
+    bool m_sustain;                     //!<    Latest sustain pedal status.
+public:
+    uint8_t m_transpose;                //!<    Transpose value in semitones.
+    //! \brief Construct a transposer that by default transposes one octave.
     Transposer(uint8_t offset = 12): m_transpose(offset) { };
-    uint8_t m_transpose;
+    //! \brief Set the sustain pedal status.
     void setSustain(bool b) { m_sustain = b; };
     void transpose(uint8_t midiStatus, uint8_t &data1, uint8_t &data2);
 };

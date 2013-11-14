@@ -6,9 +6,9 @@
 #include <stdint.h>
 #include "transposer.h"
 #include "patcher.h"
+//! \brief Apply possible transpose to MIDI message.
 void Transposer::transpose(uint8_t midiStatus, uint8_t &data1, uint8_t &data2)
 {
-    midiStatus &= 0xf0; //\todo not needed
     data1 &= 127;
 
     if (!Midi::isNote(midiStatus))
