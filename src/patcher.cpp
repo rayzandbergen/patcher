@@ -1033,7 +1033,7 @@ int main(int argc, char **argv)
         patcher.show(Patcher::UpdateScreen|Patcher::UpdateFaders);
         patcher.eventLoop();
     }
-    catch (Error e)
+    catch (Error &e)
     {
         endwin();
         std::cerr << "** " << e.what() << std::endl;
