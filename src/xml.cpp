@@ -127,7 +127,7 @@ std::string xmlStdString(const XMLCh *c)
 }
 
 //! \brief Parse a DOM document into a track list and a \a SetList.
-void parseTracks(DOMDocument *doc, std::vector<Track*> &trackList, SetList &setList)
+void parseTracks(DOMDocument *doc, TrackList &trackList, SetList &setList)
 {
     DOMElement *root = doc->getDocumentElement();
     DOMNode *trackDefNode = findNode(doc, root, "/tracks/trackDefinitions");
@@ -328,7 +328,7 @@ void parseTracks(DOMDocument *doc, std::vector<Track*> &trackList, SetList &setL
 }
 
 //! \brief Parse an XML file into a track list and a \a SetList.
-int importTracks (const char *inFile, std::vector<Track*> &tracks, SetList &setList)
+int importTracks (const char *inFile, TrackList &tracks, SetList &setList)
 {
     try {
         XMLPlatformUtils::Initialize();

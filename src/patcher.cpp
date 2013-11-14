@@ -55,7 +55,7 @@ private:
     Activity m_channelActivity;         //!< Per-channel \a Activity.
     Activity m_softPartActivity;        //!< Per-\a SwPart \a Activity.
     Screen *m_screen;                   //!< Pointer to global \a Screen object.
-    std::vector <Track *>m_trackList;   //!< Global \a Track list.
+    TrackList m_trackList;              //!< Global \a Track list.
     Midi *m_midi;                       //!< Pointer to global \a Midi object.
     Fantom *m_fantom;                   //!< Pointer to global \a Fantom object.
     FantomPerformance *m_perf;          //!< Array of pointers to \a FantomPerformance objects.
@@ -1011,7 +1011,7 @@ int main(int argc, char **argv)
         // debug: see if we have memory leaks if we read
         // the config file and then clean up again.
 
-        std::vector <Track *>trackList;
+        TrackList trackList;
         SetList setList;
         importTracks(TRACK_DEF, trackList, setList);
         clear(trackList);
