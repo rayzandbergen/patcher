@@ -27,7 +27,7 @@ Section::~Section()
 
 void Section::clear()
 {
-    for (std::vector<SwPart *>::iterator i = m_part.begin(); i != m_part.end(); i++)
+    for (SwPartList::iterator i = m_part.begin(); i != m_part.end(); i++)
         delete *i;
     m_part.clear();
     free((void*)m_name);
@@ -115,7 +115,7 @@ Track::~Track()
 
 void Track::clear()
 {
-    for (std::vector<Section *>::iterator i = m_section.begin(); i != m_section.end(); i++)
+    for (SectionList::iterator i = m_section.begin(); i != m_section.end(); i++)
         delete *i;
     m_section.clear();
     free((void*)m_name);

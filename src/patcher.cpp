@@ -58,7 +58,7 @@ private:
     TrackList m_trackList;              //!< Global \a Track list.
     Midi *m_midi;                       //!< Pointer to global \a Midi object.
     Fantom *m_fantom;                   //!< Pointer to global \a Fantom object.
-    FantomPerformance *m_perf;          //!< Array of pointers to \a FantomPerformance objects.
+    FantomPerformance *m_perf;          //!< Array of \a FantomPerformance objects.
     int m_trackIdx;                     //!< Current track index
     int m_trackIdxWithinSet;            //!< Current track index within \a SetList.
     SetList m_setList;                  //!< Global \a SetList object.
@@ -150,10 +150,11 @@ void Patcher::loadTrackDefs()
 void Patcher::dumpTrackList()
 {
     char prefix[100];
-    for (int i=0; i<nofTracks(); i++)
+    int i=1;
+    for (TrackList::const_iterator t = m_trackList.begin(); t != m_trackList.end(); t++, i++)
     {
-        sprintf(prefix, "track%02d", 1+i);
-        m_trackList[i]->dumpToLog(m_screen, prefix);
+        sprintf(prefix, "track%02d", i);
+        (*t)->dumpToLog(m_screen, prefix);
     }
 }
 

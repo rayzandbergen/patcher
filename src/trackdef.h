@@ -57,6 +57,9 @@ public:
     void dumpToLog(Screen *screen, const char *prefix) const;
 };
 
+//! \brief A list of \a Section object pointers.
+typedef std::vector<SwPart *> SwPartList;
+
 /*! \brief A single keyboard layout.
  *
  * This is a collection of \a SwPart objects, and some section chaining info
@@ -67,7 +70,7 @@ public:
     const char *m_name;             //!< The name of the section. Ownership of the string is assumed.
     bool m_noteOffEnter;            //!< Force 'note off' events when switching to this section.
     bool m_noteOffLeave;            //!< Force 'note off' events when switching away from this section.
-    std::vector<SwPart *> m_part;   //!< List of \a SwPart objects.
+    SwPartList m_part;              //!< List of \a SwPart objects.
     int m_nextTrack;                //!< Chaining info: next \a Track.
     int m_nextSection;              //!< Chaining info: next \a Section.
     int m_previousTrack;            //!< Chaining info: previous \a Track.
@@ -80,12 +83,15 @@ public:
     void dumpToLog(Screen *screen, const char *prefix) const;
 };
 
+//! \brief A list of \a Section object pointers.
+typedef std::vector<Section *> SectionList;
+
 /*! \brief The equivalent of a \a FantomPerformance.
  */
 class Track {
 public:
     const char *m_name;             //!< Name of this track. Ownership of the string is assumed.
-    std::vector<Section *> m_section;   //!< Section list.
+    SectionList m_section;   //!< Section list.
     bool m_chain;                   //!< Chain mode switch. If enabled, FCB1010 program changes are interpreted as 'next' and 'previous' events.
     int m_startSection;             //!< Section index to switch to when this track starts.
     Track(const char *name, bool chain = false, int startSection = 0);
@@ -96,7 +102,7 @@ public:
     void dumpToLog(Screen *screen, const char *prefix) const;
 };
 
-typedef std::vector<Track*> TrackList;  //!< A list of tracks.
+typedef std::vector<Track*> TrackList;  //!< A list of \a Track object pointers.
 
 //! \brief A setlist object.
 class SetList {
