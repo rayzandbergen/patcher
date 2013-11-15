@@ -13,6 +13,7 @@
 #include <ncursesw/ncurses.h>
 #endif
 #include <stdint.h>
+#include "patcher.h"
 //!  \brief Wraps an ncurses(3X) screen in an object with some convenience functions.
 class Screen
 {
@@ -27,6 +28,7 @@ public:
     void flushMidi();
     int printLog(const char *fmt, ...);
     void dumpToLog(const uint8_t *data, int n);
+    void showProgressBar(int y, int x, Real f);
 	Screen();
 	~Screen();
 };
