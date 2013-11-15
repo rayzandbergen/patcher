@@ -5,6 +5,7 @@
  */
 #include "controller.h"
 
+//! \brief Interpolate controller value.
 Real ControllerRemap::interpolate(Real x, Real x0, Real y0, Real x1, Real y1) const
 {
     Real f = (x - x0)/(x1-x0);
@@ -15,6 +16,7 @@ Real ControllerRemap::interpolate(Real x, Real x0, Real y0, Real x1, Real y1) co
     return y0 + f*(y1-y0);
 }
 
+//! \brief Do the actual controller remapping.
 void ControllerRemap::value(uint8_t controller, uint8_t val, uint8_t *controllerOut, uint8_t *valOut) const
 {
     if (controller != m_from)

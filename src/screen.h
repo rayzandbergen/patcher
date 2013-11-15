@@ -13,6 +13,7 @@
 #include <ncursesw/ncurses.h>
 #endif
 #include <stdint.h>
+//!  \brief Wraps an ncurses(3X) screen in an object with some convenience functions.
 class Screen
 {
     enum Id { track, midi, debug };

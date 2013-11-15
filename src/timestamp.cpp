@@ -6,11 +6,21 @@
 #include "patcher.h"
 #include "timestamp.h"
 
+/*! \brief Obtains the current time.
+ *
+ * \param[out] now      The current time from CLOCK_REALTIME.
+ */
 void getTime(struct timespec *now)
 {
     clock_gettime(CLOCK_REALTIME, now);
 }
 
+/*! \brief Calculates a time difference.
+ *
+ * \param[out] diff     The time difference.
+ * \param[in]  then     Previous time.
+ * \param[in]  now      More recent time.
+ */
 void timeDiff(struct timespec *diff, const struct timespec *then, const struct timespec *now)
 {
     diff->tv_sec = now->tv_sec - then->tv_sec;
@@ -25,6 +35,12 @@ void timeDiff(struct timespec *diff, const struct timespec *then, const struct t
     }
 }
 
+/*! \brief Calculates a time difference in seconds.
+ *
+ * \param[in]  then     Previous time.
+ * \param[in]  now      More recent time.
+ * \return      The time difference in seconds.
+ */
 Real timeDiffSeconds(const struct timespec *then, const struct timespec *now)
 {
     struct timespec diff;

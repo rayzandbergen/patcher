@@ -15,12 +15,13 @@
 #include "screen.h"
 
 class FantomPart;
+//! \brief Contains some placeholder constants, which are replaced by actual indexes after the TrackList is complete.
 namespace TrackDef {
-    static const int Unspecified = -1;
-    static const int PreviousTrack = -2;
-    static const int CurrentTrack = -3;
-    static const int NextTrack = -4;
-    static const int LastSection = -5;
+    static const int Unspecified = -1;      //!<    Unspecified track or section.
+    static const int PreviousTrack = -2;    //!<    Previous track.
+    static const int CurrentTrack = -3;     //!<    Current track.
+    static const int NextTrack = -4;        //!<    Next track.
+    static const int LastSection = -5;      //!<    Last section of the track.
 }
 
 /*! \brief Contains all the parameters needed to manipulate events on a single MIDI channel.

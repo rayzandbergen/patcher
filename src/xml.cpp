@@ -21,9 +21,6 @@
 
 XERCES_CPP_NAMESPACE_USE
 
-typedef std::vector<DOMNode*> NodeList;
-typedef std::list<const XMLCh*> ConstXmlStringList;
-
 /*! \brief This class template caches T objects that are created from string constants.
  *
     It is used to create cache classes for XMLCh strings and DOMXPathExpressions.
@@ -71,6 +68,7 @@ public:
     }
 };
 
+//! \brief Static instance of \a XMLStringCache.
 static XMLStringCache xmlStr;
 
 /*! \brief This class caches DOMXPathExpression instances to avoid repeated constructions from the same staring constants.
@@ -88,6 +86,7 @@ public:
     }
 };
 
+//! \brief Static instance of \a XPathCache.
 static XPathCache xPath;
 
 //! \brief Find the first node that matches an XPath expression.
@@ -105,6 +104,7 @@ DOMXPathResult *findNodes(DOMDocument *doc, const DOMElement *node, const char *
     return xPath(path, doc)->evaluate(node, DOMXPathResult::ORDERED_NODE_SNAPSHOT_TYPE, 0);
 }
 
+//! \brief Temporary stringstream.
 std::stringstream stringStream;
 
 //! \brief Put an XMLString into an std::stream

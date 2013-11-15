@@ -14,10 +14,10 @@ class Activity
     struct timespec m_t0[nofSlots];     //!<    Time of last activity.
     bool m_dirty;                       //!<    Dirty flag, set if any change in activity since last \a clean().
 public:
-    void clean() { m_dirty = false; }
-    bool isDirty() const { return m_dirty; }
-    Activity();
-    void set(int idx);
-    bool get(int idx);
+    void clean() { m_dirty = false; }   //!<    Clear dirty flag.
+    bool isDirty() const { return m_dirty; } //!<    Query dirty flag.
+    Activity();                         //!<    Default constructor
+    void set(int idx);                  //!<    Set activity flag for slot \a idx.
+    bool get(int idx);                  //!<    Get activity flag for slot \a idx.
 };
 #endif
