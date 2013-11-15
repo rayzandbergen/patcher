@@ -126,6 +126,7 @@ public:
     */
     Patcher(Screen *s, Midi *m, Fantom *f):
         debounceTime(Real(0.4)),
+        m_channelActivity(NofMidiChannels), m_softPartActivity(64 /*see tracks.xsd*/),
         m_screen(s), m_midi(m), m_fantom(f),
         m_trackIdx(0), m_trackIdxWithinSet(0), m_sectionIdx(0),
         m_metaMode(false), m_partOffsetBcf(0)
@@ -187,19 +188,21 @@ void Patcher::downloadPerfomanceData()
         d.fclose();
         return;
     }
-    char s[20];
+    char nameBuf[Fantom::nameSize];
     struct timespec ts;
     ts.tv_sec = 0;
     ts.tv_nsec = 10*1000*1000;
+    mvwprintw(win(), 2, 3, "Downloading Fantom Performance data:");
     for (int i=0; i<nofTracks(); i++)
     {
         changeTrack(i, UpdateNothing);
         nanosleep(&ts, NULL);
-        m_fantom->getPerfName(s);
+        m_fantom->getPerfName(nameBuf);
         g_alarm.m_doTimeout = false;
-        m_screen->printMidi("%3.0f%% reading '%s'\n", 100.0*(i+1.0)/nofTracks(), s);
-        m_screen->flushMidi();
-        strcpy(m_perf[i].m_name, s);
+        mvwprintw(win(), 4, 3, "Track   '%s'", nameBuf);
+        m_screen->showProgressBar(4, 28, ((Real)i)/nofTracks());
+        wrefresh(win());
+        strcpy(m_perf[i].m_name, nameBuf);
         for (int j=0; j<FantomPerformance::NofParts; j++)
         {
             FantomPart *hwPart = m_perf[i].m_part+j;
@@ -216,7 +219,9 @@ void Patcher::downloadPerfomanceData()
             {
                 strcpy(hwPart->m_patch.m_name, "secret GM   ");
             }
-            m_screen->flushMidi();
+            mvwprintw(win(), 5, 3, "Section '%s'", hwPart->m_patch.m_name);
+            m_screen->showProgressBar(5, 28, ((Real)(j+1))/FantomPerformance::NofParts);
+            wrefresh(win());
         }
     }
     if (!d.fopen(fantomPatchFile, O_WRONLY|O_CREAT, S_IRUSR|S_IWUSR))
@@ -1020,14 +1025,14 @@ int main(int argc, char **argv)
 #endif
         setAlarmHandler();
         Screen screen;
-        wprintw(screen.m_track,
-            "*** initialising ***\n\n");
+        wprintw(screen.m_track, "   *** initialising ***\n\n"); 
         wrefresh(screen.m_track);
         Midi midi(&screen);
         Fantom fantom(&screen, &midi);
         Patcher patcher(&screen, &midi, &fantom);
         patcher.loadTrackDefs();
         patcher.downloadPerfomanceData();
+        wrefresh(screen.m_track);
         patcher.mergePerformanceData();
         //patcher.dumpTrackList();
         patcher.restoreState();

@@ -9,15 +9,16 @@
 //! \brief This class administers a list of activity flags.
 class Activity
 {
-    static const int nofSlots = 16;     //!<    Number of slots.
-    bool m_active[nofSlots];            //!<    Activity flags.
-    struct timespec m_t0[nofSlots];     //!<    Time of last activity.
+    const int m_nofSlots;               //!<    Number of slots.
+    bool *m_active;                     //!<    Array of activity flags.
+    struct timespec *m_t0;              //!<    Time of last activity.
     bool m_dirty;                       //!<    Dirty flag, set if any change in activity since last \a clean().
 public:
     void clean() { m_dirty = false; }   //!<    Clear dirty flag.
     bool isDirty() const { return m_dirty; } //!<    Query dirty flag.
-    Activity();                         //!<    Default constructor
     void set(int idx);                  //!<    Set activity flag for slot \a idx.
     bool get(int idx);                  //!<    Get activity flag for slot \a idx.
+    Activity(int nofSlots);             //!<    Constructor.
+    ~Activity();                        //!<    Destructor.
 };
 #endif

@@ -8,18 +8,28 @@
 #include "activity.h"
 #include "error.h"
 
-Activity::Activity()
+typedef struct timespec TimeSpec;
+
+Activity::Activity(int nofSlots): m_nofSlots(nofSlots)
 {
+    m_active = new bool[m_nofSlots];
+    m_t0 = new TimeSpec[m_nofSlots];
     clean();
-    for (int i=0; i<nofSlots; i++)
+    for (int i=0; i<m_nofSlots; i++)
     {
         m_active[i] = false;
     }
 }
 
+Activity::~Activity()
+{
+    delete[] m_active;
+    delete[] m_t0;
+}
+
 void Activity::set(int idx)
 {
-    ASSERT(idx < nofSlots);
+    ASSERT(idx < m_nofSlots);
     if (!m_active[idx])
     {
         m_dirty = true;
@@ -30,7 +40,7 @@ void Activity::set(int idx)
 
 bool Activity::get(int idx)
 {
-    ASSERT(idx < nofSlots);
+    ASSERT(idx < m_nofSlots);
     if (!m_active[idx])
         return false;
 
