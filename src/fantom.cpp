@@ -69,6 +69,7 @@ void Part::constructPreset(bool &patchReadAllowed)
  */
 void Part::save(const Dump *d)
 {
+    d->save(m_number);
     d->save(m_channel);
     d->save(m_bankSelectMsb);
     d->save(m_bankSelectLsb);
@@ -90,6 +91,7 @@ void Part::save(const Dump *d)
  */
 void Part::restore(const Dump *d)
 {
+    d->restore(m_number);
     d->restore(m_channel);
     d->restore(m_bankSelectMsb);
     d->restore(m_bankSelectLsb);
@@ -114,7 +116,7 @@ void Part::dumpToLog(Screen *screen, const char *prefix) const
 {
     screen->printLog("%s.preset:%s\n", prefix, m_preset);
     screen->printLog("%s.name:%s\n", prefix, m_patch.m_name);
-    screen->printLog("%s.channel:%d\n", prefix, m_channel);
+    screen->printLog("%s.channel:%d\n", prefix, 1+m_channel);
     screen->printLog("%s.vol:%d\n", prefix, m_vol);
     screen->printLog("%s.transpose:%d\n", prefix, m_transpose);
     screen->printLog("%s.oct:%d\n", prefix, m_oct);
