@@ -6,11 +6,14 @@
 #include "fantom.h"
 #include "error.h"
 
+namespace Fantom
+{
+
 /*  \brief Construct the preset name for \a this.
  *
  *  param[in] patchReadAllowed  True if the patch may be read. Fantom disallows download of some GM sounds.
  */
-void FantomPart::constructPreset(bool &patchReadAllowed)
+void Part::constructPreset(bool &patchReadAllowed)
 {
     patchReadAllowed = false;
     if (m_bankSelectMsb == 87)
@@ -64,7 +67,7 @@ void FantomPart::constructPreset(bool &patchReadAllowed)
  *
  * param[in] d object to dump to.
  */
-void FantomPart::save(const Dump *d)
+void Part::save(const Dump *d)
 {
     d->save(m_channel);
     d->save(m_bankSelectMsb);
@@ -85,7 +88,7 @@ void FantomPart::save(const Dump *d)
  *
  * param[in] d object to read from.
  */
-void FantomPart::restore(const Dump *d)
+void Part::restore(const Dump *d)
 {
     d->restore(m_channel);
     d->restore(m_bankSelectMsb);
@@ -107,7 +110,7 @@ void FantomPart::restore(const Dump *d)
  * param[in] screen Screen object to dump to
  * param[in] prefix Print prefix.
  */
-void FantomPart::dumpToLog(Screen *screen, const char *prefix) const
+void Part::dumpToLog(Screen *screen, const char *prefix) const
 {
     screen->printLog("%s.preset:%s\n", prefix, m_preset);
     screen->printLog("%s.name:%s\n", prefix, m_patch.m_name);
@@ -125,7 +128,7 @@ void FantomPart::dumpToLog(Screen *screen, const char *prefix) const
  *
  * param[in] d object to dump to.
  */
-void FantomPerformance::save(const Dump *d)
+void Performance::save(const Dump *d)
 {
     d->save((const char*)m_name);
     for (int i=0; i<NofParts; i++)
@@ -136,16 +139,16 @@ void FantomPerformance::save(const Dump *d)
  *
  * param[in] d object to read from.
  */
-void FantomPerformance::restore(const Dump *d)
+void Performance::restore(const Dump *d)
 {
     d->restore((char*)m_name);
     for (int i=0; i<NofParts; i++)
         m_part[i].restore(d);
 }
 
-void Fantom::setParam(const uint32_t addr, const uint32_t length, uint8_t *data)
+void Driver::setParam(const uint32_t addr, const uint32_t length, uint8_t *data)
 {
-    //m_screen->printLog("Fantom::setParam %08x %08x\n", addr, length);
+    //m_screen->printLog("Driver::setParam %08x %08x\n", addr, length);
     uint8_t txBuf[128];
     uint32_t checkSum = 0;
     uint32_t i=0;
@@ -161,7 +164,7 @@ void Fantom::setParam(const uint32_t addr, const uint32_t length, uint8_t *data)
     txBuf[i++] = (uint8_t)(0xff & addr >> 8);
     txBuf[i++] = (uint8_t)(0xff & addr);
     if (i + length + 2 > sizeof(txBuf))
-        throw(Error("Fantom::setParam: txBuf overflow"));
+        throw(Error("Driver::setParam: txBuf overflow"));
     for (uint32_t j=0; j<length; j++)
         txBuf[i++] = data[j];
     uint32_t checkSumEnd = i;
@@ -178,10 +181,10 @@ void Fantom::setParam(const uint32_t addr, const uint32_t length, uint8_t *data)
 #endif
 }
 
-void Fantom::getParam(const uint32_t addr, const uint32_t length, uint8_t *data)
+void Driver::getParam(const uint32_t addr, const uint32_t length, uint8_t *data)
 {
     const uint32_t rxHeaderLength = 10;
-    //m_screen->printLog("Fantom::getParam %08x %08x\n", addr, length);
+    //m_screen->printLog("Driver::getParam %08x %08x\n", addr, length);
     uint8_t txBuf[128];
     uint8_t rxBuf[128]; // debug only
     memset(rxBuf, 0, sizeof(rxBuf));
@@ -205,7 +208,7 @@ void Fantom::getParam(const uint32_t addr, const uint32_t length, uint8_t *data)
     txBuf[i++] = (uint8_t)(0xff & length);
     checkSum = 0;
     if (i + length + 2 > sizeof(txBuf))
-        throw(Error("Fantom::getParam: txBuf overflow"));
+        throw(Error("Driver::getParam: txBuf overflow"));
     for (uint32_t j=checkSumStart; j<=checkSumEnd; j++)
         checkSum += txBuf[j];
     txBuf[i++] = 0x80 - (checkSum & 0x7f);
@@ -237,13 +240,13 @@ void Fantom::getParam(const uint32_t addr, const uint32_t length, uint8_t *data)
     //m_screen->dumpToLog(rxBuf, i);
 }
 
-void Fantom::setVolume(uint8_t part, uint8_t val)
+void Driver::setVolume(uint8_t part, uint8_t val)
 {
     uint32_t addr = 0x10000000 + ((0x20+part)<<8) + 7;
     setParam(addr, 1, &val);
 }
 
-void Fantom::getPartParams(FantomPart *p, int idx)
+void Driver::getPartParams(Part *p, int idx)
 {
     const int partSize = 0x31;
     uint8_t buf[partSize];
@@ -262,48 +265,50 @@ void Fantom::getPartParams(FantomPart *p, int idx)
     p->m_fadeWidthUpper = buf[0x1a];
 }
 
-void Fantom::getPatchName(char *s, int idx)
+void Driver::getPatchName(char *s, int idx)
 {
     uint32_t offset = 0x20 * idx;
     uint32_t offsetLo = offset & 0x7f;
     uint32_t offsetHi = offset >> 7;
     uint32_t addr = 0x11000000 + (offsetHi << 24) + (offsetLo << 16);
-    uint8_t buf[FantomNameLength+1];
+    uint8_t buf[NameLength+1];
     memset(buf, '*', sizeof(buf));
-    getParam(addr, FantomNameLength, buf);
-    memcpy(s, buf, FantomNameLength);
-    s[FantomNameLength] = 0;
+    getParam(addr, NameLength, buf);
+    memcpy(s, buf, NameLength);
+    s[NameLength] = 0;
 }
 
-void Fantom::getPerfName(char *s)
+void Driver::getPerfName(char *s)
 {
-    uint8_t buf[FantomNameLength+1];
+    uint8_t buf[NameLength+1];
     memset(buf, '*', sizeof(buf));
-    getParam(0x10000000, FantomNameLength, buf);
-    memcpy(s, buf, FantomNameLength);
-    s[FantomNameLength] = 0;
+    getParam(0x10000000, NameLength, buf);
+    memcpy(s, buf, NameLength);
+    s[NameLength] = 0;
 }
 
-void Fantom::setPerfName(const char *s)
+void Driver::setPerfName(const char *s)
 {
-    uint8_t buf[FantomNameLength+1];
+    uint8_t buf[NameLength+1];
     memset(buf, ' ', sizeof(buf));
-    for (int i=0; s[i] && i<FantomNameLength; i++)
+    for (int i=0; s[i] && i<NameLength; i++)
     {
         buf[i] = s[i];
     }
-    setParam(0x10000000, FantomNameLength, buf);
+    setParam(0x10000000, NameLength, buf);
 }
 
-void Fantom::setPartName(int part, const char *s)
+void Driver::setPartName(int part, const char *s)
 {
-    uint8_t buf[FantomNameLength+1];
+    uint8_t buf[NameLength+1];
     memset(buf, ' ', sizeof(buf));
-    for (int i=0; s[i] && i<FantomNameLength; i++)
+    for (int i=0; s[i] && i<NameLength; i++)
     {
         buf[i] = s[i];
     }
     uint32_t addr = 0x11000000 + 0x200000*(uint32_t)part;
-    setParam(addr, FantomNameLength, buf);
+    setParam(addr, NameLength, buf);
 }
+
+} // namespace Fantom
 

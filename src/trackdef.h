@@ -14,7 +14,9 @@
 #include "toggler.h"
 #include "screen.h"
 
-class FantomPart;
+namespace Fantom { 
+    class Part;
+}
 //! \brief Contains some placeholder constants, which are replaced by actual indexes after the TrackList is complete.
 namespace TrackDef {
     static const int Unspecified = -1;      //!<    Unspecified track or section.
@@ -40,7 +42,7 @@ public:
     int m_customTransposeOffset;        //!< Additional transposition for custom transposes.
     uint8_t m_rangeLower;               //!< Lower range.
     uint8_t m_rangeUpper;               //!< Upper range.
-    std::vector <const FantomPart *> m_hwPart;  //!< List of \a FantomPart pointers this will trigger.
+    std::vector <const Fantom::Part *> m_hwPart;  //!< List of \a FantomPart pointers this will trigger.
     ControllerRemap *m_controllerRemap; //!< Remap object. \todo allow more than one.
     MonoFilter m_monoFilter;            //!< Mono filter object.
     Toggler m_toggler;                  //!< Toggler object.

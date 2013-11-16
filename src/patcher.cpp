@@ -57,8 +57,8 @@ private:
     Screen *m_screen;                   //!< Pointer to global \a Screen object.
     TrackList m_trackList;              //!< Global \a Track list.
     Midi::Driver *m_midi;               //!< Pointer to global MIDI \a Driver object.
-    Fantom *m_fantom;                   //!< Pointer to global \a Fantom object.
-    FantomPerformance *m_perf;          //!< Array of \a FantomPerformance objects.
+    Fantom::Driver *m_fantom;           //!< Pointer to global Fantom \a Driver object.
+    Fantom::Performance *m_perf;        //!< Array of \a Performance objects.
     int m_trackIdx;                     //!< Current track index
     int m_trackIdxWithinSet;            //!< Current track index within \a SetList.
     SetList m_setList;                  //!< Global \a SetList object.
@@ -69,8 +69,8 @@ private:
     WINDOW *win() const { return m_screen->m_track; } //!< Convenience function to get to track window.
     Track *currentTrack() const {
         return m_trackList[m_trackIdx]; } //!< The current \a Track.
-    FantomPerformance *currentPerf() const {
-        return &m_perf[m_trackIdx]; } //!< The current \a FantomPerformance.
+    Fantom::Performance *currentPerf() const {
+        return &m_perf[m_trackIdx]; } //!< The current \a Performance.
     Section *currentSection() const {
         return currentTrack()->m_section[m_sectionIdx]; } //!< The current \a Section.
     int nofTracks() const { return m_trackList.size(); } //!< The number of \a Tracks.
@@ -122,9 +122,9 @@ public:
      *
      *  \param [in] s   An initialised \a Screen object.
      *  \param [in] m   An initialised MIDI \a Driver object.
-     *  \param [in] f   An initialised \a Fantom object.
+     *  \param [in] f   An initialised Fantom \a Driver object.
     */
-    Patcher(Screen *s, Midi::Driver *m, Fantom *f):
+    Patcher(Screen *s, Midi::Driver *m, Fantom::Driver *f):
         debounceTime(Real(0.4)),
         m_channelActivity(Midi::NofChannels), m_softPartActivity(64 /*see tracks.xsd*/),
         m_screen(s), m_midi(m), m_fantom(f),
@@ -169,7 +169,7 @@ void Patcher::downloadPerfomanceData()
 {
     const char *fantomPatchFile = "fantom_cache.bin";
 
-    m_perf = new FantomPerformance[nofTracks()];
+    m_perf = new Fantom::Performance[nofTracks()];
     // bank select 'Card, performance'
     // This only works when Fantom is already in performance mode
     m_midi->putBytes(Midi::Device::FantomOut,
@@ -188,7 +188,7 @@ void Patcher::downloadPerfomanceData()
         d.fclose();
         return;
     }
-    char nameBuf[FantomNameLength+1];
+    char nameBuf[Fantom::NameLength+1];
     struct timespec ts;
     ts.tv_sec = 0;
     ts.tv_nsec = 10*1000*1000;
@@ -203,9 +203,9 @@ void Patcher::downloadPerfomanceData()
         m_screen->showProgressBar(4, 28, ((Real)i)/nofTracks());
         wrefresh(win());
         strcpy(m_perf[i].m_name, nameBuf);
-        for (int j=0; j<FantomPerformance::NofParts; j++)
+        for (int j=0; j<Fantom::Performance::NofParts; j++)
         {
-            FantomPart *hwPart = m_perf[i].m_part+j;
+            Fantom::Part *hwPart = m_perf[i].m_part+j;
             //nanosleep(&ts, NULL);
             m_fantom->getPartParams(hwPart, j);
             bool readPatchParams;
@@ -220,7 +220,7 @@ void Patcher::downloadPerfomanceData()
                 strcpy(hwPart->m_patch.m_name, "secret GM   ");
             }
             mvwprintw(win(), 5, 3, "Section '%s'", hwPart->m_patch.m_name);
-            m_screen->showProgressBar(5, 28, ((Real)(j+1))/FantomPerformance::NofParts);
+            m_screen->showProgressBar(5, 28, ((Real)(j+1))/Fantom::Performance::NofParts);
             wrefresh(win());
         }
     }
@@ -245,16 +245,16 @@ void Patcher::mergePerformanceData()
     for (int t = 0; t < nofTracks(); t++)
     {
         const Track *track = m_trackList[t];
-        const FantomPerformance *perf = m_perf+t;
+        const Fantom::Performance *perf = m_perf+t;
         for (size_t s = 0; s < track->m_section.size(); s++)
         {
             const Section *section = track->m_section[s];
             for (size_t sp = 0; sp < section->m_part.size(); sp++)
             {
                 SwPart *swPart = section->m_part[sp];
-                for (int hp = 0; hp < FantomPerformance::NofParts; hp++)
+                for (int hp = 0; hp < Fantom::Performance::NofParts; hp++)
                 {
-                    const FantomPart *hwPart = perf->m_part + hp;
+                    const Fantom::Part *hwPart = perf->m_part + hp;
                     if (swPart->m_channel == hwPart->m_channel)
                     {
                         swPart->m_hwPart.push_back(hwPart);
@@ -435,7 +435,7 @@ void Patcher::eventLoop()
                                     && num >= 0x51 && num <= 0x58)
                             {
                                 uint8_t partNum = m_partOffsetBcf + (num - 0x51);
-                                FantomPart *p = currentPerf()->m_part+partNum;
+                                Fantom::Part *p = currentPerf()->m_part+partNum;
                                 p->m_vol = val;
                                 m_fantom->setVolume(partNum, val);
                                 show(UpdateScreen);
@@ -661,11 +661,11 @@ void Patcher::updateScreen()
     if (m_metaMode)
         wattroff(win(), COLOR_PAIR(1));
     int partsShown = 0;
-    for (int partIdx=0; partIdx<FantomPerformance::NofParts;partIdx++)
+    for (int partIdx=0; partIdx<Fantom::Performance::NofParts;partIdx++)
     {
         int x = (partsShown / 4) * 19;
         int y = 7 + partsShown % 4;
-        const FantomPart *part = currentPerf()->m_part+partIdx;
+        const Fantom::Part *part = currentPerf()->m_part+partIdx;
         if (part->m_channel == 255)
             break; // oops, we're not initialised yet
         if (1 || part->m_channel == m_sectionIdx)
@@ -685,9 +685,9 @@ void Patcher::updateScreen()
     for (int i=0; i<currentSection()->nofParts(); i++)
     {
         const SwPart *swPart = currentSection()->m_part[i];
-        for (int j=0; j<FantomPerformance::NofParts;j++)
+        for (int j=0; j<Fantom::Performance::NofParts;j++)
         {
-            const FantomPart *hwPart = currentPerf()->m_part+j;
+            const Fantom::Part *hwPart = currentPerf()->m_part+j;
             if (swPart->m_channel == hwPart->m_channel)
             {
                 int x = 0;
@@ -745,9 +745,9 @@ void Patcher::updateFantomDisplay()
  */
 void Patcher::updateBcfFaders()
 {
-    for (int i=0; i<FantomPerformance::NofParts;i++)
+    for (int i=0; i<Fantom::Performance::NofParts;i++)
     {
-        const FantomPart *hwPart = currentPerf()->m_part+i;
+        const Fantom::Part *hwPart = currentPerf()->m_part+i;
         if (i >= m_partOffsetBcf && i< m_partOffsetBcf + 8)
         {
             int showPart = i - m_partOffsetBcf;
@@ -1028,7 +1028,7 @@ int main(int argc, char **argv)
         wprintw(screen.m_track, "   *** initialising ***\n\n"); 
         wrefresh(screen.m_track);
         Midi::Driver midi(&screen);
-        Fantom fantom(&screen, &midi);
+        Fantom::Driver fantom(&screen, &midi);
         Patcher patcher(&screen, &midi, &fantom);
         patcher.loadTrackDefs();
         patcher.downloadPerfomanceData();
