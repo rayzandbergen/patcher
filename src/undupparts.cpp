@@ -34,6 +34,13 @@ void chompTrailingSpace(std::string &s)
         s.replace(n, 1, "&amp;");
             break;
     }
+    for(;;)
+    {
+        size_t n = s.find("\"");
+        if (n == s.npos)
+            break;
+        s.replace(n, 1, "&quot;");
+    }
 }
 
 void undupParts(const Fantom::Performance *perfList, const TrackList &trackList)
