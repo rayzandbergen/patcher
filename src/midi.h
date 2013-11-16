@@ -85,7 +85,6 @@ class Driver {
 	int openRaw(const char *portName, int mode) const;
     void openDevices(void);
 public:
-    static const uint8_t masterProgramChangeChannel = 0x0f; //!< MIDI channel to listen on for program changes.
 	Driver(Screen *screen);
     int wait(int usecTimeout = 0, int device = Device::all) const;
 	uint8_t getByte(int device);

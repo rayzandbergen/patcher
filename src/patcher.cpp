@@ -454,7 +454,7 @@ void Patcher::eventLoop()
                                 "program change ch %02x num %02x\n",
                                 channelRx, num);
 #endif
-                            if (channelRx == Midi::Driver::masterProgramChangeChannel)
+                            if (channelRx == masterProgramChangeChannel)
                             {
                                 if (num == 5)
                                 {
