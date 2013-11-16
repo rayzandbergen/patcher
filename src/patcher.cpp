@@ -791,7 +791,7 @@ void Patcher::allNotesOff()
  *
  * This function will also handle 'all notes off' and screen / BCF updates.
  *
- * \param [in] section   The section number to switch to.
+ * \param [in] sectionIdx   The section number to switch to.
  */
 void Patcher::changeSection(uint8_t sectionIdx)
 {

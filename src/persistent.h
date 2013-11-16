@@ -11,7 +11,7 @@ class MemoryMap;
 //! \brief This class uses shared memory to store information persistently between patcher runs.
 class Persist
 {
-    MemoryMap *m_memMap;
+    MemoryMap *m_memMap;    //!< The \a MemoryMap that should be made persistent.
 public:
     Persist();
     void store(int track, int section);

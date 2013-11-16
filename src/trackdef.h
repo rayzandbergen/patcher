@@ -48,6 +48,7 @@ public:
     Toggler m_toggler;                  //!< Toggler object.
     bool m_mono;                        //!< Mono toggle.
     Transposer *m_transposer;
+    //! \brief Return true if a note number is in range of this \a SwPart.
     bool inRange(uint8_t noteNum) const
         { return noteNum >= m_rangeLower && noteNum <= m_rangeUpper; }
     static uint8_t stringToNoteNum(const char *s);
@@ -80,8 +81,11 @@ public:
     Section(const char *name, bool noteOffEnter = true, bool noteOffLeave = true);
     ~Section();
     void clear();
+    //! \brief Append \a Swpart to this \a Section.
     void addPart(SwPart *s) { m_part.push_back(s); }
+    //! \brief Return the number of parts in this \a Section.
     int nofParts(void) const { return (int)m_part.size(); }
+    //! \brief Dump this \a section to a log file.
     void dumpToLog(Screen *screen, const char *prefix) const;
 };
 
@@ -110,9 +114,13 @@ typedef std::vector<Track*> TrackList;  //!< A list of \a Track object pointers.
 class SetList {
     std::vector<int> m_list;    //!< List of track indexes.
 public:
+    //! \brief Return the length ofthe \a SetList.
     int length(void) const { return m_list.size(); }
+    //! \brief Return the track index of the i'th item in the \a SetList.
     int operator[](int i) { return i>=0 && i<length() ? m_list[i] : 0; }
+    //! \brief Append a track index to the \a SetList.
     void add(int i) { m_list.push_back(i); }
+    //! \brief Append a track by name.
     void add(TrackList &trackList, const char *trackName);
 };
 

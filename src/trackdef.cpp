@@ -11,6 +11,7 @@
 #include "fantom.h"
 #include "error.h"
 
+//! \brief Construct a default Section with a given name.
 Section::Section(const char *name, bool noteOffEnter, bool noteOffLeave):
         m_name(name), m_noteOffEnter(noteOffEnter), m_noteOffLeave(noteOffLeave),
         m_nextTrack(TrackDef::Unspecified),
@@ -20,11 +21,13 @@ Section::Section(const char *name, bool noteOffEnter, bool noteOffLeave):
 {
 }
 
+//! \brief Destructor.
 Section::~Section()
 {
     clear();
 }
 
+//! \brief Clean up memory used by this \a Section.
 void Section::clear()
 {
     for (SwPartList::iterator i = m_part.begin(); i != m_part.end(); i++)
@@ -50,6 +53,7 @@ SwPart::~SwPart()
     clear();
 }
 
+//! \brief Clean up memory used by this \a SwPart..
 void SwPart::clear()
 {
     delete m_controllerRemap;
@@ -113,6 +117,7 @@ Track::~Track()
     clear();
 }
 
+//! \brief Clean up memory used by this \a Track.
 void Track::clear()
 {
     for (SectionList::iterator i = m_section.begin(); i != m_section.end(); i++)

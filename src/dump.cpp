@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "dump.h"
+#include "error.h"
 void Dump::save(const char *s) const
 {
     for (int i=0;;i++)
@@ -27,14 +28,15 @@ void Dump::restore(char *s) const
 void Dump::restore(char **s) const
 {
     char buf[200];
-    int i;
-    for (i=0;;i++)
+    size_t i;
+    for (i=0;i<sizeof(buf);i++)
     {
         read(m_fd, buf+i, 1);
         if (buf[i] == 0)
             break;
     }
-    int n=i+1;
+    ASSERT(i<=sizeof(buf));
+    size_t n=i+1;
     *s = (char*)malloc(n);
     memcpy(*s, buf, n);
 }

@@ -11,13 +11,13 @@
 class Sequencer
 {
 private:
-    std::ofstream *m_fp;
-    std::string fileName() const;
-    bool m_enabled;
+    std::ofstream *m_fp;            //!< File stream to write to.
+    std::string fileName() const;   //!< Return the current file name.
+    bool m_enabled;                 //!< Enable switch.
 public:
-    void enable();
-    void disable();
-    bool toggle();
-    Sequencer(): m_enabled(false) { }
+    void enable();                  //!< Enable the \a Sequencer.
+    void disable();                 //!< Disable the \a Sequencer.
+    bool toggle();                  //!< Toggle the on/off switch of the \a Sequencer.
+    Sequencer(): m_enabled(false) { } //!< Query enable switch.
 };
 #endif //SEQUENCER_H

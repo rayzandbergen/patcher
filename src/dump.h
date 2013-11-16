@@ -16,18 +16,25 @@ class Dump
 {
     int m_fd;       //!<    File descriptor for reading/writing.
 public:
+    //! \brief Write a binary image of an object.
     template <class T> void save(T &x) const
     {
         write(m_fd, (const void*)&x, sizeof(x));
     }
+    //! \brief restore a binary image of an object.
     template <class T> void restore(T &x) const
     {
         read(m_fd, (void*)&x, sizeof(x));
     }
+    //! \brief Write a null-terminated string.
     void save(const char *s) const;
+    //! \brief Restore a null-terminated string.
     void restore(char *s) const;
+    //! \brief Restore a null-terminated string, space is malloc'ed.
     void restore(char **s) const;
+    //! \brief open(2) a file.
     bool fopen(const char *fileName, int flags, int mode);
+    //! \brief close the associated file.
     void fclose(void);
 };
 #endif

@@ -12,6 +12,7 @@ MonoFilter::MonoFilter(): m_sustain(false)
         m_ringing[i] = false;
     }
 }
+//! \brief Update the sustain pedal status.
 void MonoFilter::sustain(bool b)
 {
     m_sustain = b;
@@ -29,6 +30,8 @@ void MonoFilter::sustain(bool b)
             }
     }
 }
+
+//! \brief Check if given note should be let through.
 bool MonoFilter::passNoteOn(uint8_t note, uint8_t velo)
 {
     if (velo > 0)
@@ -58,6 +61,8 @@ bool MonoFilter::passNoteOn(uint8_t note, uint8_t velo)
     return true; // we should not get here,
             // but if we do, pass the note off to be sure
 }
+
+//! \brief Check if given 'note off' should be let through.
 bool MonoFilter::passNoteOff(uint8_t note, uint8_t velo)
 {
     (void)velo;

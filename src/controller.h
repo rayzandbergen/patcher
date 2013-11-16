@@ -15,7 +15,10 @@ class ControllerRemap {
 protected:
     uint8_t m_from;                 //!<    Controller to map from.
     uint8_t m_to;                   //!<    Controller to map to.
-    Real m_x0, m_y0, m_x1, m_y1;    //!<    Interpolation values.
+    Real m_x0;                      //!<    Interpolation 'from' value x0.
+    Real m_y0;                      //!<    Interpolation 'from' value y0.
+    Real m_x1;                      //!<    Interpolation 'from' value x1.
+    Real m_y1;                      //!<    Interpolation 'from' value y1.
 public:
     //! \brief The name of the controller, so the configuration can refer to it.
     virtual const char *name() const { return "default"; }

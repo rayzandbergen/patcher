@@ -5,6 +5,7 @@
  */
 #include "sequencer.h"
 #include <ctime>
+//! \brief Unused.
 void Sequencer::enable()
 {
     if (m_enabled)
@@ -13,6 +14,7 @@ void Sequencer::enable()
     m_enabled = true;
 }
 
+//! \brief Unused.
 void Sequencer::disable()
 {
     if (m_enabled)
@@ -22,6 +24,7 @@ void Sequencer::disable()
     }
 }
 
+//! \brief Unused.
 bool Sequencer::toggle()
 {
     if (m_enabled)
@@ -31,6 +34,7 @@ bool Sequencer::toggle()
     return m_enabled;
 }
 
+//! \brief Unused.
 std::string Sequencer::fileName() const
 {
     std::time_t result = std::time(0);
