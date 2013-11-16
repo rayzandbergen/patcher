@@ -268,42 +268,42 @@ void Fantom::getPatchName(char *s, int idx)
     uint32_t offsetLo = offset & 0x7f;
     uint32_t offsetHi = offset >> 7;
     uint32_t addr = 0x11000000 + (offsetHi << 24) + (offsetLo << 16);
-    uint8_t buf[nameSize];
+    uint8_t buf[FantomNameLength+1];
     memset(buf, '*', sizeof(buf));
-    getParam(addr, nameSize, buf);
-    memcpy(s, buf, nameSize);
-    s[nameSize] = 0;
+    getParam(addr, FantomNameLength, buf);
+    memcpy(s, buf, FantomNameLength);
+    s[FantomNameLength] = 0;
 }
 
 void Fantom::getPerfName(char *s)
 {
-    uint8_t buf[nameSize];
+    uint8_t buf[FantomNameLength+1];
     memset(buf, '*', sizeof(buf));
-    getParam(0x10000000, nameSize, buf);
-    memcpy(s, buf, nameSize);
-    s[nameSize] = 0;
+    getParam(0x10000000, FantomNameLength, buf);
+    memcpy(s, buf, FantomNameLength);
+    s[FantomNameLength] = 0;
 }
 
 void Fantom::setPerfName(const char *s)
 {
-    uint8_t buf[nameSize];
+    uint8_t buf[FantomNameLength+1];
     memset(buf, ' ', sizeof(buf));
-    for (int i=0; s[i] && i<nameSize; i++)
+    for (int i=0; s[i] && i<FantomNameLength; i++)
     {
         buf[i] = s[i];
     }
-    setParam(0x10000000, nameSize, buf);
+    setParam(0x10000000, FantomNameLength, buf);
 }
 
 void Fantom::setPartName(int part, const char *s)
 {
-    uint8_t buf[nameSize];
+    uint8_t buf[FantomNameLength+1];
     memset(buf, ' ', sizeof(buf));
-    for (int i=0; s[i] && i<nameSize; i++)
+    for (int i=0; s[i] && i<FantomNameLength; i++)
     {
         buf[i] = s[i];
     }
     uint32_t addr = 0x11000000 + 0x200000*(uint32_t)part;
-    setParam(addr, nameSize, buf);
+    setParam(addr, FantomNameLength, buf);
 }
 

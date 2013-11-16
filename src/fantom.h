@@ -10,6 +10,9 @@
 #include "midi.h"
 #include "dump.h"
 
+static const int FantomNameLength = 12;                         //!< Name length of a Fantrom object.
+static const int FantomPresetLength = 20;                       //!< Name length of a Fantrom preset.
+
 /*! \brief A Fantom 'patch', i.e. a basic sound.
  *
  * We are only interested in its name, so this is what this class stores.
@@ -17,7 +20,7 @@
 class FantomPatch
 {
 public:
-    char m_name[20];                                            //!< The patch name
+    char m_name[FantomNameLength+1];                            //!< The patch name
     void save(const Dump *d) { d->save((const char*)m_name); }  //!< Save the patch to a \a Dump object.
     void restore(const Dump *d) { d->restore((char*)m_name); }  //!< Restore the patch from a \a Dump object.
 };
@@ -32,7 +35,7 @@ public:
     uint8_t m_bankSelectMsb;    //!<    Bank select, upper 7 bits.
     uint8_t m_bankSelectLsb;    //!<    Bank select, lower 7 bits.
     uint8_t m_pCh;              //!<    Program change number.
-    char m_preset[20];          //!<    Textual representation of bank select and program change, according to Roland.
+    char m_preset[FantomPresetLength];   //!<    Textual representation of bank select and program change, according to Roland.
     uint8_t m_vol;              //!<    MIDI volume.
     int8_t m_transpose;         //!<    Transpose value, semitones.
     int8_t m_oct;               //!<    Octave transpose.
@@ -55,7 +58,7 @@ class FantomPerformance
 {
 public:
     static const int NofParts = 16;
-    char m_name[20];                    //!< Performance name
+    char m_name[FantomNameLength+1];    //!< Performance name
     FantomPart m_part[NofParts];        //!< Parts within this \a FantomPerformance.
     void save(const Dump *d);
     void restore(const Dump *d);
@@ -66,7 +69,6 @@ public:
 struct Fantom
 {
     static const uint8_t programChangeChannel = 0x0f;   //!< MIDI channel the Fantom listens on for program changes.
-    static const int nameSize = 12;                     //!< Length of a patch name.
     Screen *m_screen;   //!< A \a Screen object to log to.
     Midi *m_midi;       //!< A MIDI object.
     /* \brief Constructor

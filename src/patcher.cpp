@@ -188,7 +188,7 @@ void Patcher::downloadPerfomanceData()
         d.fclose();
         return;
     }
-    char nameBuf[Fantom::nameSize];
+    char nameBuf[FantomNameLength+1];
     struct timespec ts;
     ts.tv_sec = 0;
     ts.tv_nsec = 10*1000*1000;
