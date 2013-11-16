@@ -56,7 +56,7 @@ private:
     Activity m_softPartActivity;        //!< Per-\a SwPart \a Activity.
     Screen *m_screen;                   //!< Pointer to global \a Screen object.
     TrackList m_trackList;              //!< Global \a Track list.
-    Midi *m_midi;                       //!< Pointer to global \a Midi object.
+    Midi::Driver *m_midi;               //!< Pointer to global MIDI \a Driver object.
     Fantom *m_fantom;                   //!< Pointer to global \a Fantom object.
     FantomPerformance *m_perf;          //!< Array of \a FantomPerformance objects.
     int m_trackIdx;                     //!< Current track index
@@ -121,12 +121,12 @@ public:
      *  This will set up an empty Patcher object.
      *
      *  \param [in] s   An initialised \a Screen object.
-     *  \param [in] m   An initialised \a Midi object.
+     *  \param [in] m   An initialised MIDI \a Driver object.
      *  \param [in] f   An initialised \a Fantom object.
     */
-    Patcher(Screen *s, Midi *m, Fantom *f):
+    Patcher(Screen *s, Midi::Driver *m, Fantom *f):
         debounceTime(Real(0.4)),
-        m_channelActivity(NofMidiChannels), m_softPartActivity(64 /*see tracks.xsd*/),
+        m_channelActivity(Midi::NofChannels), m_softPartActivity(64 /*see tracks.xsd*/),
         m_screen(s), m_midi(m), m_fantom(f),
         m_trackIdx(0), m_trackIdxWithinSet(0), m_sectionIdx(0),
         m_metaMode(false), m_partOffsetBcf(0)
@@ -172,12 +172,12 @@ void Patcher::downloadPerfomanceData()
     m_perf = new FantomPerformance[nofTracks()];
     // bank select 'Card, performance'
     // This only works when Fantom is already in performance mode
-    m_midi->putBytes(MidiDevice::FantomOut,
-        MidiStatus::controller|Fantom::programChangeChannel, 0x00, 85);
-    m_midi->putBytes(MidiDevice::FantomOut,
-        MidiStatus::controller|Fantom::programChangeChannel, 0x20, 32);
-    m_midi->putBytes(MidiDevice::FantomOut,
-        MidiStatus::programChange|Fantom::programChangeChannel, 0);
+    m_midi->putBytes(Midi::Device::FantomOut,
+        Midi::controller|Fantom::programChangeChannel, 0x00, 85);
+    m_midi->putBytes(Midi::Device::FantomOut,
+        Midi::controller|Fantom::programChangeChannel, 0x20, 32);
+    m_midi->putBytes(Midi::Device::FantomOut,
+        Midi::programChange|Fantom::programChangeChannel, 0);
     Dump d;
     if (d.fopen(fantomPatchFile, O_RDONLY, 0))
     {
@@ -306,32 +306,32 @@ void Patcher::eventLoop()
         {   // start of MIDI message
             switch (byteRx)
             {
-                case MidiStatus::timingClock:
+                case Midi::timingClock:
                     // timing clock, single byte, dropped
                     break;
-                case MidiStatus::activeSensing:
+                case Midi::activeSensing:
                     // active sensing, single byte, dropped
                     // BUT we abuse the periodic nature of this message
                     // to do a screen update
-                    for (int i=0; i<NofMidiChannels; i++)
+                    for (int i=0; i<Midi::NofChannels; i++)
                         (void)m_channelActivity.get(i);
                     if (m_channelActivity.isDirty())
                         show(UpdateScreen);
                     break;
-                case MidiStatus::realtimeStart:
+                case Midi::realtimeStart:
                     mvwprintw(win(), 17, 0, "panic on\n");
-                    for (int channel=0; channel<NofMidiChannels; channel++)
+                    for (int channel=0; channel<Midi::NofChannels; channel++)
                     {
-                        m_midi->putBytes(MidiDevice::FantomOut,
-                            MidiStatus::controller|channel, MidiController::allNotesOff, 0);
-                        m_midi->putBytes(MidiDevice::FantomOut,
-                            MidiStatus::controller|channel, MidiController::resetAllControllers, 0);
+                        m_midi->putBytes(Midi::Device::FantomOut,
+                            Midi::controller|channel, Midi::allNotesOff, 0);
+                        m_midi->putBytes(Midi::Device::FantomOut,
+                            Midi::controller|channel, Midi::resetAllControllers, 0);
                     }
                     break;
-                case MidiStatus::realtimeStop:
+                case Midi::realtimeStop:
                     mvwprintw(win(), 17, 0, "panic off\n");
                     break;
-                case MidiStatus::sysEx:
+                case Midi::sysEx:
                     consumeSysEx(deviceRx);
                     break;
                 default:
@@ -340,31 +340,31 @@ void Patcher::eventLoop()
                     uint8_t channelRx = byteRx & 0x0f;
                     switch (byteRx & 0xf0)
                     {
-                        case MidiStatus::noteOff:
+                        case Midi::noteOff:
                         {
                             uint8_t note = m_midi->getByte(deviceRx);
                             uint8_t velo = m_midi->getByte(deviceRx);
 #ifdef LOG_NOTE
                             m_screen->printMidi(
                                 "note off %s ch %02x vel %02x\n",
-                                m_midi->noteName(note), channelRx, velo);
+                                Midi::noteName(note), channelRx, velo);
 #endif
                             if (!m_metaMode)
                             {
-                                sendEventToFantom(MidiStatus::noteOff, note, velo);
+                                sendEventToFantom(Midi::noteOff, note, velo);
                                 if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
                                     show(UpdateScreen);
                             }
                             break;
                         }
-                        case MidiStatus::noteOn:
+                        case Midi::noteOn:
                         {
                             uint8_t note = m_midi->getByte(deviceRx);
                             uint8_t velo = m_midi->getByte(deviceRx);
 #ifdef LOG_NOTE
                             m_screen->printMidi(
                                 "note on %s ch %02x vel %02x\n",
-                                m_midi->noteName(note), channelRx, velo);
+                                Midi::noteName(note), channelRx, velo);
 #endif
                             if (m_metaMode)
                             {
@@ -376,25 +376,25 @@ void Patcher::eventLoop()
                             }
                             else
                             {
-                                sendEventToFantom(MidiStatus::noteOn, note, velo);
+                                sendEventToFantom(Midi::noteOn, note, velo);
                                 if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
                                     show(UpdateScreen);
                             }
                             break;
                         }
-                        case MidiStatus::aftertouch:
+                        case Midi::aftertouch:
                         {
                             uint8_t note = m_midi->getByte(deviceRx);
                             uint8_t val = m_midi->getByte(deviceRx);
                             m_screen->printMidi(
                                 "aftertouch %s ch %02x val %02x\n",
-                                m_midi->noteName(note), channelRx, val);
-                            sendEventToFantom(MidiStatus::aftertouch, note, val);
+                                Midi::noteName(note), channelRx, val);
+                            sendEventToFantom(Midi::aftertouch, note, val);
                             if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
                                 show(UpdateScreen);
                             break;
                         }
-                        case MidiStatus::controller:
+                        case Midi::controller:
                         {
                             uint8_t num = m_midi->getByte(deviceRx);
                             uint8_t val = m_midi->getByte(deviceRx);
@@ -403,35 +403,35 @@ void Patcher::eventLoop()
                                 "controller ch %02x num %02x val %02x\n",
                                 channelRx, num, val);
 #endif
-                            if ((deviceRx == MidiDevice::A30 || deviceRx == MidiDevice::Fcb1010)
-                                && (num == MidiController::continuous ||
-                                    num == MidiController::modulationWheel ||
-                                    num == MidiController::mainVolume ||
-                                    num == MidiController::continuousController16 ||
-                                    num == MidiController::sustain))
+                            if ((deviceRx == Midi::Device::A30 || deviceRx == Midi::Device::Fcb1010)
+                                && (num == Midi::continuous ||
+                                    num == Midi::modulationWheel ||
+                                    num == Midi::mainVolume ||
+                                    num == Midi::continuousController16 ||
+                                    num == Midi::sustain))
                             {
-                                sendEventToFantom(MidiStatus::controller, num, val);
+                                sendEventToFantom(Midi::controller, num, val);
                                 if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
                                     show(UpdateScreen);
                             }
-                            else if (deviceRx == MidiDevice::A30 && num == 0x5b)
+                            else if (deviceRx == Midi::Device::A30 && num == 0x5b)
                             {
                                 m_metaMode = !!val;
-                                m_midi->putBytes(MidiDevice::BcfOut, MidiStatus::controller|0,
+                                m_midi->putBytes(Midi::Device::BcfOut, Midi::controller|0,
                                     0x59, val ? 127 : 0);
                                 show(UpdateScreen);
                             }
-                            else if (deviceRx == MidiDevice::BcfIn && num == 0x59)
+                            else if (deviceRx == Midi::Device::BcfIn && num == 0x59)
                             {
                                 m_metaMode = !!val;
                                 show(UpdateScreen);
                             }
-                            else if (deviceRx == MidiDevice::BcfIn && num == 0x5b)
+                            else if (deviceRx == Midi::Device::BcfIn && num == 0x5b)
                             {
                                 m_partOffsetBcf ^= 8;
                                 show(UpdateFaders);
                             }
-                            else if (deviceRx == MidiDevice::BcfIn
+                            else if (deviceRx == Midi::Device::BcfIn
                                     && num >= 0x51 && num <= 0x58)
                             {
                                 uint8_t partNum = m_partOffsetBcf + (num - 0x51);
@@ -446,7 +446,7 @@ void Patcher::eventLoop()
                             }
                             break;
                         }
-                        case MidiStatus::programChange:
+                        case Midi::programChange:
                         {
                             uint8_t num = m_midi->getByte(deviceRx);
 #ifdef LOG_PROGRAM_CHANGE
@@ -454,7 +454,7 @@ void Patcher::eventLoop()
                                 "program change ch %02x num %02x\n",
                                 channelRx, num);
 #endif
-                            if (channelRx == Midi::masterProgramChangeChannel)
+                            if (channelRx == Midi::Driver::masterProgramChangeChannel)
                             {
                                 if (num == 5)
                                 {
@@ -478,18 +478,18 @@ void Patcher::eventLoop()
                             }
                             break;
                         }
-                        case MidiStatus::channelAftertouch:
+                        case Midi::channelAftertouch:
                         {
                             uint8_t num = m_midi->getByte(deviceRx);
                             m_screen->printMidi(
                                 "channelRx pressure channelRx %02x num %02x\n",
                                 channelRx, num);
-                            sendEventToFantom(MidiStatus::channelAftertouch, num);
+                            sendEventToFantom(Midi::channelAftertouch, num);
                             if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
                                 show(UpdateScreen);
                             break;
                         }
-                        case MidiStatus::pitchBend:
+                        case Midi::pitchBend:
                         {
                             uint8_t num1 = m_midi->getByte(deviceRx);
                             uint8_t num2 = m_midi->getByte(deviceRx);
@@ -498,7 +498,7 @@ void Patcher::eventLoop()
                                 "pitch bend ch %02x val %04x\n",
                                 channelRx, (uint16_t)num2<<7|(uint16_t)num1);
 #endif
-                            sendEventToFantom(MidiStatus::pitchBend, num1, num2);
+                            sendEventToFantom(Midi::pitchBend, num1, num2);
                             if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
                                 show(UpdateScreen);
                             break;
@@ -585,12 +585,12 @@ void Patcher::sendEventToFantom(uint8_t midiStatus,
         }
         if (isController)
         {
-            if (data1 == MidiController::sustain && swPart->m_mono)
+            if (data1 == Midi::sustain && swPart->m_mono)
             {
                 swPart->m_monoFilter.sustain(data2 != 0);
                 m_screen->printMidi("mono sustain\n");
             }
-            if (data1 == MidiController::sustain && swPart->m_transposer)
+            if (data1 == Midi::sustain && swPart->m_transposer)
             {
                 swPart->m_transposer->setSustain(data2 != 0);
                 m_screen->printMidi("transposer sustain\n");
@@ -602,12 +602,12 @@ void Patcher::sendEventToFantom(uint8_t midiStatus,
         {
             if (data2 != 255)
             {
-                m_midi->putBytes(MidiDevice::FantomOut,
+                m_midi->putBytes(Midi::Device::FantomOut,
                     midiStatus|swPart->m_channel, data1Out, data2Out);
             }
             else
             {
-                m_midi->putBytes(MidiDevice::FantomOut,
+                m_midi->putBytes(Midi::Device::FantomOut,
                     midiStatus|swPart->m_channel, data1Out);
             }
             m_channelActivity.set(swPart->m_channel);
@@ -699,12 +699,12 @@ void Patcher::updateScreen()
                         "prt range         patch        vol tps");
                 char keyL[20];
                 keyL[0] = 0;
-                m_midi->noteName(
+                Midi::noteName(
                     std::max(hwPart->m_keyRangeLower,
                     swPart->m_rangeLower), keyL);
                 char keyU[20];
                 keyU[0] = 0;
-                m_midi->noteName(
+                Midi::noteName(
                     std::min(hwPart->m_keyRangeUpper,
                     swPart->m_rangeUpper), keyU);
                 int transpose = swPart->m_transpose +
@@ -751,9 +751,9 @@ void Patcher::updateBcfFaders()
         if (i >= m_partOffsetBcf && i< m_partOffsetBcf + 8)
         {
             int showPart = i - m_partOffsetBcf;
-            m_midi->putBytes(MidiDevice::BcfOut, MidiStatus::controller|0,
+            m_midi->putBytes(Midi::Device::BcfOut, Midi::controller|0,
                 0x01+showPart, 0x80 + 4 * hwPart->m_oct);
-            m_midi->putBytes(MidiDevice::BcfOut, MidiStatus::controller|0,
+            m_midi->putBytes(Midi::Device::BcfOut, Midi::controller|0,
                 0x51+showPart, hwPart->m_vol);
         }
     }
@@ -765,8 +765,8 @@ void Patcher::updateBcfFaders()
  */
 void Patcher::allNotesOff()
 {
-    bool channelsCleared[NofMidiChannels];
-    for (int i=0; i<NofMidiChannels; i++)
+    bool channelsCleared[Midi::NofChannels];
+    for (int i=0; i<Midi::NofChannels; i++)
         channelsCleared[i] = false;
     for (int i=0; i<currentSection()->nofParts(); i++)
     {
@@ -776,11 +776,11 @@ void Patcher::allNotesOff()
         {
             channelsCleared[i] = true;
             m_midi->putBytes(
-                MidiDevice::FantomOut,
-                MidiStatus::controller|channel, MidiController::allNotesOff, 0);
+                Midi::Device::FantomOut,
+                Midi::controller|channel, Midi::allNotesOff, 0);
             m_midi->putBytes(
-                MidiDevice::FantomOut,
-                MidiStatus::controller|channel, MidiController::sustain, 0);
+                Midi::Device::FantomOut,
+                Midi::controller|channel, Midi::sustain, 0);
             m_screen->printMidi("all notes off ch %02x\n", channel+1);
             part->m_toggler.reset();
         }
@@ -884,8 +884,8 @@ void Patcher::changeTrack(uint8_t track, int updateFlags)
     //m_screen->printMidi("change track %d\n", track);
     m_trackIdx = track;
     m_sectionIdx = currentTrack()->m_startSection; // cannot use changeSection!
-    m_midi->putBytes(MidiDevice::FantomOut,
-        MidiStatus::programChange|Fantom::programChangeChannel, (uint8_t)m_trackIdx);
+    m_midi->putBytes(Midi::Device::FantomOut,
+        Midi::programChange|Fantom::programChangeChannel, (uint8_t)m_trackIdx);
     show(updateFlags);
     m_persist.store(m_trackIdx, m_sectionIdx);
 }
@@ -988,7 +988,7 @@ void Patcher::consumeSysEx(int device)
         if (!isprint(c))
             c = ' ';
         m_screen->printMidi("%x '%c' ", byteRx, c);
-        if (byteRx == MidiStatus::EOX)
+        if (byteRx == Midi::EOX)
             break;
     }
     m_screen->printMidi("\n");
@@ -1027,7 +1027,7 @@ int main(int argc, char **argv)
         Screen screen;
         wprintw(screen.m_track, "   *** initialising ***\n\n"); 
         wrefresh(screen.m_track);
-        Midi midi(&screen);
+        Midi::Driver midi(&screen);
         Fantom fantom(&screen, &midi);
         Patcher patcher(&screen, &midi, &fantom);
         patcher.loadTrackDefs();

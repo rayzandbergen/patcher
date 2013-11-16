@@ -18,62 +18,61 @@
 #include "alarm.h"
 #include "patcher.h"
 
-namespace {
+namespace Midi {
 
 /*! \brief My setup.
  */
-MidiDevice deviceList[] =
+Device deviceList[] =
 {
-    { "Anniv",   0, 0, 0, MidiDirection::in,  MidiDevice::A30,       "A30", "Roland A30",        0 },
-    { "Anniv",   0, 0, 0, MidiDirection::out, MidiDevice::FantomOut, "Fan", "Roland Fantom XR",  0 },
-    { "Anniv",   0, 0, 1, MidiDirection::in,  MidiDevice::Fcb1010,   "FCB", "Behringer FCB1010", 0 },
-    { "Anniv",   0, 0, 1, MidiDirection::out, MidiDevice::none,      "---", "-",                 0 },
-    { "Anniv",   0, 0, 2, MidiDirection::in,  MidiDevice::FantomIn,  "Fan", "Roland Fantom XR",  0 },
-    { "Anniv",   0, 0, 2, MidiDirection::out, MidiDevice::none,      "---", "-",                 0 },
-    { "Anniv",   0, 0, 3, MidiDirection::in,  MidiDevice::none,      "---", "-",                 0 },
-    { "Anniv",   0, 0, 3, MidiDirection::out, MidiDevice::none,      "---", "-",                 0 },
-    { "BCF2000", 0, 0, 0, MidiDirection::in,  MidiDevice::BcfIn,     "BCF", "Behringer BCF2000", 0 },
-    { "BCF2000", 0, 0, 0, MidiDirection::out, MidiDevice::BcfOut,    "BCF", "Behringer BCF2000", 0 },
-    { 0,         0, 0, 0, MidiDirection::none,MidiDevice::none,      0,     0,                   0 },
+    { "Anniv",   0, 0, 0, in,  Device::A30,       "A30", "Roland A30",        0 },
+    { "Anniv",   0, 0, 0, out, Device::FantomOut, "Fan", "Roland Fantom XR",  0 },
+    { "Anniv",   0, 0, 1, in,  Device::Fcb1010,   "FCB", "Behringer FCB1010", 0 },
+    { "Anniv",   0, 0, 1, out, Device::none,      "---", "-",                 0 },
+    { "Anniv",   0, 0, 2, in,  Device::FantomIn,  "Fan", "Roland Fantom XR",  0 },
+    { "Anniv",   0, 0, 2, out, Device::none,      "---", "-",                 0 },
+    { "Anniv",   0, 0, 3, in,  Device::none,      "---", "-",                 0 },
+    { "Anniv",   0, 0, 3, out, Device::none,      "---", "-",                 0 },
+    { "BCF2000", 0, 0, 0, in,  Device::BcfIn,     "BCF", "Behringer BCF2000", 0 },
+    { "BCF2000", 0, 0, 0, out, Device::BcfOut,    "BCF", "Behringer BCF2000", 0 },
+    { 0,         0, 0, 0, none,Device::none,      0,     0,                   0 },
 };
 
-}
 
-/*  \brief Map from DevId to file descriptor
+/*  \brief Map from DevId to file descriptor.
  */
-int Midi::fd(int deviceId) const
+int Driver::fd(int deviceId) const
 {
-    if (deviceId > MidiDevice::none && deviceId < MidiDevice::max)
+    if (deviceId > Device::none && deviceId < Device::max)
         return m_deviceList[m_deviceIdToDeviceTabIdx[deviceId]].m_fd;
     return -1;
 }
 
 /*  \brief Obtain file descriptors for all devices.
  */
-void Midi::openDevices(void)
+void Driver::openDevices(void)
 {
-    MidiDevice *dIn = m_deviceList;
+    Device *dIn = m_deviceList;
     char devStr[100];
     int deviceIdx = 0;
     while (dIn->m_longDescr != 0)
     {
-        MidiDevice *dOut = dIn+1;
+        Device *dOut = dIn+1;
         dOut->m_card = dIn->m_card = cardNameToNum(dIn->m_cardName);
         sprintf(devStr, "hw:%d,%d,%d", dIn->m_card, dIn->m_sub1, dIn->m_sub2);
-        if (dIn->m_id != MidiDevice::none && dOut->m_id != MidiDevice::none)
+        if (dIn->m_id != Device::none && dOut->m_id != Device::none)
         {
             m_screen->printMidi("opening %s\n%s\n", dIn->m_longDescr, devStr);
             m_screen->printMidi("opening %s\n%s\n", dOut->m_longDescr, devStr);
             m_screen->flushMidi();
             dIn->m_fd = dOut->m_fd = openRaw(devStr, O_RDWR);
         }
-        else if (dIn->m_id == MidiDevice::none && dOut->m_id != MidiDevice::none)
+        else if (dIn->m_id == Device::none && dOut->m_id != Device::none)
         {
             m_screen->printMidi("opening %s\n%s\n", dOut->m_longDescr, devStr);
             m_screen->flushMidi();
             dOut->m_fd = openRaw(devStr, O_WRONLY);
         }
-        else if (dIn->m_id != MidiDevice::none && dOut->m_id == MidiDevice::none)
+        else if (dIn->m_id != Device::none && dOut->m_id == Device::none)
         {
             m_screen->printMidi("opening %s\n%s\n", dIn->m_longDescr, devStr);
             m_screen->flushMidi();
@@ -88,7 +87,7 @@ void Midi::openDevices(void)
         dIn += 2;
         deviceIdx += 2;
     }
-    for (int i=MidiDevice::none+1; i<MidiDevice::max; i++)
+    for (int i=Device::none+1; i<Device::max; i++)
     {
         m_screen->printMidi("dev = %d, devIdx = %d, fd = %d\n",
             i, m_deviceIdToDeviceTabIdx[i], fd(i));
@@ -101,7 +100,7 @@ void Midi::openDevices(void)
  *  \param[in] num   MIDI note number.
  *  \param[OUT] s    string buffer, must be at least 5 bytes.
  */
-void Midi::noteName(uint8_t num, char *s)
+void noteName(uint8_t num, char *s)
 {
     const char *str[] = {
         "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"
@@ -116,7 +115,7 @@ void Midi::noteName(uint8_t num, char *s)
  *  \param[in] num   MIDI note number.
  *  \return static string buffer.
  */
-const char *Midi::noteName(uint8_t num)
+const char *noteName(uint8_t num)
 {
     static char buf[5];
     noteName(num, buf);
@@ -129,7 +128,7 @@ const char *Midi::noteName(uint8_t num)
  * \param[in] mode      open(2) flag.
  * \return file descriptor, or -1 on error.
  */
-int Midi::openRaw(const char *portName, int mode) const
+int Driver::openRaw(const char *portName, int mode) const
 {
    // abandoned once we have the file descriptor
    snd_rawmidi_t *rawMidi1, *rawMidi2;
@@ -156,16 +155,16 @@ int Midi::openRaw(const char *portName, int mode) const
  * \param[in] usecTimeout    timeout in usec, if specified.
  * \param[in] device         specified device ID to wait for, if specified, otherwise any activity.
  */
-int Midi::wait(int usecTimeout, int device) const
+int Driver::wait(int usecTimeout, int device) const
 {
     fd_set fdSet;
     FD_ZERO(&fdSet);
     int maxFd = 0;
-    if (device == MidiDevice::all)
+    if (device == Device::all)
     {
         for (int i=0; m_deviceList[i].m_longDescr;i++)
         {
-            if (m_deviceList[i].m_direction == MidiDirection::in && m_deviceList[i].m_id != MidiDevice::none)
+            if (m_deviceList[i].m_direction == in && m_deviceList[i].m_id != Device::none)
             {
                 FD_SET(m_deviceList[i].m_fd, &fdSet);
                 if (m_deviceList[i].m_fd > maxFd)
@@ -197,8 +196,8 @@ int Midi::wait(int usecTimeout, int device) const
     }
     for (int i=0; m_deviceList[i].m_longDescr;i++)
     {
-        if (m_deviceList[i].m_id != MidiDevice::none &&
-            m_deviceList[i].m_direction == MidiDirection::in &&
+        if (m_deviceList[i].m_id != Device::none &&
+            m_deviceList[i].m_direction == in &&
             FD_ISSET(m_deviceList[i].m_fd, &fdSet))
         {
 #if 0
@@ -218,7 +217,7 @@ int Midi::wait(int usecTimeout, int device) const
  * \param[in] target        Card name to look for.
  * \return                  The card number.
  */
-int Midi::cardNameToNum(const char *target) const
+int Driver::cardNameToNum(const char *target) const
 {
     const char *proc = "/proc/asound/cards";
     int hwNum = -1;
@@ -247,11 +246,11 @@ int Midi::cardNameToNum(const char *target) const
     return hwNum;
 }
 
-/*! \brief Construct a \a Midi object
+/*! \brief Construct a MIDI \a Driver object
  *
  * \param[in] s     A \a Screen object to log to.
  */
-Midi::Midi(Screen *s): m_screen(s)
+Driver::Driver(Screen *s): m_screen(s)
 {
     m_deviceList = &deviceList[0];
     openDevices();
@@ -270,7 +269,7 @@ Midi::Midi(Screen *s): m_screen(s)
  * \param[in] device    Device ID.
  * \return              MIDI byte.
  */
-uint8_t Midi::getByte(int device)
+uint8_t Driver::getByte(int device)
 {
     if (device < 0)
         return 0;
@@ -324,7 +323,7 @@ static void writeChecked(int fd, const void *buf, size_t count)
  * \param[in]   device  MIDI device.
  * \param[in]   b1      byte to be written.
  */
-void Midi::putByte(int device, uint8_t b1)
+void Driver::putByte(int device, uint8_t b1)
 {
     int fDescr = fd(device);
     if (fDescr >= 0)
@@ -337,7 +336,7 @@ void Midi::putByte(int device, uint8_t b1)
  * \param[in]   b       byte buffer.
  * \param[in]   n       byte buffer size.
  */
-void Midi::putBytes(int device, const uint8_t *b, int n)
+void Driver::putBytes(int device, const uint8_t *b, int n)
 {
     int fDescr = fd(device);
     if (fDescr >= 0)
@@ -350,7 +349,7 @@ void Midi::putBytes(int device, const uint8_t *b, int n)
  * \param[in]   b1      first byte.
  * \param[in]   b2      second byte.
  */
-void Midi::putBytes(int device, uint8_t b1, uint8_t b2)
+void Driver::putBytes(int device, uint8_t b1, uint8_t b2)
 {
     int fDescr = fd(device);
     if (fDescr >= 0)
@@ -369,7 +368,7 @@ void Midi::putBytes(int device, uint8_t b1, uint8_t b2)
  * \param[in]   b2      second byte.
  * \param[in]   b3      third byte.
  */
-void Midi::putBytes(int device, uint8_t b1, uint8_t b2, uint8_t b3)
+void Driver::putBytes(int device, uint8_t b1, uint8_t b2, uint8_t b3)
 {
     int fDescr = fd(device);
     if (fDescr >= 0)
@@ -387,12 +386,12 @@ void Midi::putBytes(int device, uint8_t b1, uint8_t b2, uint8_t b3)
  * \param[in]   status  status byte to be checked.
  * \return      true if given status byte id MIDI note data.
  */
-bool Midi::isNote(uint8_t status)
+bool isNote(uint8_t status)
 {
     status &= 0xf0;
-    return status == MidiStatus::noteOff
-        || status == MidiStatus::noteOn
-        || status == MidiStatus::aftertouch;
+    return status == noteOff
+        || status == noteOn
+        || status == aftertouch;
 }
 
 /*! \brief Return true if input is a MIDI note on message.
@@ -402,11 +401,11 @@ bool Midi::isNote(uint8_t status)
  * \param[in]   data2   MIDI data 2.
  * \return      true if given message is a MIDI note on message.
  */
-bool Midi::isNoteOn(uint8_t status, uint8_t data1, uint8_t data2)
+bool isNoteOn(uint8_t status, uint8_t data1, uint8_t data2)
 {
     (void)data1;
     status &= 0xf0;
-    return status == MidiStatus::noteOn && data2 != 0;
+    return status == noteOn && data2 != 0;
 }
 
 /*! \brief Return true if input is a MIDI note off message.
@@ -416,12 +415,12 @@ bool Midi::isNoteOn(uint8_t status, uint8_t data1, uint8_t data2)
  * \param[in]   data2   MIDI data 2.
  * \return      true if given message is a MIDI note off message.
  */
-bool Midi::isNoteOff(uint8_t status, uint8_t data1, uint8_t data2)
+bool isNoteOff(uint8_t status, uint8_t data1, uint8_t data2)
 {
     (void)data1;
     status &= 0xf0;
-    return (status == MidiStatus::noteOn && data2 == 0)
-         || status == MidiStatus::noteOff;
+    return (status == noteOn && data2 == 0)
+         || status == noteOff;
 }
 
 /*! \brief Return true if input status is a MIDI controller.
@@ -429,9 +428,10 @@ bool Midi::isNoteOff(uint8_t status, uint8_t data1, uint8_t data2)
  * \param[in]   status  status byte to be checked.
  * \return      true if given status is a MIDI controller.
  */
-bool Midi::isController(uint8_t status)
+bool isController(uint8_t status)
 {
     status &= 0xf0;
-    return status == MidiStatus::controller;
+    return status == controller;
 }
 
+} // namespace Midi

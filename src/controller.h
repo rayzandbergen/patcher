@@ -38,8 +38,8 @@ class ControllerRemapVolQuadratic: public ControllerRemap {
 public:
     virtual const char *name() const { return "volQuadratic"; }
     ControllerRemapVolQuadratic(): ControllerRemap(
-        MidiController::continuousController16,
-        MidiController::mainVolume
+        Midi::continuousController16,
+        Midi::mainVolume
     ) { }
     virtual Real interpolate(Real x, Real x0, Real y0,
         Real x1, Real y1) const;
@@ -51,8 +51,8 @@ class ControllerRemapVolReverse: public ControllerRemap {
 public:
     virtual const char *name() const { return "volReverse"; }
     ControllerRemapVolReverse(): ControllerRemap(
-        MidiController::continuousController16,
-        MidiController::mainVolume,
+        Midi::continuousController16,
+        Midi::mainVolume,
         0, 127, 127, 0) { };
 };
 

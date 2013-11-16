@@ -149,7 +149,7 @@ void Fantom::setParam(const uint32_t addr, const uint32_t length, uint8_t *data)
     uint8_t txBuf[128];
     uint32_t checkSum = 0;
     uint32_t i=0;
-    txBuf[i++] = MidiStatus::sysEx;
+    txBuf[i++] = Midi::sysEx;
     txBuf[i++] = 0x41; // ID: Roland
     uint32_t checkSumStart = i;
     txBuf[i++] = 0x10; // dev ID, start of checksum
@@ -169,8 +169,8 @@ void Fantom::setParam(const uint32_t addr, const uint32_t length, uint8_t *data)
     for (uint32_t j=checkSumStart; j<=checkSumEnd; j++)
         checkSum += txBuf[j];
     txBuf[i++] = 0x80 - (checkSum & 0x7f);
-    txBuf[i++] = MidiStatus::EOX;
-    m_midi->putBytes(MidiDevice::FantomOut, txBuf, i);
+    txBuf[i++] = Midi::EOX;
+    m_midi->putBytes(Midi::Device::FantomOut, txBuf, i);
 #if 0
     m_screen->printMidi("sending sysEx %08x %08x\n", addr, length);
     m_screen->dumpToLog(txBuf, i);
@@ -187,7 +187,7 @@ void Fantom::getParam(const uint32_t addr, const uint32_t length, uint8_t *data)
     memset(rxBuf, 0, sizeof(rxBuf));
     uint32_t checkSum = 0;
     uint32_t i=0;
-    txBuf[i++] = MidiStatus::sysEx;
+    txBuf[i++] = Midi::sysEx;
     txBuf[i++] = 0x41; // ID: Roland
     uint32_t checkSumStart = i;
     txBuf[i++] = 0x10; // dev ID, start of checksum
@@ -209,13 +209,13 @@ void Fantom::getParam(const uint32_t addr, const uint32_t length, uint8_t *data)
     for (uint32_t j=checkSumStart; j<=checkSumEnd; j++)
         checkSum += txBuf[j];
     txBuf[i++] = 0x80 - (checkSum & 0x7f);
-    txBuf[i++] = MidiStatus::EOX;
-    m_midi->putBytes(MidiDevice::FantomOut, txBuf, i);
+    txBuf[i++] = Midi::EOX;
+    m_midi->putBytes(Midi::Device::FantomOut, txBuf, i);
     uint8_t byteRx;
     for (;;)
     {
-        byteRx = m_midi->getByte(MidiDevice::FantomIn);
-        if (byteRx == MidiStatus::sysEx)
+        byteRx = m_midi->getByte(Midi::Device::FantomIn);
+        if (byteRx == Midi::sysEx)
             break;
         m_screen->printMidi("unexpected response, retry\n");
         m_screen->flushMidi();
@@ -223,9 +223,9 @@ void Fantom::getParam(const uint32_t addr, const uint32_t length, uint8_t *data)
     rxBuf[0] = byteRx;
     for (i=1;;i++)
     {
-        byteRx = m_midi->getByte(MidiDevice::FantomIn);
+        byteRx = m_midi->getByte(Midi::Device::FantomIn);
         rxBuf[i] = byteRx;
-        if (byteRx == MidiStatus::EOX || i+1 >= (uint32_t)sizeof(rxBuf))
+        if (byteRx == Midi::EOX || i+1 >= (uint32_t)sizeof(rxBuf))
             break;
         if (i >= rxHeaderLength && i-rxHeaderLength < length)
         {

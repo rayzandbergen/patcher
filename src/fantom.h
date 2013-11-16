@@ -69,13 +69,13 @@ public:
 struct Fantom
 {
     static const uint8_t programChangeChannel = 0x0f;   //!< MIDI channel the Fantom listens on for program changes.
-    Screen *m_screen;   //!< A \a Screen object to log to.
-    Midi *m_midi;       //!< A MIDI object.
+    Screen *m_screen;           //!< A \a Screen object to log to.
+    Midi::Driver *m_midi;       //!< A MIDI driver object.
     /* \brief Constructor
      *
      * Constructs an empty Fantom object.
      */
-    Fantom(Screen *screen, Midi *midi): m_screen(screen), m_midi(midi) { }
+    Fantom(Screen *screen, Midi::Driver *midi): m_screen(screen), m_midi(midi) { }
     void setParam(const uint32_t addr, const uint32_t length, uint8_t *data);
     void getParam(const uint32_t addr, const uint32_t length, uint8_t *data);
     void setVolume(uint8_t part, uint8_t val);
