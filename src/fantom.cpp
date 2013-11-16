@@ -128,7 +128,7 @@ void FantomPart::dumpToLog(Screen *screen, const char *prefix) const
 void FantomPerformance::save(const Dump *d)
 {
     d->save((const char*)m_name);
-    for (int i=0; i<16; i++)
+    for (int i=0; i<NofParts; i++)
         m_part[i].save(d);
 }
 
@@ -139,7 +139,7 @@ void FantomPerformance::save(const Dump *d)
 void FantomPerformance::restore(const Dump *d)
 {
     d->restore((char*)m_name);
-    for (int i=0; i<16; i++)
+    for (int i=0; i<NofParts; i++)
         m_part[i].restore(d);
 }
 
