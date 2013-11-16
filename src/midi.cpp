@@ -95,7 +95,7 @@ void Driver::openDevices(void)
     m_screen->flushMidi();
 }
 
-/*  \brief Convert a note number to a string.
+/*! \brief Convert a note number to a string.
  *
  *  \param[in] num   MIDI note number.
  *  \param[OUT] s    string buffer, must be at least 5 bytes.
@@ -110,7 +110,7 @@ void noteName(uint8_t num, char *s)
     sprintf(s, "%s%d", str[num], oct);
 }
 
-/*  \brief Convert a note number to a string in a static buffer.
+/*! \brief Convert a note number to a string in a static buffer.
  *
  *  \param[in] num   MIDI note number.
  *  \return static string buffer.

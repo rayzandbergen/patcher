@@ -8,7 +8,7 @@
 #include "activity.h"
 #include "error.h"
 
-typedef struct timespec TimeSpec;
+typedef struct timespec TimeSpec;   //!< Shorthand for struct timespec so we can 'new' it.
 
 Activity::Activity(int nofSlots): m_nofSlots(nofSlots)
 {
