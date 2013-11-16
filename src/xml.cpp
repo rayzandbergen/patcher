@@ -21,6 +21,9 @@
 
 XERCES_CPP_NAMESPACE_USE
 
+namespace
+{
+
 /*! \brief This class template caches T objects that are created from string constants.
  *
     It is used to create cache classes for XMLCh strings and DOMXPathExpressions.
@@ -324,6 +327,8 @@ void parseTracks(DOMDocument *doc, TrackList &trackList, SetList &setList)
     }
     trackNodes->release();
 }
+
+} // anonymous namespace
 
 //! \brief Parse an XML file into a track list and a \a SetList.
 int importTracks (const char *inFile, TrackList &tracks, SetList &setList)
