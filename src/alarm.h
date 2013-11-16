@@ -5,7 +5,7 @@
  */
 #ifndef ALARM_H
 #define ALARM_H
-//! \brief Alarm handler state.
+//! \brief Alarm handler state. \todo Extend this to a metronome.
 class Alarm {
 public:
     bool m_doTimeout;       //!<    Indicate if a timeout should raise the watchdog timeout flag.

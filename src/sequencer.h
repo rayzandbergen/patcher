@@ -7,7 +7,7 @@
 #define SEQUENCER_H
 #include <iostream>
 #include <fstream>
-//! \brief This class is not used.
+//! \brief This class is not used. \todo Implement a sequencer.
 class Sequencer
 {
 private:

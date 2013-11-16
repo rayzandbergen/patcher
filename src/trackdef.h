@@ -28,9 +28,9 @@ namespace TrackDef {
 
 /*! \brief Contains all the parameters needed to manipulate events on a single MIDI channel.
  *
- * This is the counterpart of \a FantomPart, although the mapping is not strictly 1-to-1.
- * In some older track definitions, a single \a SwPart may trigger more than one
- * \a FantomPart. \todo fix this in tracks.xml.
+ * This is the counterpart of \a Fantom::Part, although the mapping is not strictly 1-to-1.
+ * \todo In some older track definitions, a single \a SwPart may trigger more than one
+ * \a Fantom::Part. This should be fixed in tracks.xml.
  */
 class SwPart {
 public:
@@ -42,7 +42,7 @@ public:
     int m_customTransposeOffset;        //!< Additional transposition for custom transposes.
     uint8_t m_rangeLower;               //!< Lower range.
     uint8_t m_rangeUpper;               //!< Upper range.
-    std::vector <const Fantom::Part *> m_hwPart;  //!< List of \a FantomPart pointers this will trigger.
+    std::vector <const Fantom::Part *> m_hwPart;  //!< List of \a Fantom::Part pointers this will trigger.
     ControllerRemap *m_controllerRemap; //!< Remap object. \todo allow more than one.
     MonoFilter m_monoFilter;            //!< Mono filter object.
     Toggler m_toggler;                  //!< Toggler object.
