@@ -18,7 +18,7 @@
 class Screen
 {
     enum Id //!< Screen ID for logging.
-        { track, midi, debug }
+        { track, midi, debug };
 	WINDOW *m_midiLog;              //!< curses MIDI window object.
     int vprintf(Id id, const char *fmt, va_list);   //!< Low level log function.
     FILE *m_fpLog;                  //!< FILE pointer for witten logs.
