@@ -28,6 +28,7 @@
 #include "alarm.h"
 #include "xml.h"
 #include "persistent.h"
+//#include "undupparts.h"
 
 #define VERSION "1.2.0"     //!< global version number
 
@@ -157,6 +158,7 @@ void Patcher::dumpTrackList()
         sprintf(prefix, "track%02d", i);
         (*t)->dumpToLog(m_screen, prefix);
     }
+    //undupParts(m_perf, m_trackList);
 }
 
 /*! \brief Download performance data from the Fantom.
