@@ -1004,7 +1004,7 @@
           <range lower="C0" upper="G10"/>
           <transpose offset="0"/>
         </part>
-        <part channel="11" name="'Q' DualSaws">
+        <part channel="11" name="&quot;Q&quot; DualSaws">
           <range lower="C0" upper="G10"/>
           <transpose offset="0"/>
         </part>
@@ -1055,7 +1055,7 @@
           <range lower="C0" upper="G10"/>
           <transpose offset="0"/>
         </part>
-        <part channel="10" name="'Q' DualSaws">
+        <part channel="10" name="&quot;Q&quot; DualSaws">
           <range lower="C0" upper="G10"/>
           <transpose offset="0"/>
         </part>
@@ -1065,7 +1065,7 @@
           <range lower="C0" upper="G10"/>
           <transpose offset="0"/>
         </part>
-        <part channel="4" name="'Q' DualSaws">
+        <part channel="4" name="&quot;Q&quot; DualSaws">
           <range lower="C0" upper="G10"/>
           <transpose offset="0"/>
         </part>
