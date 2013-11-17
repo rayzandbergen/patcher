@@ -39,11 +39,11 @@
       </section>
       <section name="Section 5">
         <part channel="5" name="FullStop Org">
-          <range lower="C0" upper="G10"/>
+          <range lower="F3" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="6" name="UltimatGrand">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="E3"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -52,15 +52,15 @@
     <track name="Metropolis part I">
       <section name="Section 1">
         <part channel="1" name="Metr PATCH">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="E2"/>
           <transpose offset="0"/>
         </part>
         <part channel="2" name="FS Sqr Pad M">
-          <range lower="C0" upper="G10"/>
+          <range lower="F2" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="8" name="secret GM">
-          <range lower="C0" upper="G10"/>
+          <range lower="F2" upper="G10"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -78,11 +78,11 @@
       </section>
       <section name="Section 4">
         <part channel="3" name="Optik'Synth2">
-          <range lower="C0" upper="G10"/>
+          <range lower="D#4" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="4" name="Optik'Synth2">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="D4"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -123,19 +123,19 @@
       </section>
       <section name="Section 4">
         <part channel="5" name="Phase Clavi">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="E3"/>
           <transpose offset="0"/>
         </part>
         <part channel="6" name="Stage EP">
-          <range lower="C0" upper="G10"/>
+          <range lower="C5" upper="A6"/>
           <transpose offset="0"/>
         </part>
         <part channel="7" name="FS Strings">
-          <range lower="C0" upper="G10"/>
+          <range lower="E6" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="8" name="BodyElectric">
-          <range lower="C0" upper="G10"/>
+          <range lower="F3" upper="B4"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -144,39 +144,39 @@
     <track name="Home">
       <section name="Section 1">
         <part channel="1" name="Home PATCH">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="E2"/>
           <transpose offset="0"/>
         </part>
         <part channel="2" name="FS Sitar 2">
-          <range lower="C0" upper="G10"/>
+          <range lower="F2" upper="D4"/>
           <transpose offset="0"/>
         </part>
         <part channel="12" name="FS Sitar 2">
-          <range lower="C0" upper="G10"/>
+          <range lower="D#4" upper="G10"/>
           <transpose offset="0"/>
         </part>
       </section>
       <section name="Section 2">
         <part channel="3" name="X Perc Organ">
-          <range lower="C0" upper="G10"/>
+          <range lower="C3" upper="B4"/>
           <transpose offset="0"/>
         </part>
         <part channel="4" name="FS Sitar 2">
-          <range lower="C0" upper="G10"/>
+          <range lower="C5" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="7" name="SBF Nozer">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="B2"/>
           <transpose offset="0"/>
         </part>
       </section>
       <section name="Section 3">
         <part channel="5" name="X Perc Organ">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="B4"/>
           <transpose offset="0"/>
         </part>
         <part channel="6" name="Full Strings">
-          <range lower="C0" upper="G10"/>
+          <range lower="C5" upper="G10"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -192,15 +192,15 @@
       </section>
       <section name="Section 5">
         <part channel="9" name="SBF Voices">
-          <range lower="C0" upper="G10"/>
+          <range lower="C5" upper="C7"/>
           <transpose offset="0"/>
         </part>
         <part channel="10" name="X Perc Organ">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="B4"/>
           <transpose offset="0"/>
         </part>
         <part channel="11" name="Full Strings">
-          <range lower="C0" upper="G10"/>
+          <range lower="C#7" upper="G10"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -215,11 +215,11 @@
       </section>
       <section name="Section 2">
         <part channel="2" name="Oct Unison">
-          <range lower="C0" upper="G10"/>
+          <range lower="E5" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="3" name="Oct Unison">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="D5"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -264,11 +264,11 @@
       </section>
       <section name="Section 2">
         <part channel="2" name="FS 70'EP">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="B4"/>
           <transpose offset="0"/>
         </part>
         <part channel="3" name="Warm Strings">
-          <range lower="C0" upper="G10"/>
+          <range lower="C5" upper="G10"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -280,11 +280,11 @@
       </section>
       <section name="Section 4">
         <part channel="5" name="Kinda Kurt">
-          <range lower="C0" upper="G10"/>
+          <range lower="C5" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="6" name="Warm Strings">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="B4"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -332,25 +332,25 @@
       </section>
       <section name="Section 2">
         <part channel="2" name="Crossed Bows">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="F#5"/>
           <transpose offset="0"/>
         </part>
         <part channel="5" name="JP Strings 2">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="F#5"/>
           <transpose offset="0"/>
         </part>
         <part channel="6" name="Sax Heavy">
-          <range lower="C0" upper="G10"/>
+          <range lower="G5" upper="G10"/>
           <transpose offset="0"/>
         </part>
       </section>
       <section name="Section 3">
         <part channel="3" name="FS Soft Pad">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="G#3"/>
           <transpose offset="0"/>
         </part>
         <part channel="4" name="UltimatGrand">
-          <range lower="C0" upper="G10"/>
+          <range lower="A3" upper="G10"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -402,51 +402,51 @@
     <track name="Learning to live">
       <section name="Section 1">
         <part channel="1" name="Gang Strangs">
-          <range lower="C0" upper="G10"/>
+          <range lower="C#6" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="2" name="EP Belle">
-          <range lower="C0" upper="G10"/>
+          <range lower="C#6" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="3" name="Bosporus">
-          <range lower="C0" upper="G10"/>
+          <range lower="C#6" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="9" name="Spit Flugel">
-          <range lower="C0" upper="G10"/>
+          <range lower="C#4" upper="C6"/>
           <transpose offset="0"/>
         </part>
         <part channel="10" name="Pan Pipes">
-          <range lower="C0" upper="G10"/>
+          <range lower="C#4" upper="C6"/>
           <transpose offset="0"/>
         </part>
         <part channel="13" name="Gang Strangs">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="C4"/>
           <transpose offset="0"/>
         </part>
         <part channel="14" name="Terra Nostra">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="C4"/>
           <transpose offset="0"/>
         </part>
       </section>
       <section name="Section 2">
         <part channel="4" name="FS Saw Ld 1">
-          <range lower="C0" upper="G10"/>
+          <range lower="D4" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="12" name="secret GM">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="C#4"/>
           <transpose offset="0"/>
         </part>
       </section>
       <section name="Section 3">
         <part channel="5" name="secret GM">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="D6"/>
           <transpose offset="0"/>
         </part>
         <part channel="7" name="Dreaming Box">
-          <range lower="C0" upper="G10"/>
+          <range lower="D#6" upper="G10"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -456,7 +456,7 @@
           <transpose offset="0"/>
         </part>
         <part channel="11" name="Stringz 101">
-          <range lower="C0" upper="G10"/>
+          <range lower="G#4" upper="G10"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -471,11 +471,11 @@
     <track name="Fireblossom">
       <section name="Section 1">
         <part channel="1" name="Hall Concert">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="A#7"/>
           <transpose offset="0"/>
         </part>
         <part channel="5" name="Sahara Str">
-          <range lower="C0" upper="G10"/>
+          <range lower="B7" upper="G10"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -485,7 +485,7 @@
           <transpose offset="0"/>
         </part>
         <part channel="3" name="Full Strings">
-          <range lower="C0" upper="G10"/>
+          <range lower="C6" upper="G10"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -500,19 +500,19 @@
     <track name="Under a glass moon">
       <section name="Section 1">
         <part channel="1" name="Rockin' Dly">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="B6"/>
           <transpose offset="0"/>
         </part>
         <part channel="9" name="Warm Strings">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="B6"/>
           <transpose offset="0"/>
         </part>
         <part channel="12" name="FS Sqr Lead">
-          <range lower="C0" upper="G10"/>
+          <range lower="C7" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="13" name="Soft Orch 1">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="B6"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -528,29 +528,29 @@
       </section>
       <section name="Section 3">
         <part channel="3" name="X Perc Organ">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="F6"/>
           <transpose offset="0"/>
         </part>
         <part channel="4" name="X Perc Organ">
-          <range lower="C0" upper="G10"/>
+          <range lower="F#6" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="5" name="Oct Strings">
-          <range lower="C0" upper="G10"/>
+          <range lower="F#6" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="11" name="FS Musicbox">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="F6"/>
           <transpose offset="0"/>
         </part>
       </section>
       <section name="Section 4">
         <part channel="6" name="SideBandBell">
-          <range lower="C0" upper="G10"/>
+          <range lower="B6" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="7" name="Warm Strings">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="A#6"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -575,19 +575,19 @@
       </section>
       <section name="Section 2">
         <part channel="2" name="Jupiter-X">
-          <range lower="C0" upper="G10"/>
+          <range lower="F#2" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="6" name="Overture">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="E2"/>
           <transpose offset="0"/>
         </part>
         <part channel="7" name="FS Saw Ld 1">
-          <range lower="C0" upper="G10"/>
+          <range lower="G6" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="10" name="Countdown">
-          <range lower="C0" upper="G10"/>
+          <range lower="F2" upper="F2"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -605,11 +605,11 @@
       </section>
       <section name="Section 5">
         <part channel="5" name="Synergy MLT">
-          <range lower="C0" upper="G10"/>
+          <range lower="E5" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="8" name="Synergy MLT">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="D5"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -618,11 +618,11 @@
     <track name="Lines in the sand 1/2">
       <section name="Section 1">
         <part channel="1" name="Starchild">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="C5"/>
           <transpose offset="0"/>
         </part>
         <part channel="2" name="FS Saw Ld 1">
-          <range lower="C0" upper="G10"/>
+          <range lower="D5" upper="G10"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -632,11 +632,11 @@
           <transpose offset="0"/>
         </part>
         <part channel="4" name="Darmstrat X">
-          <range lower="C0" upper="G10"/>
+          <range lower="C5" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="5" name="FS Syn Str">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="B4"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -646,11 +646,11 @@
           <transpose offset="0"/>
         </part>
         <part channel="7" name="Darmstrat X">
-          <range lower="C0" upper="G10"/>
+          <range lower="C5" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="8" name="FS Syn Str">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="B4"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -665,25 +665,25 @@
       </section>
       <section name="Section 2">
         <part channel="5" name="FS Soft Pad">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="B4"/>
           <transpose offset="0"/>
         </part>
         <part channel="6" name="Aah Vox">
-          <range lower="C0" upper="G10"/>
+          <range lower="C5" upper="G10"/>
           <transpose offset="0"/>
         </part>
       </section>
       <section name="Section 3">
         <part channel="1" name="Euro Organ">
-          <range lower="C0" upper="G10"/>
+          <range lower="C#5" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="2" name="DetuneSawBrs">
-          <range lower="C0" upper="G10"/>
+          <range lower="D3" upper="C5"/>
           <transpose offset="0"/>
         </part>
         <part channel="7" name="R&amp;B Organ 1">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="C3"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -702,15 +702,15 @@
     <track name="A change of seasons 1/2">
       <section name="Section 1">
         <part channel="1" name="88ConcertPno">
-          <range lower="C0" upper="G10"/>
+          <range lower="F#4" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="2" name="secret GM">
-          <range lower="C0" upper="G10"/>
+          <range lower="B3" upper="F4"/>
           <transpose offset="0"/>
         </part>
         <part channel="3" name="FS Glocken">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="A#3"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -720,43 +720,43 @@
           <transpose offset="0"/>
         </part>
         <part channel="9" name="Sahara Str">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="B3"/>
           <transpose offset="0"/>
         </part>
         <part channel="10" name="FS Glocken">
-          <range lower="C0" upper="G10"/>
+          <range lower="G#7" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="14" name="FS WindWood">
-          <range lower="C0" upper="G10"/>
+          <range lower="C#7" upper="F#7"/>
           <transpose offset="0"/>
         </part>
       </section>
       <section name="Section 3">
         <part channel="5" name="Zepix Organ">
-          <range lower="C0" upper="G10"/>
+          <range lower="F#4" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="6" name="SQ Pan">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="F4"/>
           <transpose offset="0"/>
         </part>
       </section>
       <section name="Section 4">
         <part channel="7" name="BodyElectric">
-          <range lower="C0" upper="G10"/>
+          <range lower="B6" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="8" name="Dual Profs2">
-          <range lower="C0" upper="G10"/>
+          <range lower="B6" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="11" name="Optik'Synth2">
-          <range lower="C0" upper="G10"/>
+          <range lower="E4" upper="A6"/>
           <transpose offset="0"/>
         </part>
         <part channel="13" name="Harpsy Clavi">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="D4"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -777,29 +777,29 @@
       </section>
       <section name="Section 2">
         <part channel="2" name="Warm Strings">
-          <range lower="C0" upper="G10"/>
+          <range lower="G3" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="7" name="FS Glocken">
-          <range lower="C0" upper="G10"/>
+          <range lower="A2" upper="F#3"/>
           <transpose offset="0"/>
         </part>
         <part channel="8" name="HOWL">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="G#2"/>
           <transpose offset="0"/>
         </part>
       </section>
       <section name="Section 3">
         <part channel="3" name="Zepix Organ">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="D4"/>
           <transpose offset="0"/>
         </part>
         <part channel="5" name="Orgaenia">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="D4"/>
           <transpose offset="0"/>
         </part>
         <part channel="6" name="UltimatGrand">
-          <range lower="C0" upper="G10"/>
+          <range lower="D#4" upper="G10"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -844,15 +844,15 @@
       </section>
       <section name="Section 3">
         <part channel="4" name="Euro Organ">
-          <range lower="C0" upper="G10"/>
+          <range lower="F3" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="5" name="UltimatGrand">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="E3"/>
           <transpose offset="0"/>
         </part>
         <part channel="6" name="FS Soft Pad">
-          <range lower="C0" upper="G10"/>
+          <range lower="C4" upper="G10"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -861,7 +861,7 @@
     <track name="Trial of tears">
       <section name="Section 1">
         <part channel="1" name="Orchipad">
-          <range lower="C0" upper="G10"/>
+          <range lower="C6" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="2" name="Vint Clavier">
@@ -871,7 +871,7 @@
       </section>
       <section name="Section 2">
         <part channel="3" name="Soft Orch 1">
-          <range lower="C0" upper="G10"/>
+          <range lower="C#5" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="4" name="Vint Clavier">
@@ -881,15 +881,15 @@
       </section>
       <section name="Section 3">
         <part channel="7" name="Zepix Organ">
-          <range lower="C0" upper="G10"/>
+          <range lower="G5" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="8" name="Zepix Organ">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="F#5"/>
           <transpose offset="0"/>
         </part>
         <part channel="13" name="Jupiter-X">
-          <range lower="C0" upper="G10"/>
+          <range lower="G5" upper="G10"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -905,23 +905,23 @@
       </section>
       <section name="Section 5">
         <part channel="9" name="ConcertGrand">
-          <range lower="C0" upper="G10"/>
+          <range lower="C#5" upper="F#8"/>
           <transpose offset="0"/>
         </part>
         <part channel="10" name="R&amp;B Organ 2">
-          <range lower="C0" upper="G10"/>
+          <range lower="G3" upper="C5"/>
           <transpose offset="0"/>
         </part>
         <part channel="11" name="Rezo Sync">
-          <range lower="C0" upper="G10"/>
+          <range lower="F2" upper="F#3"/>
           <transpose offset="0"/>
         </part>
         <part channel="12" name="Snare">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="E2"/>
           <transpose offset="0"/>
         </part>
         <part channel="14" name="Wind">
-          <range lower="C0" upper="G10"/>
+          <range lower="G8" upper="G10"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -930,43 +930,43 @@
     <track name="Surrounded">
       <section name="Section 1">
         <part channel="1" name="FS Sqr Pad M">
-          <range lower="C0" upper="G10"/>
+          <range lower="D7" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="2" name="UltimatGrand">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="C#7"/>
           <transpose offset="0"/>
         </part>
       </section>
       <section name="Section 2">
         <part channel="3" name="UltimatGrand">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="B6"/>
           <transpose offset="0"/>
         </part>
         <part channel="4" name="Warm Strings">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="C6"/>
           <transpose offset="0"/>
         </part>
         <part channel="10" name="FS Strings">
-          <range lower="C0" upper="G10"/>
+          <range lower="C7" upper="G10"/>
           <transpose offset="0"/>
         </part>
       </section>
       <section name="Section 3">
         <part channel="5" name="Warm Strings">
-          <range lower="C0" upper="G10"/>
+          <range lower="E4" upper="C7"/>
           <transpose offset="0"/>
         </part>
         <part channel="6" name="FS Saw Ld 1">
-          <range lower="C0" upper="G10"/>
+          <range lower="C#7" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="7" name="Wind Syn Ld">
-          <range lower="C0" upper="G10"/>
+          <range lower="C#7" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="8" name="Mr.AXXE">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="D#4"/>
           <transpose offset="0"/>
         </part>
         <part channel="9" name="FS Strings">
@@ -979,61 +979,61 @@
     <track name="Take the time">
       <section name="Section 1">
         <part channel="1" name="Cosmic Rays">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="G#3"/>
           <transpose offset="0"/>
         </part>
         <part channel="2" name="Pop Brs wAtk">
-          <range lower="C0" upper="G10"/>
+          <range lower="G#4" upper="C6"/>
           <transpose offset="0"/>
         </part>
         <part channel="3" name="Gang Strangs">
-          <range lower="C0" upper="G10"/>
+          <range lower="A3" upper="C#5"/>
           <transpose offset="0"/>
         </part>
         <part channel="4" name="Optik'Synth2">
-          <range lower="C0" upper="G10"/>
+          <range lower="C#6" upper="G10"/>
           <transpose offset="0"/>
         </part>
       </section>
       <section name="Section 2">
         <part channel="5" name="Rapsody">
-          <range lower="C0" upper="G10"/>
+          <range lower="C#7" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="6" name="Rochno Org">
-          <range lower="C0" upper="G10"/>
+          <range lower="F2" upper="C7"/>
           <transpose offset="0"/>
         </part>
         <part channel="11" name="&quot;Q&quot; DualSaws">
-          <range lower="C0" upper="G10"/>
+          <range lower="F2" upper="G4"/>
           <transpose offset="0"/>
         </part>
         <part channel="14" name="TTTime Intro">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="E2"/>
           <transpose offset="0"/>
         </part>
       </section>
       <section name="Section 3">
         <part channel="7" name="Organic FM">
-          <range lower="C0" upper="G10"/>
+          <range lower="G#6" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="8" name="FS Strings">
-          <range lower="C0" upper="G10"/>
+          <range lower="C4" upper="G6"/>
           <transpose offset="0"/>
         </part>
         <part channel="9" name="SA Stacks">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="B3"/>
           <transpose offset="0"/>
         </part>
       </section>
       <section name="Section 4">
         <part channel="10" name="UltimatGrand">
-          <range lower="C0" upper="G10"/>
+          <range lower="C4" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="12" name="Stringz 101">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="B3"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -1048,65 +1048,65 @@
     <track name="Only a matter of time">
       <section name="Section 1">
         <part channel="1" name="FS Saw Ld 1">
-          <range lower="C0" upper="G10"/>
+          <range lower="G4" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="2" name="Oct Strings">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="F#4"/>
           <transpose offset="0"/>
         </part>
         <part channel="10" name="&quot;Q&quot; DualSaws">
-          <range lower="C0" upper="G10"/>
+          <range lower="G4" upper="G10"/>
           <transpose offset="0"/>
         </part>
       </section>
       <section name="Section 2">
         <part channel="3" name="FS Saw Ld 1">
-          <range lower="C0" upper="G10"/>
+          <range lower="F#4" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="4" name="&quot;Q&quot; DualSaws">
-          <range lower="C0" upper="G10"/>
+          <range lower="F#4" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="5" name="Oct Strings">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="F4"/>
           <transpose offset="0"/>
         </part>
       </section>
       <section name="Section 3">
         <part channel="6" name="Oct Strings">
-          <range lower="C0" upper="G10"/>
+          <range lower="F4" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="7" name="Aah Vox">
-          <range lower="C0" upper="G10"/>
+          <range lower="F4" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="8" name="Warm Strings">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="E4"/>
           <transpose offset="0"/>
         </part>
         <part channel="9" name="Aah Vox">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="E4"/>
           <transpose offset="0"/>
         </part>
         <part channel="11" name="R&amp;B Organ 2">
-          <range lower="C0" upper="G10"/>
+          <range lower="F#4" upper="G10"/>
           <transpose offset="0"/>
         </part>
       </section>
       <section name="Section 4">
         <part channel="12" name="X StrSection">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="F#5"/>
           <transpose offset="0"/>
         </part>
         <part channel="13" name="Oct Strings">
-          <range lower="C0" upper="G10"/>
+          <range lower="G5" upper="G10"/>
           <transpose offset="0"/>
         </part>
         <part channel="14" name="Full Strings">
-          <range lower="C0" upper="G10"/>
+          <range lower="C0" upper="E4"/>
           <transpose offset="0"/>
         </part>
       </section>
