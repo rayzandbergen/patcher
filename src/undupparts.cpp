@@ -4,23 +4,9 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <string.h>
 
-class NewPart
-{
-public:
-    std::string m_name;
-    int m_channel;
-};
-
-class NewSection
-{
-public:
-    std::string m_name;
-    std::vector<NewPart> m_part;
-    bool m_noteOffEnter, m_noteOffLeave;
-};
-
-void chompTrailingSpace(std::string &s)
+void sanitise(std::string &s)
 {
     while (s.find_last_of(" ")+1 == s.size())
     {
@@ -43,78 +29,70 @@ void chompTrailingSpace(std::string &s)
     }
 }
 
+std::string sanitise(const char *s)
+{
+    std::string rv(s);
+    sanitise(rv);
+    return rv;
+}
+
 void undupParts(const Fantom::Performance *perfList, const TrackList &trackList)
 {
-    std::vector<NewSection> sectionList;
     std::ofstream of("undup.txt");
     for (size_t i = 0; i < 22; i++)
     {
         const Fantom::Performance *perf = perfList + i;
         const Track *track = trackList[i];
-        of << "    <track name=\"" << track->m_name << "\"";
+        of << "    <track name=\"" << sanitise(track->m_name) << "\"";
         int startSection = track->m_startSection;
         if (startSection != 0)
             of << " startSection=\"" << startSection << "\"";
         of << ">\n";
-        sectionList.resize(track->nofSections());
-        for (size_t s = 0; s < sectionList.size(); s++)
+        for (SectionList::const_iterator si = track->m_section.begin(); 
+                si != track->m_section.end(); si++)
         {
-            sectionList[s].m_part.clear();
-            sectionList[s].m_noteOffEnter = track->m_section[s]->m_noteOffEnter;
-            sectionList[s].m_noteOffLeave = track->m_section[s]->m_noteOffLeave;
-        }
-        of << "<![CDATA[\n";
-        for (size_t hp = 0; hp<16; hp++)
-        {
-            const Fantom::Part *part = &perf->m_part[hp];
-            size_t sIdx = (size_t)part->m_channel;
-            if (part->m_channel != hp)
-            {
-                of << "    part " << (hp+1) << " is on channel " << (1+(int)part->m_channel) << ", reset to " << (hp+1) << "\n";
-            }
-            if (sIdx < sectionList.size())
-            {
-                NewPart newPart;
-                newPart.m_channel = hp;
-                newPart.m_name = part->m_patch.m_name;
-                chompTrailingSpace(newPart.m_name);
-                sectionList[sIdx].m_part.push_back(newPart);
-            }
-        }
-        of << "]]>\n";
-        for (size_t s = 0; s < sectionList.size(); s++)
-        {
-            if (sectionList[s].m_part.empty())
-                continue;
+            const Section *section = *si;
             of << "      <section";
-            if (sectionList[s].m_part.size() != 1)
-            {
-                std::stringstream sstream;
-                sstream << "Section " << (s+1);
-                sectionList[s].m_name = sstream.str();
-            }
-            else
-            {
-                sectionList[s].m_name = sectionList[s].m_part[0].m_name;
-            }
-            of << " name=\"" << sectionList[s].m_name << "\">\n";
-            bool e = sectionList[s].m_noteOffEnter;
-            bool l = sectionList[s].m_noteOffLeave;
-            if (!e || !l)
+            of << " name=\"" << sanitise(section->m_name) << "\">\n";
+            bool ne = section->m_noteOffEnter;
+            bool nl = section->m_noteOffLeave;
+            if (!ne || !nl)
             {
                 of << "      <noteOff";
-                if (!e)
+                if (!ne)
                     of << " enter=\"false\"";
-                if (!l)
+                if (!nl)
                     of << " leave=\"false\"";
                 of << "      />\n";
             }
-            for (size_t p = 0; p < sectionList[s].m_part.size(); p++)
+            for (size_t p = 0; p < section->m_part.size(); p++)
             {
+                const SwPart *swPart = section->m_part[p];
+                const Fantom::Part *hwPart = &perf->m_part[swPart->m_channel];
+                int l = hwPart->m_keyRangeLower;
+                int u = hwPart->m_keyRangeUpper;
+                int fl = hwPart->m_fadeWidthLower;
+                int fu = hwPart->m_fadeWidthUpper;
+                char lString[20];
+                char uString[20];
+                Midi::noteName(l, lString);
+                Midi::noteName(u, uString);
+                if (l > 0 || u < 127)
+                {
+                    if (fl != 0 || fu != 0)
+                    {
+                        of << "<![CDATA[\n";
+                        of << "  range is " << lString << " - " << uString <<
+                        " but fadewidth is " << fl << "," << fu << "\n";
+                        of << "]]>\n";
+                        strcpy(lString, "C0");
+                        strcpy(uString, "G10");
+                    }
+                }
                 of << "        <part channel=\"" <<
-                   (1+sectionList[s].m_part[p].m_channel) << "\"" << 
-                   " name=\"" << sectionList[s].m_part[p].m_name << "\">\n";
-                of << "          <range lower=\"C0\" upper=\"G10\"/>\n"
+                   (1+swPart->m_channel) << "\"" << 
+                   " name=\"" << sanitise(swPart->m_name) << "\">\n";
+                of << "          <range lower=\"" << lString << "\" upper=\"" << uString << "\"/>\n"
                       "          <transpose offset=\"0\"/>\n"
                       "        </part>\n";
             }
