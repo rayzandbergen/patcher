@@ -315,7 +315,7 @@ void Patcher::eventLoop()
                     // active sensing, single byte, dropped
                     // BUT we abuse the periodic nature of this message
                     // to do a screen update
-                    for (int i=0; i<Midi::NofChannels; i++)
+                    for (size_t i=0; i<m_channelActivity.size(); i++)
                         (void)m_channelActivity.get(i);
                     if (m_channelActivity.isDirty())
                         show(UpdateScreen);
@@ -859,7 +859,7 @@ void Patcher::nextSection()
 
 /*! \brief Change to previous \a Section.
  *
- * Similar to \a Patcher::nextSection().
+ * \sa Patcher::nextSection().
  *
  */
 void Patcher::prevSection()

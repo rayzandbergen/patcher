@@ -18,6 +18,8 @@ public:
     bool isDirty() const { return m_dirty; } //!<    Query dirty flag.
     void set(int idx);                  //!<    Set activity flag for slot \a idx.
     bool get(int idx);                  //!<    Get activity flag for slot \a idx.
+    //! \brief Return the number of slots.
+    size_t size() const { return (size_t)m_nofSlots; }
     Activity(int nofSlots);             //!<    Constructor.
     ~Activity();                        //!<    Destructor.
 };
