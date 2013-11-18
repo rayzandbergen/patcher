@@ -42,7 +42,7 @@ Screen::Screen(): m_enableMidiLog(true)
         m_midiLog = NULL;
 }
 
-Screen::~Screen(void)
+Screen::~Screen()
 {
     if (m_enableMidiLog)
         delwin(m_midiLog);

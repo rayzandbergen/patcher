@@ -35,6 +35,6 @@ public:
     //! \brief open(2) a file.
     bool fopen(const char *fileName, int flags, int mode);
     //! \brief close the associated file.
-    void fclose(void);
+    void fclose();
 };
 #endif

@@ -12,7 +12,7 @@
  */
 class Transposer
 {
-    bool m_noteState[MidiNote::max];    //!<    Sustain status for each MIDI note.
+    bool m_noteState[Midi::Note::max];  //!<    Sustain status for each MIDI note.
     bool m_sustain;                     //!<    Latest sustain pedal status.
 public:
     uint8_t m_transpose;                //!<    Transpose value in semitones.

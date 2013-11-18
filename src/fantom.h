@@ -20,7 +20,7 @@ static const int PresetLength = 20;                       //!< Name length of a 
 
 /*! \brief A Fantom 'patch', i.e. a basic sound.
  *
- * We are only interested in its name, so this is what this class stores.
+ * The patcher only interested in its name, so this is what this class stores.
  */
 class Patch
 {
@@ -57,19 +57,24 @@ public:
     Part(): m_number(255), m_channel(255) { }
 };
 
-/*! \brief A Fantom 'performance', i.e. a collection of parts in a proper mix.
+/*! \brief A Fantom performance.
+ *
+ * This object holds all the relevant parameters of a Fantom performance,
+ * i.e. a collection of 16 Fantom parts, in a proper mix.
+ * At startup, these parameters are downloaded from the Fantom,
+ * or from a cache.
  */
 class Performance
 {
 public:
-    static const int NofParts = 16;
-    char m_name[NameLength+1];    //!< Performance name
+    static const int NofParts = 16; //!< Number of Parts in a Fantom performance.
+    char m_name[NameLength+1];    //!< Performance name.
     Part m_part[NofParts];        //!< Parts within this \a FantomPerformance.
     void save(const Dump *d);
     void restore(const Dump *d);
 };
 
-/*! \brief Class to upload and download Fantom parameters.
+/*! \brief Class to upload and download parameters from and to the Fantom.
  */
 struct Driver
 {
@@ -79,6 +84,7 @@ struct Driver
      *
      * Constructs an empty Driver object.
      */
+    //! \brief Contruct a default Driver object.
     Driver(Screen *screen, Midi::Driver *midi): m_screen(screen), m_midi(midi) { }
     void setParam(const uint32_t addr, const uint32_t length, uint8_t *data);
     void getParam(const uint32_t addr, const uint32_t length, uint8_t *data);

@@ -12,9 +12,9 @@
  */
 class MonoFilter
 {
-    uint8_t m_noteOnCount[MidiNote::max];     //!< Number of note on events seen for each note.
-    bool m_ringing[MidiNote::max];            //!< 'ringing' flag for each note.
-    bool m_sustain;                           //!< Last known state of the sustain pedal.
+    uint8_t m_noteOnCount[Midi::Note::max];     //!< Number of note on events seen for each note.
+    bool m_ringing[Midi::Note::max];            //!< 'ringing' flag for each note.
+    bool m_sustain;                             //!< Last known state of the sustain pedal.
 public:
     MonoFilter();
     void sustain(bool b);

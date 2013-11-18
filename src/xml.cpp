@@ -30,11 +30,14 @@ namespace
 */
 template <class T> class XMLCache
 {
-    std::map<const char *, T *> m_map;
+    std::map<const char *, T *> m_map;  //!< Map of all cached T's.
 protected:
+    //! \brief Create a new T object.
     virtual T *create(const char *stringConstant, DOMDocument *doc = 0) = 0;
+    //! \brief Release a T object.
     virtual void release(T *) = 0;
 public:
+    //! \brief Retrieve a T pointer from cache, or create a new one.
     T *operator()(const char *stringConstant, DOMDocument *doc = 0)
     {
         typename std::map<const char *, T *>::iterator i = m_map.find(stringConstant);
@@ -46,6 +49,7 @@ public:
         }
         return i->second;
     }
+    //! \brief Release all the resources held by the cache.
     void clear()
     {
         for (typename std::map<const char *, T *>::iterator i = m_map.begin(); i != m_map.end(); i++)
@@ -253,14 +257,14 @@ void parseTracks(DOMDocument *doc, TrackList &trackList, SetList &setList)
                     delete part->m_controllerRemap; // default
                     std::string id = xmlStdString(((DOMElement*)controllerRemapNode)->getAttribute(xmlStr("id")));
                     if (id == "volQuadratic")
-                        part->m_controllerRemap = new ControllerRemapVolQuadratic;
+                        part->m_controllerRemap = new ControllerRemap::VolQuadratic;
                     else if (id == "volReverse")
-                        part->m_controllerRemap = new ControllerRemapVolReverse;
+                        part->m_controllerRemap = new ControllerRemap::VolReverse;
                     else
                         throw(Error("unknown controllerRemap id"));
                 }
                 if (!part->m_controllerRemap)
-                    part->m_controllerRemap = new ControllerRemap;
+                    part->m_controllerRemap = new ControllerRemap::Default;
 
                 DOMNode *rangeNode = findNode(doc, (DOMElement*)partNode, "./range");
                 if (rangeNode)

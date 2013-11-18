@@ -6,7 +6,7 @@
 #include "monofilter.h"
 MonoFilter::MonoFilter(): m_sustain(false)
 {
-    for (int i=0; i<MidiNote::max; i++)
+    for (int i=0; i<Midi::Note::max; i++)
     {
         m_noteOnCount[i] = 0;
         m_ringing[i] = false;
@@ -18,12 +18,12 @@ void MonoFilter::sustain(bool b)
     m_sustain = b;
     if (!b)
     {
-        for (int i=0; i<MidiNote::max; i++)
+        for (int i=0; i<Midi::Note::max; i++)
             m_ringing[i] = false;
     }
     else
     {
-        for (int i=0; i<MidiNote::max; i++)
+        for (int i=0; i<Midi::Note::max; i++)
             if (m_noteOnCount[i] > 0)
             {
                 m_ringing[i] = true;

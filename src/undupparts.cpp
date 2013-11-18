@@ -48,7 +48,7 @@ void undupParts(const Fantom::Performance *perfList, const TrackList &trackList)
         if (startSection != 0)
             of << " startSection=\"" << startSection << "\"";
         of << ">\n";
-        for (SectionList::const_iterator si = track->m_section.begin(); 
+        for (SectionList::const_iterator si = track->m_section.begin();
                 si != track->m_section.end(); si++)
         {
             const Section *section = *si;
@@ -90,7 +90,7 @@ void undupParts(const Fantom::Performance *perfList, const TrackList &trackList)
                     }
                 }
                 of << "        <part channel=\"" <<
-                   (1+swPart->m_channel) << "\"" << 
+                   (1+swPart->m_channel) << "\"" <<
                    " name=\"" << sanitise(swPart->m_name) << "\">\n";
                 of << "          <range lower=\"" << lString << "\" upper=\"" << uString << "\"/>\n"
                       "          <transpose offset=\"0\"/>\n"

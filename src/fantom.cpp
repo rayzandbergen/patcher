@@ -9,9 +9,9 @@
 namespace Fantom
 {
 
-/*  \brief Construct the preset name for \a this.
+/*! \brief Construct the preset name for \a this.
  *
- *  param[in] patchReadAllowed  True if the patch may be read. Fantom disallows download of some GM sounds.
+ *  \param[in] patchReadAllowed  True if the patch may be read. Fantom disallows download of some GM sounds.
  */
 void Part::constructPreset(bool &patchReadAllowed)
 {
@@ -65,7 +65,7 @@ void Part::constructPreset(bool &patchReadAllowed)
 
 /*! \brief Save \a this to a \a Dump object.
  *
- * param[in] d object to dump to.
+ * \param[in] d object to dump to.
  */
 void Part::save(const Dump *d)
 {
@@ -87,7 +87,7 @@ void Part::save(const Dump *d)
 
 /*! \brief Restore \a this from a \a Dump object.
  *
- * param[in] d object to read from.
+ * \param[in] d object to read from.
  */
 void Part::restore(const Dump *d)
 {
@@ -109,8 +109,8 @@ void Part::restore(const Dump *d)
 
 /*! \brief Dump \a this to \a Screen.
  *
- * param[in] screen Screen object to dump to
- * param[in] prefix Print prefix.
+ * \param[in] screen Screen object to dump to
+ * \param[in] prefix Print prefix.
  */
 void Part::dumpToLog(Screen *screen, const char *prefix) const
 {
@@ -128,7 +128,7 @@ void Part::dumpToLog(Screen *screen, const char *prefix) const
 
 /*! \brief Save \a this to a \a Dump object.
  *
- * param[in] d object to dump to.
+ * \param[in] d object to dump to.
  */
 void Performance::save(const Dump *d)
 {
@@ -139,7 +139,7 @@ void Performance::save(const Dump *d)
 
 /*! \brief Restore \a this from a \a Dump object.
  *
- * param[in] d object to read from.
+ * \param[in] d object to read from.
  */
 void Performance::restore(const Dump *d)
 {
@@ -148,6 +148,12 @@ void Performance::restore(const Dump *d)
         m_part[i].restore(d);
 }
 
+/*! \brief Set a parameter in Fantom memory.
+ *
+ * \param[in] addr      Parameter address.
+ * \param[in] length    Number of bytes to be written.
+ * \param[in] data      Byte string.
+ */
 void Driver::setParam(const uint32_t addr, const uint32_t length, uint8_t *data)
 {
     //m_screen->printLog("Driver::setParam %08x %08x\n", addr, length);
@@ -183,6 +189,12 @@ void Driver::setParam(const uint32_t addr, const uint32_t length, uint8_t *data)
 #endif
 }
 
+/*! \brief Retrieve a parameter fom Fantom memory.
+ *
+ * \param[in] addr      Parameter address.
+ * \param[in] length    Number of bytes to get.
+ * \param[out] data     Byte string.
+ */
 void Driver::getParam(const uint32_t addr, const uint32_t length, uint8_t *data)
 {
     const uint32_t rxHeaderLength = 10;
@@ -236,18 +248,28 @@ void Driver::getParam(const uint32_t addr, const uint32_t length, uint8_t *data)
         {
             data[i-rxHeaderLength] = byteRx;
         }
-        // TODO maybe Rx header check, checksum check
+        // \todo check Rx header check and checksum
     }
     //m_screen->printLog("received, length = %d\n", i);
     //m_screen->dumpToLog(rxBuf, i);
 }
 
+/*! \brief Set the volume of a part.
+ *
+ * \param[in] part      part number.
+ * \param[in] val       Volume value.
+ */
 void Driver::setVolume(uint8_t part, uint8_t val)
 {
     uint32_t addr = 0x10000000 + ((0x20+part)<<8) + 7;
     setParam(addr, 1, &val);
 }
 
+/*! \brief Retrieve all the relevant parameters of a Fantom Part.
+ *
+ * \param[in] p         Pointer to a Part.
+ * \param[in] idx       Part index within Performance.
+ */
 void Driver::getPartParams(Part *p, int idx)
 {
     const int partSize = 0x31;
@@ -267,6 +289,11 @@ void Driver::getPartParams(Part *p, int idx)
     p->m_fadeWidthUpper = buf[0x1a];
 }
 
+/*! \brief Retrieve a patch name from a Fantom Performance.
+ *
+ * \param[in] s         Pointer to char buffer of at least NameLength+1 chars.
+ * \param[in] idx       Part index within Performance.
+ */
 void Driver::getPatchName(char *s, int idx)
 {
     uint32_t offset = 0x20 * idx;
@@ -280,6 +307,10 @@ void Driver::getPatchName(char *s, int idx)
     s[NameLength] = 0;
 }
 
+/*! \brief Retrieve a Performance name from the Fantom.
+ *
+ * \param[in] s         Pointer to char buffer of at least NameLength+1 chars.
+ */
 void Driver::getPerfName(char *s)
 {
     uint8_t buf[NameLength+1];
@@ -289,6 +320,10 @@ void Driver::getPerfName(char *s)
     s[NameLength] = 0;
 }
 
+/*! \brief Set a Performance name in the Fantom.
+ *
+ * \param[in] s         Pointer to char buffer, optionally zero-terminated.
+ */
 void Driver::setPerfName(const char *s)
 {
     uint8_t buf[NameLength+1];
@@ -300,6 +335,11 @@ void Driver::setPerfName(const char *s)
     setParam(0x10000000, NameLength, buf);
 }
 
+/*! \brief Set a Part name in the Fantom.
+ *
+ * \param[in] part  Index of the part within the performance.
+ * \param[in] s     Pointer to char buffer, optionally zero-terminated.
+ */
 void Driver::setPartName(int part, const char *s)
 {
     uint8_t buf[NameLength+1];

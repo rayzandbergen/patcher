@@ -5,8 +5,10 @@
  */
 #include "controller.h"
 
+namespace ControllerRemap {
+
 //! \brief Interpolate controller value.
-Real ControllerRemap::interpolate(Real x, Real x0, Real y0, Real x1, Real y1) const
+Real Default::interpolate(Real x, Real x0, Real y0, Real x1, Real y1) const
 {
     Real f = (x - x0)/(x1-x0);
     if (f < 0)
@@ -17,7 +19,7 @@ Real ControllerRemap::interpolate(Real x, Real x0, Real y0, Real x1, Real y1) co
 }
 
 //! \brief Do the actual controller remapping.
-void ControllerRemap::value(uint8_t controller, uint8_t val, uint8_t *controllerOut, uint8_t *valOut) const
+void Default::value(uint8_t controller, uint8_t val, uint8_t *controllerOut, uint8_t *valOut) const
 {
     if (controller != m_from)
     {
@@ -29,7 +31,7 @@ void ControllerRemap::value(uint8_t controller, uint8_t val, uint8_t *controller
     *valOut = (uint8_t)interpolate((Real)val, m_x0, m_y0, m_x1, m_y1);
 }
 
-Real ControllerRemapVolQuadratic::interpolate(Real x,
+Real VolQuadratic::interpolate(Real x,
     Real x0, Real y0, Real x1, Real y1) const
 {
     Real f = (x - x0)/(x1-x0);
@@ -44,3 +46,4 @@ Real ControllerRemapVolQuadratic::interpolate(Real x,
     return y0 + f*(y1-y0);
 }
 
+} // namespace ControllerRemap

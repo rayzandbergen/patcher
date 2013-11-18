@@ -14,18 +14,21 @@
 #include <sys/unistd.h>
 #include "error.h"
 
-//! \brief The memory map of persistent data: current \a Track and \a Section.
+//! \brief The memory map of persistent data: current \a Track and \a Section index.
 class MemoryMap
 {
 public:
     static const int expectMagic = 0xafbe8219;  //!<    Magic number, must be changed if layout changes.
     int m_magic;                                //!<    Magic number.
     bool m_valid;                               //!<    Validity flag.
-    int m_track;                                //!<    Current \a Track.
-    int m_section;                              //!<    Current \a Section.
+    int m_track;                                //!<    Current \a Track number.
+    int m_section;                              //!<    Current \a Section number.
 };
 
-//! \brief Constructor.
+/*! \brief Constructor.
+ *
+ * Creates some shared memory, or attaches to existing.
+ */
 Persist::Persist(): m_memMap(0)
 {
     int fd = shm_open("/patcher-persistent",
@@ -58,11 +61,11 @@ Persist::Persist(): m_memMap(0)
         m_memMap->m_magic != MemoryMap::expectMagic ||
         !m_memMap->m_valid)
     {
-        store(0, 0);
+        store(0, 0); // clear
     }
 }
 
-/*! \brief  Store current \a Track and \a Section
+/*! \brief  Store current \a Track and \a Section in shared memory.
  */
 void Persist::store(int track, int section)
 {
@@ -73,7 +76,7 @@ void Persist::store(int track, int section)
     m_memMap->m_valid = true;
 }
 
-/*! \brief  Restore current \a Track and \a Section
+/*! \brief  Restore current \a Track and \a Section from shared memory.
  */
 void Persist::restore(int *track, int *section)
 {

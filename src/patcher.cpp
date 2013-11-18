@@ -41,10 +41,10 @@ namespace MetaNote
 {
     //! \brief In meta mode, these note numbers are used to select a track.
     enum {
-        info = MidiNote::E4,      //!< Toggle info mode.
-        up = MidiNote::D4,        //!< Move to next track in setlist.
-        down = MidiNote::C4,      //!< Move to previous track in setlist.
-        select = MidiNote::C5     //!< Select directly.
+        info = Midi::Note::E4,      //!< Toggle info mode.
+        up = Midi::Note::D4,        //!< Move to next track in setlist.
+        down = Midi::Note::C4,      //!< Move to previous track in setlist.
+        select = Midi::Note::C5     //!< Select directly.
     };
 }
 
@@ -59,7 +59,7 @@ private:
     TrackList m_trackList;              //!< Global \a Track list.
     Midi::Driver *m_midi;               //!< Pointer to global MIDI \a Driver object.
     Fantom::Driver *m_fantom;           //!< Pointer to global Fantom \a Driver object.
-    Fantom::Performance *m_perf;        //!< Array of \a Performance objects.
+    Fantom::Performance *m_perf;        //!< Array of \a Performance objects, in the same order as stored in the Fantom.
     int m_trackIdx;                     //!< Current track index
     int m_trackIdxWithinSet;            //!< Current track index within \a SetList.
     SetList m_setList;                  //!< Global \a SetList object.
@@ -76,7 +76,7 @@ private:
         return currentTrack()->m_section[m_sectionIdx]; } //!< The current \a Section.
     int nofTracks() const { return m_trackList.size(); } //!< The number of \a Tracks.
     const char *nextTrackName() {
-        if (m_trackIdxWithinSet+1 < m_setList.length())
+        if (m_trackIdxWithinSet+1 < m_setList.size())
             return m_trackList[m_setList[m_trackIdxWithinSet+1]]->m_name;
         else
             return "<none>";
@@ -648,7 +648,7 @@ void Patcher::updateScreen()
         1+m_sectionIdx, currentTrack()->nofSections(),
         currentSection()->m_name);
     mvwprintw(win(), 2, 44,
-        "%03d/%03d within setlist", 1+m_trackIdxWithinSet, m_setList.length());
+        "%03d/%03d within setlist", 1+m_trackIdxWithinSet, m_setList.size());
     mvwprintw(win(), 5, 0,
         "performance \"%s\"\n",
         currentPerf()->m_name);
@@ -951,7 +951,7 @@ void Patcher::showInfo()
 void Patcher::changeTrackByNote(uint8_t note)
 {
     bool valid = false;
-    if (note == MetaNote::up && m_trackIdxWithinSet < m_setList.length()-1)
+    if (note == MetaNote::up && m_trackIdxWithinSet < m_setList.size()-1)
     {
         m_trackIdxWithinSet++;
         m_trackIdx = m_setList[m_trackIdxWithinSet];
@@ -1027,7 +1027,7 @@ int main(int argc, char **argv)
 #endif
         setAlarmHandler();
         Screen screen;
-        wprintw(screen.m_track, "   *** initialising ***\n\n"); 
+        wprintw(screen.m_track, "   *** initialising ***\n\n");
         wrefresh(screen.m_track);
         Midi::Driver midi(&screen);
         Fantom::Driver fantom(&screen, &midi);

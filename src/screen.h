@@ -17,7 +17,7 @@
 //!  \brief Wraps an ncurses(3X) screen in an object with some convenience functions.
 class Screen
 {
-    enum Id //!< Screen ID for logging.
+    enum Id                         //!< Screen ID for logging.
         { track, midi, debug };
 	WINDOW *m_midiLog;              //!< curses MIDI window object.
     int vprintf(Id id, const char *fmt, va_list);   //!< Low level log function.

@@ -38,7 +38,9 @@ Device deviceList[] =
 };
 
 
-/*  \brief Map from DevId to file descriptor.
+/*! \brief Map from DevId to file descriptor.
+ *
+ *  \param[in]  deviceId    A valid \a DevId.
  */
 int Driver::fd(int deviceId) const
 {
@@ -47,34 +49,34 @@ int Driver::fd(int deviceId) const
     return -1;
 }
 
-/*  \brief Obtain file descriptors for all devices.
+/*! \brief Obtain file descriptors for all devices.
  */
-void Driver::openDevices(void)
+void Driver::openDevices()
 {
     Device *dIn = m_deviceList;
     char devStr[100];
     int deviceIdx = 0;
-    while (dIn->m_longDescr != 0)
+    while (dIn->m_longDescription != 0)
     {
         Device *dOut = dIn+1;
         dOut->m_card = dIn->m_card = cardNameToNum(dIn->m_cardName);
         sprintf(devStr, "hw:%d,%d,%d", dIn->m_card, dIn->m_sub1, dIn->m_sub2);
         if (dIn->m_id != Device::none && dOut->m_id != Device::none)
         {
-            m_screen->printMidi("opening %s\n%s\n", dIn->m_longDescr, devStr);
-            m_screen->printMidi("opening %s\n%s\n", dOut->m_longDescr, devStr);
+            m_screen->printMidi("opening %s\n%s\n", dIn->m_longDescription, devStr);
+            m_screen->printMidi("opening %s\n%s\n", dOut->m_longDescription, devStr);
             m_screen->flushMidi();
             dIn->m_fd = dOut->m_fd = openRaw(devStr, O_RDWR);
         }
         else if (dIn->m_id == Device::none && dOut->m_id != Device::none)
         {
-            m_screen->printMidi("opening %s\n%s\n", dOut->m_longDescr, devStr);
+            m_screen->printMidi("opening %s\n%s\n", dOut->m_longDescription, devStr);
             m_screen->flushMidi();
             dOut->m_fd = openRaw(devStr, O_WRONLY);
         }
         else if (dIn->m_id != Device::none && dOut->m_id == Device::none)
         {
-            m_screen->printMidi("opening %s\n%s\n", dIn->m_longDescr, devStr);
+            m_screen->printMidi("opening %s\n%s\n", dIn->m_longDescription, devStr);
             m_screen->flushMidi();
             dIn->m_fd = openRaw(devStr, O_RDONLY);
         }
@@ -98,7 +100,7 @@ void Driver::openDevices(void)
 /*! \brief Convert a note number to a string.
  *
  *  \param[in] num   MIDI note number.
- *  \param[OUT] s    string buffer, must be at least 5 bytes.
+ *  \param[out] s    string buffer, must be at least 5 bytes.
  */
 void noteName(uint8_t num, char *s)
 {
@@ -162,7 +164,7 @@ int Driver::wait(int usecTimeout, int device) const
     int maxFd = 0;
     if (device == Device::all)
     {
-        for (int i=0; m_deviceList[i].m_longDescr;i++)
+        for (int i=0; m_deviceList[i].m_longDescription;i++)
         {
             if (m_deviceList[i].m_direction == in && m_deviceList[i].m_id != Device::none)
             {
@@ -194,7 +196,7 @@ int Driver::wait(int usecTimeout, int device) const
     {
         throw(Error("select", errno));
     }
-    for (int i=0; m_deviceList[i].m_longDescr;i++)
+    for (int i=0; m_deviceList[i].m_longDescription;i++)
     {
         if (m_deviceList[i].m_id != Device::none &&
             m_deviceList[i].m_direction == in &&
@@ -293,7 +295,7 @@ uint8_t Driver::getByte(int device)
  * This function wraps the write(2) function, so that an \a Alarm
  * may cause an exception.
  *
- * \param[in] device    Device ID.
+ * \param[in] fd        File descriptor.
  * \param[in] buf       Byte buffer.
  * \param[in] count     Number of bytes to be written.
  */

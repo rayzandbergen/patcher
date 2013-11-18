@@ -10,7 +10,7 @@
  */
 class Error
 {
-    int m_exitCode;                         //!<    The exit code for the process.
+    int m_exitCode;                         //!<    The intended exit code for the process.
     std::stringstream m_sstream;            //!<    Stream access to the error message.
     std::string m_tempString;               //!<    Temporary string buffer.
 public:
@@ -53,9 +53,9 @@ public:
     }
     //! \brief Return a string stream to write an error message to.
     std::stringstream &stream() { return m_sstream; }
-    //! \brief Get the exit code for the process.
+    //! \brief Get the intended exit code for the process.
     int exitCode() const { return m_exitCode; }
-    //! \brief Set the exit code for the process.
+    //! \brief Set the intended exit code for the process.
     int &exitCode() { return m_exitCode; }
 };
 

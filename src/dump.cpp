@@ -45,7 +45,7 @@ bool Dump::fopen(const char *fileName, int flags, int mode)
     m_fd = open(fileName, flags, mode);
     return m_fd >= 0;
 }
-void Dump::fclose(void)
+void Dump::fclose()
 {
     close(m_fd);
 }

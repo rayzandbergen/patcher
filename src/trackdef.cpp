@@ -12,8 +12,8 @@
 #include "error.h"
 
 //! \brief Construct a default Section with a given name.
-Section::Section(const char *name, bool noteOffEnter, bool noteOffLeave):
-        m_name(name), m_noteOffEnter(noteOffEnter), m_noteOffLeave(noteOffLeave),
+Section::Section(const char *name):
+        m_name(name), m_noteOffEnter(true), m_noteOffLeave(true),
         m_nextTrack(TrackDef::Unspecified),
         m_nextSection(TrackDef::Unspecified),
         m_previousTrack(TrackDef::Unspecified),
@@ -37,17 +37,18 @@ void Section::clear()
     m_name = 0;
 }
 
-SwPart::SwPart(const char *name, uint8_t channel, int transpose,
-            const char *lower, const char *upper,
-            bool mono, Transposer *t):
-        m_name(name), m_channel(channel), m_transpose(transpose),
-        m_customTransposeEnabled(false), m_mono(mono), m_transposer(t)
+//! \brief Contruct a default SwPart with a given name.
+SwPart::SwPart(const char *name):
+        m_name(name), m_channel(255), m_transpose(0),
+        m_customTransposeEnabled(false),
+        m_rangeLower(0), m_rangeUpper(127),
+        m_controllerRemap(new ControllerRemap::Default),
+        m_mono(false),
+        m_transposer(0)
 {
-    m_rangeLower = lower ? stringToNoteNum(lower) : 0;
-    m_rangeUpper = upper ? stringToNoteNum(upper): 127;
-    m_controllerRemap = new ControllerRemap;
 }
 
+//! \brief Destructor.
 SwPart::~SwPart()
 {
     clear();
@@ -64,6 +65,7 @@ void SwPart::clear()
     m_name = 0;
 }
 
+//! \brief Convert a string to a MIDI note number.
 uint8_t SwPart::stringToNoteNum(const char *s)
 {
     const struct NoteOffset {
@@ -108,10 +110,12 @@ uint8_t SwPart::stringToNoteNum(const char *s)
     return num;
 }
 
-Track::Track(const char *name, bool chain, int startSection): m_name(name), m_chain(chain), m_startSection(startSection)
+//! \brief Construct a default Track with a given name.
+Track::Track(const char *name): m_name(name), m_chain(false), m_startSection(0)
 {
 }
 
+//! \brief Destructor.
 Track::~Track()
 {
     clear();
@@ -127,6 +131,7 @@ void Track::clear()
     m_name = 0;
 }
 
+//! \brief Dump to a log file.
 void Track::dumpToLog(Screen *screen, const char *prefix) const
 {
     screen->printLog("%s.name:%s\n", prefix, m_name);
@@ -141,6 +146,7 @@ void Track::dumpToLog(Screen *screen, const char *prefix) const
     }
 }
 
+//! \brief Dump to a log file.
 void Section::dumpToLog(Screen *screen, const char *prefix) const
 {
     screen->printLog("%s.name:%s\n", prefix, m_name);
@@ -159,6 +165,7 @@ void Section::dumpToLog(Screen *screen, const char *prefix) const
     }
 }
 
+//! \brief Dump to a log file.
 void SwPart::dumpToLog(Screen *screen, const char *prefix) const
 {
     screen->printLog("%s.name:%s\n", prefix, m_name ? m_name : "noName");

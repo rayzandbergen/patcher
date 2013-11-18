@@ -56,15 +56,16 @@ enum InOut { none, in = 100, out };
 //! \brief State of a single MIDI device.
 struct Device
 {
-    enum DevId { none = 0, A30, Fcb1010, FantomOut, FantomIn, BcfOut, BcfIn, max, all }; //!< My hardware.
+    //!<    \brief My hardware.
+    enum DeviceId { none = 0, A30, Fcb1010, FantomOut, FantomIn, BcfOut, BcfIn, max, all };
     const char *m_cardName;     //!< ALSA driver name.
     int m_card;                 //!< ALSA card number.
     int m_sub1;                 //!< ALSA sub ID 1.
     int m_sub2;                 //!< ALSA sub ID 2.
     InOut m_direction;          //!< In or out.
-    DevId m_id;                 //!< Device ID.
-    const char *m_shortDescr;   //!< Short description.
-    const char *m_longDescr;    //!< Long description.
+    DeviceId m_id;              //!< Device ID.
+    const char *m_shortDescription;   //!< Short description.
+    const char *m_longDescription;    //!< Long description.
     int m_fd;                   //!< ALSA File descriptor.
 };
 
@@ -78,12 +79,12 @@ struct Device
 class Driver {
     Screen *m_screen;                               //!< \a Screen object to log to.
 	struct Device *m_deviceList;                    //!< List of all MIDI devices.
-    int m_deviceIdToDeviceTabIdx[Device::max];      //!< Map from DevId to m_deviceList index.
+    int m_deviceIdToDeviceTabIdx[Device::max];      //!< Map from DeviceId to m_deviceList index.
     int m_suicideFd;                                //!< Activity on this file descriptor kills the process.
     int fd(int deviceId) const;
     int cardNameToNum(const char *target) const;
 	int openRaw(const char *portName, int mode) const;
-    void openDevices(void);
+    void openDevices();
 public:
 	Driver(Screen *screen);
     int wait(int usecTimeout = 0, int device = Device::all) const;
