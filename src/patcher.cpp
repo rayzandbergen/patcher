@@ -671,8 +671,7 @@ void Patcher::updateScreen()
         int x = (partsShown / 4) * 19;
         int y = 7 + partsShown % 4;
         const Fantom::Part *part = currentPerf()->m_part+partIdx;
-        if (part->m_channel == 255)
-            break; // oops, we're not initialised yet
+        ASSERT(part->m_channel != 255);
         if (1 || part->m_channel == m_sectionIdx)
         {
             bool active = m_channelActivity.get(part->m_channel);
@@ -811,7 +810,6 @@ void Patcher::changeSection(uint8_t sectionIdx)
         }
         m_sectionIdx = sectionIdx;
         show(UpdateScreen|UpdateFantomDisplay);
-        redrawwin(win()); // TODO why is this here?
         m_persist.store(m_trackIdx, m_sectionIdx);
     }
 }
