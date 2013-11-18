@@ -105,11 +105,14 @@ private:
     bool debounced(Real delaySeconds);
     void consumeSysEx(int device);
 public:
-    static const int UpdateNothing = 0;                 //!< Bit flag: update nothing.
-    static const int UpdateFaders = 1;                  //!< Bit flag: update BCF faders.
-    static const int UpdateFantomDisplay = 2;           //!< Bit flag: update Fantom display.
-    static const int UpdateScreen = 4;                  //!< Bit flag: update the \a Screen.
-    static const int UpdateAll = 7;                     //!< Bit flag: update all.
+    //! \brief Update bit flags.
+    enum UpdateFlags {
+        UpdateNothing = 0,                 //!< Update nothing.
+        UpdateFaders = 1,                  //!< Update BCF faders.
+        UpdateFantomDisplay = 2,           //!< Update Fantom display.
+        UpdateScreen = 4,                  //!< Update the \a Screen.
+        UpdateAll = 7                      //!< Update all.
+    };
     void dumpTrackList();
     void downloadPerfomanceData();
     void mergePerformanceData();
