@@ -15,8 +15,8 @@ namespace Fantom
 {
 
 static const uint8_t programChangeChannel = 0x0f;         //!< MIDI channel the Fantom listens on for program changes.
-static const int NameLength = 12;                         //!< Name length of a Fantrom object.
-static const int PresetLength = 20;                       //!< Name length of a Fantrom preset.
+static const int NameLength = 12;                         //!< Name length of a Fantom object.
+static const int PresetLength = 20;                       //!< Name length of a Fantom preset.
 
 /*! \brief A Fantom 'patch', i.e. a basic sound.
  *
