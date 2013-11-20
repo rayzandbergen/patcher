@@ -352,5 +352,27 @@ void Driver::setPartName(int part, const char *s)
     setParam(addr, NameLength, buf);
 }
 
+/*! \brief Select a performance in the Fantom.
+ *
+ * \param[in] performanceIndex  Index of the performance.
+ */
+void Driver::selectPerformance(uint8_t performanceIndex) const
+{
+    m_midi->putBytes(Midi::Device::FantomOut,
+        Midi::programChange|Fantom::programChangeChannel, performanceIndex);
+}
+
+/*! \brief Select performances from memory card in the Fantom.
+ *
+ * This only works when Fantom is already in performance mode.
+ */
+void Driver::selectPerformanceFromMemCard() const
+{
+    m_midi->putBytes(Midi::Device::FantomOut,
+        Midi::controller|Fantom::programChangeChannel, 0x00, 85);
+    m_midi->putBytes(Midi::Device::FantomOut,
+        Midi::controller|Fantom::programChangeChannel, 0x20, 32);
+}
+
 } // namespace Fantom
 

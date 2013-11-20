@@ -94,6 +94,8 @@ struct Driver
     void getPerfName(char *s);
     void setPerfName(const char *s);
     void setPartName(int part, const char *s);
+    void selectPerformance(uint8_t performanceIndex) const;
+    void selectPerformanceFromMemCard() const;
 };
 
 } // Fantom namespace

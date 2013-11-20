@@ -177,14 +177,7 @@ void Patcher::downloadPerfomanceData()
     const char *fantomPatchFile = "fantom_cache.bin";
 
     m_performanceList = new Fantom::Performance[nofTracks()];
-    // bank select 'Card, performance'
-    // This only works when Fantom is already in performance mode
-    m_midi->putBytes(Midi::Device::FantomOut,
-        Midi::controller|Fantom::programChangeChannel, 0x00, 85);
-    m_midi->putBytes(Midi::Device::FantomOut,
-        Midi::controller|Fantom::programChangeChannel, 0x20, 32);
-    m_midi->putBytes(Midi::Device::FantomOut,
-        Midi::programChange|Fantom::programChangeChannel, 0);
+    m_fantom->selectPerformanceFromMemCard();
     Dump d;
     if (d.fopen(fantomPatchFile, O_RDONLY, 0))
     {
@@ -200,18 +193,18 @@ void Patcher::downloadPerfomanceData()
     mvwprintw(win(), 2, 3, "Downloading Fantom Performance data:");
     for (int i=0; i<nofTracks(); i++)
     {
+        m_fantom->selectPerformance(i);
         changeTrack(i, UpdateNothing);
         nanosleep(&fantomPerformanceSelectDelay, NULL);
         m_fantom->getPerfName(nameBuf);
         g_alarm.m_doTimeout = false;
-        mvwprintw(win(), 4, 3, "Track   '%s'", nameBuf);
-        m_screen->showProgressBar(4, 28, ((Real)i)/nofTracks());
+        mvwprintw(win(), 4, 3, "Performance: '%s'", nameBuf);
+        m_screen->showProgressBar(4, 32, ((Real)i)/nofTracks());
         wrefresh(win());
         strcpy(m_performanceList[i].m_name, nameBuf);
         for (int j=0; j<Fantom::Performance::NofParts; j++)
         {
             Fantom::Part *hwPart = m_performanceList[i].m_part+j;
-            //nanosleep(&fantomPerformanceSelectDelay, NULL);
             m_fantom->getPartParams(hwPart, j);
             bool readPatchParams;
             hwPart->m_number = j;
@@ -224,8 +217,8 @@ void Patcher::downloadPerfomanceData()
             {
                 strcpy(hwPart->m_patch.m_name, "secret GM   ");
             }
-            mvwprintw(win(), 5, 3, "Section '%s'", hwPart->m_patch.m_name);
-            m_screen->showProgressBar(5, 28, ((Real)(j+1))/Fantom::Performance::NofParts);
+            mvwprintw(win(), 5, 3, "Part:        '%s'", hwPart->m_patch.m_name);
+            m_screen->showProgressBar(5, 32, ((Real)(j+1))/Fantom::Performance::NofParts);
             wrefresh(win());
         }
     }
@@ -892,8 +885,7 @@ void Patcher::changeTrack(uint8_t track, int updateFlags)
     //m_screen->printMidi("change track %d\n", track);
     m_trackIdx = track;
     m_sectionIdx = currentTrack()->m_startSection; // cannot use changeSection!
-    m_midi->putBytes(Midi::Device::FantomOut,
-        Midi::programChange|Fantom::programChangeChannel, (uint8_t)m_trackIdx);
+    m_fantom->selectPerformance(m_trackIdx);
     show(updateFlags);
     m_persist.store(m_trackIdx, m_sectionIdx);
 }
