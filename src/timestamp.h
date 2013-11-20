@@ -6,10 +6,25 @@
 #ifndef TIMESTAMP_H
 #define TIMESTAMP_H
 #include <time.h>
+#include <cmath>
 #include "patcher.h"
-class TimeSpec: public timespec { public: TimeSpec() { tv_nsec=0; tv_sec=0;} };
-void getTime(struct timespec *now);
-Real timeDiffSeconds(const struct timespec *then, const struct timespec *now);
-void timeDiff(struct timespec *diff, const struct timespec *then, const struct timespec *now);
+class TimeSpec: public timespec
+{
+public:
+    TimeSpec(time_t sec = 0, long int nsec = 0)
+    {
+        tv_sec=sec;
+        tv_nsec=nsec;
+    }
+    TimeSpec(Real sec)
+    {
+        Real floorSec = floor(sec);
+        tv_sec = (time_t)floorSec;
+        tv_nsec = (time_t)((sec - floorSec)*(Real)1e+9);
+    }
+};
+void getTime(TimeSpec &now);
+Real timeDiffSeconds(const TimeSpec &then, const TimeSpec &now);
+void timeDiff(TimeSpec &diff, const TimeSpec &then, const TimeSpec &now);
 #endif
 

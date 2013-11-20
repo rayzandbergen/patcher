@@ -10,9 +10,9 @@
  *
  * \param[out] now      The current time from CLOCK_REALTIME.
  */
-void getTime(struct timespec *now)
+void getTime(TimeSpec &now)
 {
-    clock_gettime(CLOCK_REALTIME, now);
+    clock_gettime(CLOCK_REALTIME, &now);
 }
 
 /*! \brief Calculates a time difference.
@@ -21,17 +21,17 @@ void getTime(struct timespec *now)
  * \param[in]  then     Previous time.
  * \param[in]  now      More recent time.
  */
-void timeDiff(struct timespec *diff, const struct timespec *then, const struct timespec *now)
+void timeDiff(TimeSpec &diff, const TimeSpec &then, const TimeSpec &now)
 {
-    diff->tv_sec = now->tv_sec - then->tv_sec;
-    if (now->tv_nsec < then->tv_nsec)
+    diff.tv_sec = now.tv_sec - then.tv_sec;
+    if (now.tv_nsec < then.tv_nsec)
     {
-        diff->tv_nsec = ((time_t)1000000000 - then->tv_nsec) + now->tv_nsec;
-        diff->tv_sec--;
+        diff.tv_nsec = ((time_t)1000000000 - then.tv_nsec) + now.tv_nsec;
+        diff.tv_sec--;
     }
     else
     {
-        diff->tv_nsec = now->tv_nsec - then->tv_nsec;
+        diff.tv_nsec = now.tv_nsec - then.tv_nsec;
     }
 }
 
@@ -41,10 +41,10 @@ void timeDiff(struct timespec *diff, const struct timespec *then, const struct t
  * \param[in]  now      More recent time.
  * \return      The time difference in seconds.
  */
-Real timeDiffSeconds(const struct timespec *then, const struct timespec *now)
+Real timeDiffSeconds(const TimeSpec &then, const TimeSpec &now)
 {
-    struct timespec diff;
-    timeDiff(&diff, then, now);
-    return diff.tv_sec + 1e-9 * diff.tv_nsec;
+    TimeSpec diff;
+    timeDiff(diff, then, now);
+    return diff.tv_sec + ((Real)1e-9) * diff.tv_nsec;
 }
 

@@ -127,7 +127,7 @@ void ActivityList::update(const TimeSpec &ts, size_t idx)
         {
             //std::cout << "checking " << idx << "\n";
             bool recentTrigger = 
-                timeDiffSeconds(&m_nodeList[idx].m_ts, &ts) < (Real)0.3;
+                timeDiffSeconds(m_nodeList[idx].m_ts, ts) < (Real)0.3;
             if (!recentTrigger)
             {
                 m_dirty = true;

@@ -83,12 +83,13 @@ private:
     } //!< The name of the next \a Track.
     struct {
         bool m_enabled;                                 //!< Enable switch for info mode.
-        struct timespec m_previous;                     //!< Previous time the Fantom display was updated.
+        TimeSpec m_previous;                            //!< Previous time the Fantom display was updated.
         size_t m_offset;                                //!< Scroll offset.
         std::string m_text;                             //!< Info text to be displayed.
     } m_info;                                           //!< Fantom info display state.
     int m_partOffsetBcf;                                //!< Either 0 or 8, since BCF only has 8 sliders to show 16 parameters
-    struct timespec m_debouncePrev;                     //!< Absolute time of the latest \a debounced() call.
+    TimeSpec m_debouncePrev;                            //!< Time since last debounce test.
+    TimeSpec m_eventInTime;                             //!< Arrival time of the current Midi event.
     void sendEventToFantom(uint8_t midiStatus,
                 uint8_t data1, uint8_t data2 = 255);
     void allNotesOff();
@@ -139,7 +140,7 @@ public:
         m_info.m_enabled = false;
         m_info.m_offset = 0;
         m_trackIdx = m_setList[0];
-        getTime(&m_debouncePrev);
+        getTime(m_debouncePrev);
         m_info.m_previous = m_debouncePrev;
     };
 };
@@ -195,14 +196,12 @@ void Patcher::downloadPerfomanceData()
         return;
     }
     char nameBuf[Fantom::NameLength+1];
-    struct timespec ts;
-    ts.tv_sec = 0;
-    ts.tv_nsec = 10*1000*1000;
+    TimeSpec fantomPerformanceSelectDelay((Real)0.01);
     mvwprintw(win(), 2, 3, "Downloading Fantom Performance data:");
     for (int i=0; i<nofTracks(); i++)
     {
         changeTrack(i, UpdateNothing);
-        nanosleep(&ts, NULL);
+        nanosleep(&fantomPerformanceSelectDelay, NULL);
         m_fantom->getPerfName(nameBuf);
         g_alarm.m_doTimeout = false;
         mvwprintw(win(), 4, 3, "Track   '%s'", nameBuf);
@@ -212,7 +211,7 @@ void Patcher::downloadPerfomanceData()
         for (int j=0; j<Fantom::Performance::NofParts; j++)
         {
             Fantom::Part *hwPart = m_performanceList[i].m_part+j;
-            //nanosleep(&ts, NULL);
+            //nanosleep(&fantomPerformanceSelectDelay, NULL);
             m_fantom->getPartParams(hwPart, j);
             bool readPatchParams;
             hwPart->m_number = j;
@@ -298,10 +297,9 @@ void Patcher::eventLoop()
         int deviceRx = m_midi->wait();
         uint8_t byteRx = m_midi->getByte(deviceRx);
         g_alarm.m_doTimeout = false;
-        TimeSpec now;
-        getTime(&now);
-        m_channelActivity.update(now);
-        m_softPartActivity.update(now);
+        getTime(m_eventInTime);
+        m_channelActivity.update(m_eventInTime);
+        m_softPartActivity.update(m_eventInTime);
         if (byteRx < 0x80)
         {
             // data without status - skip
@@ -618,10 +616,8 @@ void Patcher::sendEventToFantom(uint8_t midiStatus,
             }
             if (isNoteData)
             {
-                TimeSpec now;
-                getTime(&now);
-                m_channelActivity.trigger(swPart->m_channel, data1Out, now);
-                m_softPartActivity.trigger(i, data1Out, now);
+                m_channelActivity.trigger(swPart->m_channel, data1Out, m_eventInTime);
+                m_softPartActivity.trigger(i, data1Out, m_eventInTime);
             }
         }
     } // FOREACH part in current section
@@ -834,12 +830,10 @@ void Patcher::changeSection(uint8_t sectionIdx)
  */
 bool Patcher::debounced(Real delaySeconds)
 {
-    struct timespec now;
-    getTime(&now);
-    bool rv = timeDiffSeconds(&m_debouncePrev, &now) > delaySeconds;
+    bool rv = timeDiffSeconds(m_debouncePrev, m_eventInTime) > delaySeconds;
     if (rv)
     {
-        m_debouncePrev = now;
+        m_debouncePrev = m_eventInTime;
     }
     return rv;
 }
@@ -932,12 +926,10 @@ void Patcher::toggleInfoMode(uint8_t note)
  */
 void Patcher::showInfo()
 {
-    struct timespec now;
-    getTime(&now);
-    bool rv = timeDiffSeconds(&m_info.m_previous, &now) > 0.333;
+    bool rv = timeDiffSeconds(m_info.m_previous, m_eventInTime) > 0.333;
     if (rv)
     {
-        m_info.m_previous = now;
+        m_info.m_previous = m_eventInTime;
         // abuse the fantom screen to print some info
         char buf[20];
         for (size_t i=0, j=m_info.m_offset; i<sizeof(buf); i++)
