@@ -52,7 +52,7 @@ namespace MetaNote
 class Patcher
 {
 private:
-    const Real debounceTime;            //!< \brief Debounce time in seconds, used to debounce track and section changes.
+    const Real debounceTime;            //!< Debounce time in seconds, used to debounce track and section changes.
     ActivityList m_channelActivity;     //!< Per-channel \a Activity.
     ActivityList m_softPartActivity;    //!< Per-\a SwPart \a Activity.
     Screen *m_screen;                   //!< Pointer to global \a Screen object.
@@ -88,7 +88,7 @@ private:
         std::string m_text;                             //!< Info text to be displayed.
     } m_info;                                           //!< Fantom info display state.
     int m_partOffsetBcf;                                //!< Either 0 or 8, since BCF only has 8 sliders to show 16 parameters
-    TimeSpec m_debouncePrev;                            //!< Time since last debounce test.
+    TimeSpec m_debouncePrev;                            //!< Absolute time of last debounce test.
     TimeSpec m_eventInTime;                             //!< Arrival time of the current Midi event.
     void sendEventToFantom(uint8_t midiStatus,
                 uint8_t data1, uint8_t data2 = 255);
@@ -948,7 +948,7 @@ void Patcher::showInfo()
 
 /*! \brief Switch to \a Track indicated by note number.
  *
- * See \a MetaNote::select.
+ * \sa MetaNote::select.
  *
  * param [in] note  MIDI note number.
  */

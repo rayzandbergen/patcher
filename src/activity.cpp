@@ -46,7 +46,6 @@ public:
  *
  * \param[in]   majorSize   Major size, i.e. query granularity.
  * \param[in]   minorSize   Minor size.
- * \param[in]   ts          Some valid time.
  */
 ActivityList::ActivityList(int majorSize, int minorSize): m_majorSize(majorSize), m_dirty(true)
 {

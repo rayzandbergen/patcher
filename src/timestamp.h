@@ -11,11 +11,20 @@
 class TimeSpec: public timespec
 {
 public:
+    /*! \brief Constructor.
+     *
+     * \param[in] sec   Seconds.
+     * \param[in] nsec  Nanoseconds.
+     */
     TimeSpec(time_t sec = 0, long int nsec = 0)
     {
         tv_sec=sec;
         tv_nsec=nsec;
     }
+    /*! \brief Constructor.
+     *
+     * \param[in] sec   Seconds.
+     */
     TimeSpec(Real sec)
     {
         Real floorSec = floor(sec);
