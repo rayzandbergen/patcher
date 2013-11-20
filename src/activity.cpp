@@ -4,53 +4,158 @@
  *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
  */
 #include <stdio.h>
+//#include <iostream>
+#include <stdlib.h>
+#include <vector>
 #include "timestamp.h"
 #include "activity.h"
 #include "error.h"
+#include "patcher.h"
 
-typedef struct timespec TimeSpec;   //!< Shorthand for struct timespec so we can 'new' it.
+namespace {
 
-Activity::Activity(int nofSlots): m_nofSlots(nofSlots)
+//! \brief calculates ceil(log2(x))
+int ceilLog2(int x)
 {
-    m_active = new bool[m_nofSlots];
-    m_t0 = new TimeSpec[m_nofSlots];
-    clean();
-    for (int i=0; i<m_nofSlots; i++)
-    {
-        m_active[i] = false;
-    }
+    int y = 0;
+    for (int testVal = 1; x > testVal; y++, testVal<<=1);
+    return y;
 }
 
-Activity::~Activity()
+} // anonymous namespace
+
+/* \brief Binary activity tree node.
+ *
+ * Active means 'triggered recently'. Since the vast majority of
+ * slots is inactive at any given time, a binary tree is used to
+ * get to the few active slots quickly.
+ */
+class ActivityNode
 {
-    delete[] m_active;
-    delete[] m_t0;
+public:
+    TimeSpec m_ts;      //!<    Time of last trigger, valid for leaf nodes only, so slightly wasteful.
+    bool m_active;      //!<    This node, or at least 1 child is active.
+    //! \brief Default constructor.
+    ActivityNode(): m_active(false) { }
+};
+
+/*! \brief Constructor.
+ *
+ * Contains a binary tree of activity flags to keep track of at most
+ * majorSize * minorSize times.
+ *
+ * \param[in]   majorSize   Major size, i.e. query granularity.
+ * \param[in]   minorSize   Minor size.
+ * \param[in]   ts          Some valid time.
+ */
+ActivityList::ActivityList(int majorSize, int minorSize): m_majorSize(majorSize), m_dirty(true)
+{
+    m_majorBits = ceilLog2(majorSize);
+    m_minorBits = ceilLog2(minorSize);
+    m_size = 1 << (m_majorBits + m_minorBits);
+    // we waste the first entry to simplify
+    // the index expressions.
+    // Leaf nodes start at offset m_size.
+    m_nodeList = new ActivityNode[2*m_size];
 }
 
-void Activity::set(int idx)
+/*! \brief Destructor.
+ */
+ActivityList::~ActivityList()
 {
-    ASSERT(idx < m_nofSlots);
-    if (!m_active[idx])
-    {
+    delete[] m_nodeList;
+}
+
+/*! \brief Stores the current time at given major/minor location and updates the activity tree.
+ *
+ * \param[in]   major   Major location index.
+ * \param[in]   minor   Minor location index.
+ * \param[in]   ts      Current time.
+ */
+void ActivityList::trigger(int major, int minor, const TimeSpec &ts)
+{
+    size_t i = m_size + offset(major, minor);
+    m_nodeList[i].m_ts = ts;
+    if (!m_nodeList[i].m_active)
         m_dirty = true;
-        m_active[idx] = true;
-    }
-    getTime(m_t0 + idx);
+    do
+    {
+        //std::cout << "trigger " << i << "\n";
+        m_nodeList[i].m_active = true;
+        i >>= 1;
+    } while (i >= m_root);
 }
 
-bool Activity::get(int idx)
+/*! \brief Clear all acitvity.
+ *
+ * \param[in]   idx     Tree index at which to start.
+ */
+void ActivityList::clear(size_t idx)
 {
-    ASSERT(idx < m_nofSlots);
-    if (!m_active[idx])
-        return false;
-
-    struct timespec now;
-    getTime(&now);
-    if (timeDiffSeconds(m_t0 + idx, &now) > (Real)0.1)
+    if (m_nodeList[idx].m_active)
     {
-        m_dirty = true;
-        m_active[idx] = false;
+        m_nodeList[idx].m_active = false;
+        if (idx < m_size)
+        {
+            size_t child = idx << 1;
+            clear(child);
+            clear(child+1);
+        }
     }
-    return m_active[idx];
+}
+
+/*! \brief Clear all acitvity.
+ */
+void ActivityList::clear()
+{
+    clear(m_root);
+    m_dirty = true; // really, since this is a forced status change.
+}
+
+/*! \brief Update activity list with current time.
+ *
+ * This function clears activity slots that are expired.
+ *
+ * \param[in]   ts      Current time.
+ * \param[in]   idx     Tree index at which to start, default is root.
+ */
+void ActivityList::update(const TimeSpec &ts, size_t idx)
+{
+    if (m_nodeList[idx].m_active)
+    {
+        if (idx >= m_size)
+        {
+            //std::cout << "checking " << idx << "\n";
+            bool recentTrigger = 
+                timeDiffSeconds(&m_nodeList[idx].m_ts, &ts) < (Real)0.3;
+            if (!recentTrigger)
+            {
+                m_dirty = true;
+                m_nodeList[idx].m_active = false;
+            }
+        }
+        else
+        {
+            size_t child = idx << 1;
+            update(ts, child);
+            update(ts, child+1);
+            m_nodeList[idx].m_active = m_nodeList[child].m_active
+                    || m_nodeList[child+1].m_active;
+        }
+    }
+}
+
+/*! \brief Get list of activity flags, and clear the dirty flag.
+ *
+ * \param[out]  activity    Bool array, must be at least majorSize entries.
+ */
+void ActivityList::get(bool *activity)
+{
+    size_t majorOffset = 1 << m_majorBits;
+    for (size_t i=0; i<m_majorSize; i++)
+    {
+        activity[i] = m_nodeList[majorOffset+i].m_active;
+    }
+    m_dirty = false;
 }
 

@@ -6,21 +6,35 @@
 #ifndef ACTIVITY_H
 #define ACTIVITY_H
 #include "timestamp.h"
-//! \brief This class administers a list of activity flags.
-class Activity
+
+class ActivityNode;
+
+/*! \brief Manages activity status flags.
+ */
+class ActivityList
 {
-    const int m_nofSlots;               //!<    Number of slots.
-    bool *m_active;                     //!<    Array of activity flags.
-    struct timespec *m_t0;              //!<    Time of last activity.
-    bool m_dirty;                       //!<    Dirty flag, set if any change in activity since last \a clean().
+    int m_majorBits;        //!<    Number of bits needed to store major size.
+    int m_minorBits;        //!<    Number of bits needed to store minor size.
+    size_t m_majorSize;     //!<    Major size.
+    size_t m_size;          //!<    2^(m_majorBits + m_minorBits).
+    ActivityNode *m_nodeList;   //!<    Flattened binary tree of activity nodes, root is at offset 1.
+    bool m_dirty;           //!<    True after any activity change.
+    //! \brief Combines major and minor index into a single offset.
+    size_t offset(int major, int minor) const
+    {
+        return (major << m_minorBits) | minor;
+    }
+    void clear(size_t idx);
 public:
-    void clean() { m_dirty = false; }   //!<    Clear dirty flag.
-    bool isDirty() const { return m_dirty; } //!<    Query dirty flag.
-    void set(int idx);                  //!<    Set activity flag for slot \a idx.
-    bool get(int idx);                  //!<    Get activity flag for slot \a idx.
-    //! \brief Return the number of slots.
-    size_t size() const { return (size_t)m_nofSlots; }
-    Activity(int nofSlots);             //!<    Constructor.
-    ~Activity();                        //!<    Destructor.
+    static const size_t m_root = 1;    //!<    Root node offset, slot 0 is not used.
+    ActivityList(int majorSize, int minorSize);
+    ~ActivityList();
+    //! \brief Returns true if any change since last \a get().
+    bool isDirty() const { return m_dirty; }
+    void trigger(int major, int minor, const TimeSpec &ts);
+    void update(const TimeSpec &ts, size_t idx = m_root);
+    void clear();
+    void get(bool *b);
 };
+
 #endif

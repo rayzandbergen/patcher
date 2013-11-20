@@ -53,13 +53,13 @@ class Patcher
 {
 private:
     const Real debounceTime;            //!< \brief Debounce time in seconds, used to debounce track and section changes.
-    Activity m_channelActivity;         //!< Per-channel \a Activity.
-    Activity m_softPartActivity;        //!< Per-\a SwPart \a Activity.
+    ActivityList m_channelActivity;     //!< Per-channel \a Activity.
+    ActivityList m_softPartActivity;    //!< Per-\a SwPart \a Activity.
     Screen *m_screen;                   //!< Pointer to global \a Screen object.
     TrackList m_trackList;              //!< Global \a Track list.
     Midi::Driver *m_midi;               //!< Pointer to global MIDI \a Driver object.
     Fantom::Driver *m_fantom;           //!< Pointer to global Fantom \a Driver object.
-    Fantom::Performance *m_perf;        //!< Array of \a Performance objects, in the same order as stored in the Fantom.
+    Fantom::Performance *m_performanceList;        //!< Array of \a Performance objects, in the same order as stored in the Fantom.
     int m_trackIdx;                     //!< Current track index
     int m_trackIdxWithinSet;            //!< Current track index within \a SetList.
     SetList m_setList;                  //!< Global \a SetList object.
@@ -71,7 +71,7 @@ private:
     Track *currentTrack() const {
         return m_trackList[m_trackIdx]; } //!< The current \a Track.
     Fantom::Performance *currentPerf() const {
-        return &m_perf[m_trackIdx]; } //!< The current \a Performance.
+        return &m_performanceList[m_trackIdx]; } //!< The current \a Performance.
     Section *currentSection() const {
         return currentTrack()->m_section[m_sectionIdx]; } //!< The current \a Section.
     int nofTracks() const { return m_trackList.size(); } //!< The number of \a Tracks.
@@ -130,7 +130,8 @@ public:
     */
     Patcher(Screen *s, Midi::Driver *m, Fantom::Driver *f):
         debounceTime(Real(0.4)),
-        m_channelActivity(Midi::NofChannels), m_softPartActivity(64 /*see tracks.xsd*/),
+        m_channelActivity(Midi::NofChannels, Midi::Note::max),
+        m_softPartActivity(64 /*see tracks.xsd*/, Midi::Note::max),
         m_screen(s), m_midi(m), m_fantom(f),
         m_trackIdx(0), m_trackIdxWithinSet(0), m_sectionIdx(0),
         m_metaMode(false), m_partOffsetBcf(0)
@@ -161,7 +162,7 @@ void Patcher::dumpTrackList()
         sprintf(prefix, "track%02d", i);
         (*t)->dumpToLog(m_screen, prefix);
     }
-    //undupParts(m_perf, m_trackList);
+    //undupParts(m_performanceList, m_trackList);
 }
 
 /*! \brief Download performance data from the Fantom.
@@ -174,7 +175,7 @@ void Patcher::downloadPerfomanceData()
 {
     const char *fantomPatchFile = "fantom_cache.bin";
 
-    m_perf = new Fantom::Performance[nofTracks()];
+    m_performanceList = new Fantom::Performance[nofTracks()];
     // bank select 'Card, performance'
     // This only works when Fantom is already in performance mode
     m_midi->putBytes(Midi::Device::FantomOut,
@@ -188,7 +189,7 @@ void Patcher::downloadPerfomanceData()
     {
         for (int i=0; i<nofTracks(); i++)
         {
-            m_perf[i].restore(&d);
+            m_performanceList[i].restore(&d);
         }
         d.fclose();
         return;
@@ -207,10 +208,10 @@ void Patcher::downloadPerfomanceData()
         mvwprintw(win(), 4, 3, "Track   '%s'", nameBuf);
         m_screen->showProgressBar(4, 28, ((Real)i)/nofTracks());
         wrefresh(win());
-        strcpy(m_perf[i].m_name, nameBuf);
+        strcpy(m_performanceList[i].m_name, nameBuf);
         for (int j=0; j<Fantom::Performance::NofParts; j++)
         {
-            Fantom::Part *hwPart = m_perf[i].m_part+j;
+            Fantom::Part *hwPart = m_performanceList[i].m_part+j;
             //nanosleep(&ts, NULL);
             m_fantom->getPartParams(hwPart, j);
             bool readPatchParams;
@@ -237,7 +238,7 @@ void Patcher::downloadPerfomanceData()
     {
         for (int i=0; i<nofTracks(); i++)
         {
-            m_perf[i].save(&d);
+            m_performanceList[i].save(&d);
         }
         d.fclose();
     }
@@ -250,7 +251,7 @@ void Patcher::mergePerformanceData()
     for (int t = 0; t < nofTracks(); t++)
     {
         const Track *track = m_trackList[t];
-        const Fantom::Performance *perf = m_perf+t;
+        const Fantom::Performance *perf = m_performanceList+t;
         for (size_t s = 0; s < track->m_section.size(); s++)
         {
             const Section *section = track->m_section[s];
@@ -294,11 +295,13 @@ void Patcher::eventLoop()
 #ifndef RASPBIAN
         mvwprintw(win(), 1, 69, "%09d\n", j);
 #endif
-        m_channelActivity.clean();
-        m_softPartActivity.clean();
         int deviceRx = m_midi->wait();
         uint8_t byteRx = m_midi->getByte(deviceRx);
         g_alarm.m_doTimeout = false;
+        TimeSpec now;
+        getTime(&now);
+        m_channelActivity.update(now);
+        m_softPartActivity.update(now);
         if (byteRx < 0x80)
         {
             // data without status - skip
@@ -318,8 +321,6 @@ void Patcher::eventLoop()
                     // active sensing, single byte, dropped
                     // BUT we abuse the periodic nature of this message
                     // to do a screen update
-                    for (size_t i=0; i<m_channelActivity.size(); i++)
-                        (void)m_channelActivity.get(i);
                     if (m_channelActivity.isDirty())
                         show(UpdateScreen);
                     break;
@@ -615,8 +616,13 @@ void Patcher::sendEventToFantom(uint8_t midiStatus,
                 m_midi->putBytes(Midi::Device::FantomOut,
                     midiStatus|swPart->m_channel, data1Out);
             }
-            m_channelActivity.set(swPart->m_channel);
-            m_softPartActivity.set(i);
+            if (isNoteData)
+            {
+                TimeSpec now;
+                getTime(&now);
+                m_channelActivity.trigger(swPart->m_channel, data1Out, now);
+                m_softPartActivity.trigger(i, data1Out, now);
+            }
         }
     } // FOREACH part in current section
 }
@@ -666,6 +672,9 @@ void Patcher::updateScreen()
     if (m_metaMode)
         wattroff(win(), COLOR_PAIR(1));
     int partsShown = 0;
+    //ool partActivity[Fantom::Performance::NofParts];
+    bool channelActivity[Midi::NofChannels];
+    m_channelActivity.get(channelActivity);
     for (int partIdx=0; partIdx<Fantom::Performance::NofParts;partIdx++)
     {
         int x = (partsShown / 4) * 19;
@@ -674,7 +683,7 @@ void Patcher::updateScreen()
         ASSERT(part->m_channel != 255);
         if (1 || part->m_channel == m_sectionIdx)
         {
-            bool active = m_channelActivity.get(part->m_channel);
+            bool active = channelActivity[part->m_channel];
             if (active)
                 wattron(win(), COLOR_PAIR(1));
             mvwprintw(win(), y, x,
@@ -686,6 +695,8 @@ void Patcher::updateScreen()
     }
     partsShown = 0;
     const int colLength = 3;
+    bool softPartActivity[64];
+    m_softPartActivity.get(softPartActivity);
     for (int i=0; i<currentSection()->nofParts(); i++)
     {
         const SwPart *swPart = currentSection()->m_part[i];
@@ -714,7 +725,7 @@ void Patcher::updateScreen()
                 int transpose = swPart->m_transpose +
                         (int)hwPart->m_transpose +
                         (int)hwPart->m_oct*12;
-                bool active = m_softPartActivity.get(i);
+                bool active = softPartActivity[i];
                 if (active)
                     wattron(win(), COLOR_PAIR(1));
                 ASSERT(hwPart->m_patch.m_name[1] != '[');
