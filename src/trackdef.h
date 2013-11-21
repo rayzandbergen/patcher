@@ -14,6 +14,10 @@
 #include "toggler.h"
 #include "screen.h"
 
+#ifdef FAKE_STL // set in PREDEFINED in doxygen config
+namespace std { template <class T> class vector { public T entry[2]; }; }
+#endif
+
 namespace Fantom {
     class Part;
 }
@@ -43,7 +47,7 @@ public:
     int m_customTransposeOffset;        //!< Additional transposition for custom transposes.
     uint8_t m_rangeLower;               //!< Lower range.
     uint8_t m_rangeUpper;               //!< Upper range.
-    std::vector <const Fantom::Part *> m_hwPart;  //!< List of \a Fantom::Part pointers this will trigger.
+    std::vector <const Fantom::Part *> m_hwPartList;  //!< List of \a Fantom::Part pointers this will trigger.
     ControllerRemap::Default *m_controllerRemap; //!< Remap object. \todo allow more than one.
     MonoFilter m_monoFilter;            //!< Mono filter object.
     Toggler m_toggler;                  //!< Toggler object.
@@ -72,7 +76,7 @@ public:
     const char *m_name;             //!< The name of the section. Ownership of the string is assumed.
     bool m_noteOffEnter;            //!< Force 'note off' events when switching to this section.
     bool m_noteOffLeave;            //!< Force 'note off' events when switching away from this section.
-    SwPartList m_part;              //!< List of \a SwPart objects.
+    SwPartList m_partList;              //!< List of \a SwPart objects.
     int m_nextTrack;                //!< Chaining info: next \a Track.
     int m_nextSection;              //!< Chaining info: next \a Section.
     int m_previousTrack;            //!< Chaining info: previous \a Track.
@@ -81,9 +85,9 @@ public:
     ~Section();
     void clear();
     //! \brief Append \a Swpart to this \a Section.
-    void addPart(SwPart *s) { m_part.push_back(s); }
+    void addPart(SwPart *s) { m_partList.push_back(s); }
     //! \brief Return the number of parts in this \a Section.
-    int nofParts() const { return (int)m_part.size(); }
+    int nofParts() const { return (int)m_partList.size(); }
     //! \brief Dump this \a section to a log file.
     void dumpToLog(Screen *screen, const char *prefix) const;
 };
@@ -96,16 +100,16 @@ typedef std::vector<Section *> SectionList;
 class Track {
 public:
     const char *m_name;             //!< Name of this track. Ownership of the string is assumed.
-    SectionList m_section;          //!< Section list.
+    SectionList m_sectionList;      //!< Section list.
     bool m_chain;                   //!< Chain mode switch. If enabled, FCB1010 program changes are interpreted as 'next' and 'previous' events.
     int m_startSection;             //!< Section index to switch to when this track starts.
     Track(const char *name);
     ~Track();
     void clear();
     //! \brief Add \a Section.
-    void addSection(Section *s) { m_section.push_back(s); }
+    void addSection(Section *s) { m_sectionList.push_back(s); }
     //! \brief The number of sections in this Track.
-    int nofSections() const { return (int)m_section.size(); }
+    int nofSections() const { return (int)m_sectionList.size(); }
     void dumpToLog(Screen *screen, const char *prefix) const;
 };
 
@@ -115,14 +119,14 @@ typedef std::vector<Track*> TrackList;  //!< A list of \a Track object pointers.
  * a \a TrackList.
  */
 class SetList {
-    std::vector<int> m_list;    //!< List of track indexes.
+    std::vector<int> m_trackIndexList;    //!< List of track indexes.
 public:
     //! \brief Return the size ofthe \a SetList.
-    int size() const { return (int)m_list.size(); }
+    int size() const { return (int)m_trackIndexList.size(); }
     //! \brief Return the track index of the i'th item in the \a SetList.
-    int operator[](int i) { return i>=0 && i<size() ? m_list[i] : 0; }
+    int operator[](int i) { return i>=0 && i<size() ? m_trackIndexList[i] : 0; }
     //! \brief Append a track index to the \a SetList.
-    void add(int i) { m_list.push_back(i); }
+    void add(int i) { m_trackIndexList.push_back(i); }
     //! \brief Append a track by name.
     void add(TrackList &trackList, const char *trackName);
 };

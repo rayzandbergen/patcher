@@ -30,9 +30,9 @@ Section::~Section()
 //! \brief Clean up memory used by this \a Section.
 void Section::clear()
 {
-    for (SwPartList::iterator i = m_part.begin(); i != m_part.end(); i++)
+    for (SwPartList::iterator i = m_partList.begin(); i != m_partList.end(); i++)
         delete *i;
-    m_part.clear();
+    m_partList.clear();
     free((void*)m_name);
     m_name = 0;
 }
@@ -124,9 +124,9 @@ Track::~Track()
 //! \brief Clean up memory used by this \a Track.
 void Track::clear()
 {
-    for (SectionList::iterator i = m_section.begin(); i != m_section.end(); i++)
+    for (SectionList::iterator i = m_sectionList.begin(); i != m_sectionList.end(); i++)
         delete *i;
-    m_section.clear();
+    m_sectionList.clear();
     free((void*)m_name);
     m_name = 0;
 }
@@ -142,7 +142,7 @@ void Track::dumpToLog(Screen *screen, const char *prefix) const
     for (int i=0; i<nofSections(); i++)
     {
         sprintf(nestedPrefix, "%s.section%02d", prefix, 1+i);
-        m_section[i]->dumpToLog(screen, nestedPrefix);
+        m_sectionList[i]->dumpToLog(screen, nestedPrefix);
     }
 }
 
@@ -161,7 +161,7 @@ void Section::dumpToLog(Screen *screen, const char *prefix) const
     for (int i=0; i<nofParts(); i++)
     {
         sprintf(nestedPrefix, "%s.swPart%02d", prefix, 1+i);
-        m_part[i]->dumpToLog(screen, nestedPrefix);
+        m_partList[i]->dumpToLog(screen, nestedPrefix);
     }
 }
 
@@ -173,12 +173,12 @@ void SwPart::dumpToLog(Screen *screen, const char *prefix) const
     screen->printLog("%s.transpose:%d\n", prefix, m_transpose);
     screen->printLog("%s.rangeLower:%s\n", prefix, Midi::noteName(m_rangeLower));
     screen->printLog("%s.rangeUpper:%s\n", prefix, Midi::noteName(m_rangeUpper));
-    screen->printLog("%s.nofHwParts:%d\n", prefix, m_hwPart.size());
+    screen->printLog("%s.nofHwParts:%d\n", prefix, m_hwPartList.size());
     char nestedPrefix[100];
-    for (size_t i=0; i<m_hwPart.size(); i++)
+    for (size_t i=0; i<m_hwPartList.size(); i++)
     {
-        sprintf(nestedPrefix, "%s.hwPart%02d", prefix, 1+(int)m_hwPart[i]->m_number);
-        m_hwPart[i]->dumpToLog(screen, nestedPrefix);
+        sprintf(nestedPrefix, "%s.hwPart%02d", prefix, 1+(int)m_hwPartList[i]->m_number);
+        m_hwPartList[i]->dumpToLog(screen, nestedPrefix);
     }
 }
 
@@ -210,11 +210,11 @@ void fixChain(TrackList &trackList)
         Track *track = trackList[t];
         size_t tPrev = t > 0 ? t-1 : t; // clamped
         size_t tNext = t+1 < trackList.size() ? t+1 : t; // clamped
-        for (size_t s=0; s<track->m_section.size(); s++)
+        for (size_t s=0; s<track->m_sectionList.size(); s++)
         {
-            Section *section = track->m_section[s];
-            size_t sNext = s+1 < track->m_section.size() ? s+1 : 0; // wraparound
-            size_t sPrev = s > 0 ? s-1 : track->m_section.size()-1; // wraparound
+            Section *section = track->m_sectionList[s];
+            size_t sNext = s+1 < track->m_sectionList.size() ? s+1 : 0; // wraparound
+            size_t sPrev = s > 0 ? s-1 : track->m_sectionList.size()-1; // wraparound
             switch (section->m_nextTrack)
             {
                 case TrackDef::NextTrack:
@@ -253,7 +253,7 @@ void fixChain(TrackList &trackList)
                     if (section->m_previousTrack >= (int)trackList.size() || section->m_previousTrack < 0)
                         section->m_previousTrack = t;
             }
-            size_t sLast = trackList[section->m_nextTrack]->m_section.size()-1;
+            size_t sLast = trackList[section->m_nextTrack]->m_sectionList.size()-1;
             switch (section->m_nextSection)
             {
                 case TrackDef::Unspecified:
@@ -271,7 +271,7 @@ void fixChain(TrackList &trackList)
                     if (section->m_nextSection > (int)sLast || section->m_nextSection < 0)
                         section->m_nextSection = (int)(s <= sLast ? s : sLast);
             }
-            sLast = trackList[section->m_previousTrack]->m_section.size()-1;
+            sLast = trackList[section->m_previousTrack]->m_sectionList.size()-1;
             switch (section->m_previousSection)
             {
                 case TrackDef::Unspecified:

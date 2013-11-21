@@ -69,7 +69,7 @@ class Performance
 public:
     static const int NofParts = 16; //!< Number of Parts in a Fantom performance.
     char m_name[NameLength+1];    //!< Performance name.
-    Part m_part[NofParts];        //!< Parts within this \a FantomPerformance.
+    Part m_partList[NofParts];    //!< Parts within this \a FantomPerformance.
     void save(const Dump *d);
     void restore(const Dump *d);
 };

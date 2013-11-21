@@ -33,7 +33,7 @@ int ceilLog2(int x)
 class ActivityNode
 {
 public:
-    TimeSpec m_ts;      //!<    Time of last trigger, valid for leaf nodes only, so slightly wasteful.
+    TimeSpec m_triggerTime;      //!<    Time of last trigger, valid for leaf nodes only, so slightly wasteful.
     bool m_active;      //!<    This node, or at least 1 child is active.
     //! \brief Default constructor.
     ActivityNode(): m_active(false) { }
@@ -69,12 +69,12 @@ ActivityList::~ActivityList()
  *
  * \param[in]   major   Major location index.
  * \param[in]   minor   Minor location index.
- * \param[in]   ts      Current time.
+ * \param[in]   now     Current time.
  */
-void ActivityList::trigger(int major, int minor, const TimeSpec &ts)
+void ActivityList::trigger(int major, int minor, const TimeSpec &now)
 {
     size_t i = m_size + offset(major, minor);
-    m_nodeList[i].m_ts = ts;
+    m_nodeList[i].m_triggerTime = now;
     if (!m_nodeList[i].m_active)
         m_dirty = true;
     do
@@ -115,10 +115,10 @@ void ActivityList::clear()
  *
  * This function clears activity slots that are expired.
  *
- * \param[in]   ts      Current time.
+ * \param[in]   now      Current time.
  * \param[in]   idx     Tree index at which to start, default is root.
  */
-void ActivityList::update(const TimeSpec &ts, size_t idx)
+void ActivityList::update(const TimeSpec &now, size_t idx)
 {
     if (m_nodeList[idx].m_active)
     {
@@ -126,7 +126,7 @@ void ActivityList::update(const TimeSpec &ts, size_t idx)
         {
             //std::cout << "checking " << idx << "\n";
             bool recentTrigger = 
-                timeDiffSeconds(m_nodeList[idx].m_ts, ts) < (Real)0.3;
+                timeDiffSeconds(m_nodeList[idx].m_triggerTime, now) < (Real)0.3;
             if (!recentTrigger)
             {
                 m_dirty = true;
@@ -136,8 +136,8 @@ void ActivityList::update(const TimeSpec &ts, size_t idx)
         else
         {
             size_t child = idx << 1;
-            update(ts, child);
-            update(ts, child+1);
+            update(now, child);
+            update(now, child+1);
             m_nodeList[idx].m_active = m_nodeList[child].m_active
                     || m_nodeList[child+1].m_active;
         }

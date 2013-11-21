@@ -232,7 +232,7 @@ void parseTracks(DOMDocument *doc, TrackList &trackList, SetList &setList)
                     part = new SwPart(strdup(name));
                     XMLString::release(&name);
                 }
-                section->m_part.push_back(part);
+                section->m_partList.push_back(part);
                 int channel;
                 xmlStream(((DOMElement*)partNode)->getAttribute(xmlStr("channel")))
                     >> channel;
@@ -313,7 +313,7 @@ void parseTracks(DOMDocument *doc, TrackList &trackList, SetList &setList)
                     }
                 }
             }
-            track->m_section.push_back(section);
+            track->addSection(section);
             partNodes->release();
         }
         trackList.push_back(track);

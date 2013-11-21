@@ -134,7 +134,7 @@ void Performance::save(const Dump *d)
 {
     d->save((const char*)m_name);
     for (int i=0; i<NofParts; i++)
-        m_part[i].save(d);
+        m_partList[i].save(d);
 }
 
 /*! \brief Restore \a this from a \a Dump object.
@@ -145,7 +145,7 @@ void Performance::restore(const Dump *d)
 {
     d->restore((char*)m_name);
     for (int i=0; i<NofParts; i++)
-        m_part[i].restore(d);
+        m_partList[i].restore(d);
 }
 
 /*! \brief Set a parameter in Fantom memory.
