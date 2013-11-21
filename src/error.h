@@ -3,6 +3,8 @@
  *
  *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
  */
+#ifndef ERROR_H
+#define ERROR_H
 #include <errno.h>
 #include <string.h>
 #include <sstream>
@@ -64,3 +66,4 @@ public:
 //! \brief Check assertion.
 #define ASSERT(x) do { if (!(x)) { throw(Error("assertion failed ", __FILE__, __LINE__)); } } while(0)
 
+#endif // ERROR_H
