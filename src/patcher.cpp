@@ -196,7 +196,7 @@ void Patcher::downloadPerfomanceData()
         changeTrack(i, UpdateNothing);
         nanosleep(&fantomPerformanceSelectDelay, NULL);
         m_fantom->getPerfName(nameBuf);
-        g_alarm.m_doTimeout = false;
+        g_timer.setTimeout(false);
         mvwprintw(win(), 4, 3, "Performance: '%s'", nameBuf);
         m_screen->showProgressBar(4, 32, ((Real)i)/nofTracks());
         wrefresh(win());
@@ -288,7 +288,7 @@ void Patcher::eventLoop()
 #endif
         int deviceRx = m_midi->wait();
         uint8_t byteRx = m_midi->getByte(deviceRx);
-        g_alarm.m_doTimeout = false;
+        g_timer.setTimeout(false);
         getTime(m_eventInTime);
         m_channelActivity.update(m_eventInTime);
         m_softPartActivity.update(m_eventInTime);
@@ -1020,7 +1020,7 @@ int main(int argc, char **argv)
         clear(trackList);
         return 0;
 #endif
-        setAlarmHandler();
+        g_timer.setTimeout((Real)2.5);
         Screen screen;
         wprintw(screen.m_track, "   *** initialising ***\n\n");
         wrefresh(screen.m_track);

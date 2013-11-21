@@ -191,7 +191,7 @@ int Driver::wait(int usecTimeout, int device) const
     {
         e = select(maxFd+1, &fdSet, NULL, NULL, usecTimeout> 0 ? &tv : NULL);
         interrupted = e == -1 && errno == EINTR;
-    } while (interrupted && !g_alarm.m_globalTimeout);
+    } while (interrupted && !g_timer.timedout());
     if (e == -1)
     {
         throw(Error("select", errno));
@@ -224,7 +224,7 @@ int Driver::cardNameToNum(const char *target) const
     const char *proc = "/proc/asound/cards";
     int hwNum = -1;
     FILE *fp = fopen(proc, "r");
-    if (g_alarm.m_globalTimeout || !fp)
+    if (g_timer.timedout() || !fp)
     {
         throw(Error("open", errno));
     }
@@ -276,48 +276,8 @@ uint8_t Driver::getByte(int device)
     if (device < 0)
         return 0;
     uint8_t buf;
-    for (;;)
-    {
-        ssize_t n = read(fd(device), &buf, 1);
-        if (n >= 0)
-            break;
-        if (g_alarm.m_globalTimeout || (n < 0 && (errno != EAGAIN && errno != EINTR)))
-        {
-            throw(Error("read", errno));
-        }
-        m_screen->printMidi("read: %s\n", strerror(errno));
-    }
+    g_timer.read(fd(device), &buf, 1);
     return buf;
-}
-
-/*! \brief Write a byte string to a file descriptor.
- *
- * This function wraps the write(2) function, so that an \a Alarm
- * may cause an exception.
- *
- * \param[in] fd        File descriptor.
- * \param[in] buf       Byte buffer.
- * \param[in] count     Number of bytes to be written.
- */
-static void writeChecked(int fd, const void *buf, size_t count)
-{
-    for (;;)
-    {
-        ssize_t rv = write(fd, buf, count);
-        if (g_alarm.m_globalTimeout || (rv == -1 && errno != EINTR))
-        {
-            throw(Error("write", errno));
-        }
-        if (rv == (ssize_t)count)
-        {
-            break;
-        }
-        else
-        {
-            count -= rv;
-            buf = (char*)buf + count;
-        }
-    }
 }
 
 /*! \brief Write a byte to a MIDI device.
@@ -329,7 +289,7 @@ void Driver::putByte(int device, uint8_t b1)
 {
     int fDescr = fd(device);
     if (fDescr >= 0)
-        writeChecked(fDescr, &b1, 1);
+        g_timer.write(fDescr, &b1, 1);
 }
 
 /*! \brief Write a byte string to a MIDI device.
@@ -342,7 +302,7 @@ void Driver::putBytes(int device, const uint8_t *b, int n)
 {
     int fDescr = fd(device);
     if (fDescr >= 0)
-        writeChecked(fDescr, b, n);
+        g_timer.write(fDescr, b, n);
 }
 
 /*! \brief Write 2 bytes to a MIDI device.
@@ -359,7 +319,7 @@ void Driver::putBytes(int device, uint8_t b1, uint8_t b2)
         uint8_t buf[2];
         buf[0] = b1;
         buf[1] = b2;
-        writeChecked(fDescr, buf, 2);
+        g_timer.write(fDescr, buf, 2);
     }
 }
 
@@ -379,7 +339,7 @@ void Driver::putBytes(int device, uint8_t b1, uint8_t b2, uint8_t b3)
         buf[0] = b1;
         buf[1] = b2;
         buf[2] = b3;
-        writeChecked(fDescr, buf, 3);
+        g_timer.write(fDescr, buf, 3);
     }
 }
 
