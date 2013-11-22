@@ -5,6 +5,8 @@
  */
 #include "fantom.h"
 #include "error.h"
+#include "timestamp.h"
+#include "screen.h"
 
 namespace Fantom
 {
@@ -372,6 +374,102 @@ void Driver::selectPerformanceFromMemCard() const
         Midi::controller|Fantom::programChangeChannel, 0x00, 85);
     m_midi->putBytes(Midi::Device::FantomOut,
         Midi::controller|Fantom::programChangeChannel, 0x20, 32);
+}
+
+void PerformanceList::clear()
+{
+    if (m_performanceList)
+    {
+        delete[] m_performanceList;
+    }
+    m_performanceList = 0;
+    m_size = 0;
+}
+
+size_t PerformanceList::readFromCache(const char *fantomPatchFile)
+{
+    clear();
+    Dump d;
+    if (d.fopen(fantomPatchFile, O_RDONLY, 0))
+    {
+        d.restore(m_magic);
+        if (m_magic != magic)
+            return 0;
+        d.restore(m_size);
+        m_performanceList = new Fantom::Performance[m_size];
+        try 
+        {
+            for (size_t i=0; i<m_size; i++)
+            {
+                m_performanceList[i].restore(&d);
+            }
+            d.fclose();
+        }
+        catch (Error &e)
+        {
+            clear();
+            return 0;
+        }
+        return m_size;
+    }
+    return 0;
+}
+
+void PerformanceList::download(Fantom::Driver *fantom, WINDOW *win, size_t nofTracks)
+{
+    clear();
+    m_size = nofTracks;
+    m_performanceList = new Fantom::Performance[m_size];
+    char nameBuf[Fantom::NameLength+1];
+    TimeSpec fantomPerformanceSelectDelay((Real)0.01);
+    mvwprintw(win, 2, 3, "Downloading Fantom Performance data:");
+    for (size_t i=0; i<m_size; i++)
+    {
+        fantom->selectPerformance(i);
+        nanosleep(&fantomPerformanceSelectDelay, NULL);
+        fantom->getPerfName(nameBuf);
+        g_timer.setTimeout(false);
+        mvwprintw(win, 4, 3, "Performance: '%s'", nameBuf);
+        Screen::showProgressBar(win, 4, 32, ((Real)i)/m_size);
+        wrefresh(win);
+        strcpy(m_performanceList[i].m_name, nameBuf);
+        for (int j=0; j<Fantom::Performance::NofParts; j++)
+        {
+            Fantom::Part *hwPart = m_performanceList[i].m_partList+j;
+            fantom->getPartParams(hwPart, j);
+            bool readPatchParams;
+            hwPart->m_number = j;
+            hwPart->constructPreset(readPatchParams);
+            if (readPatchParams)
+            {
+                fantom->getPatchName(hwPart->m_patch.m_name, j);
+            }
+            else
+            {
+                strcpy(hwPart->m_patch.m_name, "secret GM   ");
+            }
+            mvwprintw(win, 5, 3, "Part:        '%s'", hwPart->m_patch.m_name);
+            Screen::showProgressBar(win, 5, 32, ((Real)(j+1))/Fantom::Performance::NofParts);
+            wrefresh(win);
+        }
+    }
+}
+
+void PerformanceList::writeToCache(const char *fantomPatchFile)
+{
+    Dump d;
+    if (!d.fopen(fantomPatchFile, O_WRONLY|O_CREAT, S_IRUSR|S_IWUSR))
+    {
+        throw(Error("open O_WRONLY|O_CREAT", errno));
+    }
+    m_magic = magic;
+    d.save(m_magic);
+    d.save(m_size);
+    for (size_t i=0; i<m_size; i++)
+    {
+        m_performanceList[i].save(&d);
+    }
+    d.fclose();
 }
 
 } // namespace Fantom

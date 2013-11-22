@@ -98,5 +98,24 @@ struct Driver
     void selectPerformanceFromMemCard() const;
 };
 
+class PerformanceList
+{    
+    static const uint32_t magic = 0x46a28f12;
+    Fantom::Performance *m_performanceList;
+    uint32_t m_magic;
+    size_t m_size;
+public:
+    size_t size() const { return m_size; }
+    void clear();
+    PerformanceList(): m_performanceList(0) { }
+    Fantom::Performance *operator[](size_t index) const
+    {
+        return &m_performanceList[index];
+    }
+    size_t readFromCache(const char *fantomPatchFile);
+    void writeToCache(const char *fantomPatchFile);
+    void download(Fantom::Driver *fantom, WINDOW *win, size_t nofTracks);
+};
+
 } // Fantom namespace
 #endif // FANTOM_H

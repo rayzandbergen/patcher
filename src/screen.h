@@ -29,7 +29,7 @@ public:
     void flushMidi();               //!< Update the MIDI log screen.
     int printLog(const char *fmt, ...); //!< printf-like log function.
     void dumpToLog(const uint8_t *data, int n); //!< dump a binary string to the log.
-    void showProgressBar(int y, int x, Real f); //!< show a progress bar at screen coordinates.
+    static void showProgressBar(WINDOW *win, int y, int x, Real f); //!< show a progress bar at screen coordinates.
 	Screen();                       //!< Constructor.
 	~Screen();                      //!< Destructor.
 };

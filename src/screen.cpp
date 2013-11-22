@@ -106,15 +106,15 @@ int Screen::vprintf(Id id, const char *fmt, va_list ap)
     }
 }
 
-void Screen::showProgressBar(int y, int x, Real fraction)
+void Screen::showProgressBar(WINDOW *win, int y, int x, Real fraction)
 {
     const int width = 30;
-    mvwaddch(m_track, y, x++, '[');
+    mvwaddch(win, y, x++, '[');
     for (int i=0; i<width; i++)
     {
-        mvwaddch(m_track, y, x, i < (int)(fraction*width) ? '=' : ' ' );
+        mvwaddch(win, y, x, i < (int)(fraction*width) ? '=' : ' ' );
         x++;
     }
-    mvwaddch(m_track, y, x++, ']');
-    mvwprintw(m_track, y, x, " %3.0f%%", (double)((Real)100.0 * fraction));
+    mvwaddch(win, y, x++, ']');
+    mvwprintw(win, y, x, " %3.0f%%", (double)((Real)100.0 * fraction));
 }
