@@ -15,7 +15,7 @@
 #include <alsa/asoundlib.h>
 #include "error.h"
 #include "midi.h"
-#include "alarm.h"
+#include "timer.h"
 #include "patcher.h"
 
 namespace Midi {

@@ -1,5 +1,5 @@
-/*! \file alarm.h
- *  \brief Contains an alarm handler, to be used as a watchdog timer.
+/*! \file timer.h
+ *  \brief Contains an timer handler, to be used as a watchdog timer.
  *
  *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
  */

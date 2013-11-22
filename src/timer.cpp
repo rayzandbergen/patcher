@@ -1,9 +1,9 @@
-/*! \file alarm.cpp
- *  \brief Contains an alarm handler, to be used as a watchdog timer.
+/*! \file timer.cpp
+ *  \brief Contains an timer handler, to be used as a watchdog timer.
  *
  *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
  */
-#include "alarm.h"
+#include "timer.h"
 #include <signal.h>
 #include <stdio.h>
 #include <sys/time.h>

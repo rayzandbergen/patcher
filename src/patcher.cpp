@@ -24,7 +24,7 @@
 #include "midi_note.h"
 #include "networkif.h"
 #include "sequencer.h"
-#include "alarm.h"
+#include "timer.h"
 #include "xml.h"
 #include "persistent.h"
 #include "fantomscroller.h"
@@ -272,7 +272,6 @@ void Patcher::restoreState()
  */
 void Patcher::eventLoop()
 {
-    //changeTrack(m_setList[0]);
     for (uint32_t j=0;;j++)
     {
 #ifndef RASPBIAN

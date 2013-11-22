@@ -23,7 +23,7 @@ set(patcherSources
     src/midi.cpp
     src/networkif.cpp
     src/toggler.cpp
-    src/alarm.cpp
+    src/timer.cpp
     src/xml.cpp
     src/dump.cpp
     src/activity.cpp

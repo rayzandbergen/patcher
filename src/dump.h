@@ -10,7 +10,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include "alarm.h"
+#include "timer.h"
 /*! \brief This object reads and writes binary dumps of other objects.
  */
 class Dump
