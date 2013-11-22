@@ -76,7 +76,7 @@ public:
     const char *m_name;             //!< The name of the section. Ownership of the string is assumed.
     bool m_noteOffEnter;            //!< Force 'note off' events when switching to this section.
     bool m_noteOffLeave;            //!< Force 'note off' events when switching away from this section.
-    SwPartList m_partList;              //!< List of \a SwPart objects.
+    SwPartList m_partList;          //!< List of \a SwPart objects.
     int m_nextTrack;                //!< Chaining info: next \a Track.
     int m_nextSection;              //!< Chaining info: next \a Section.
     int m_previousTrack;            //!< Chaining info: previous \a Track.

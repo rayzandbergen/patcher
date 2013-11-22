@@ -14,7 +14,7 @@
 #include <sys/unistd.h>
 #include "error.h"
 
-//! \brief The memory map of persistent data: current \a Track and \a Section index.
+//! \brief Memory map of persistent data: current \a Track and \a Section index.
 class MemoryMap
 {
 public:

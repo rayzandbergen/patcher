@@ -15,7 +15,7 @@ namespace Fantom
 {
 
 static const uint8_t programChangeChannel = 0x0f;         //!< MIDI channel the Fantom listens on for program changes.
-static const int NameLength = 12;                         //!< Name length of a Fantom object.
+static const int NameLength = 12;                         //!< Name length of a Fantom patch or performance.
 static const int PresetLength = 20;                       //!< Name length of a Fantom preset.
 
 /*! \brief A Fantom 'patch', i.e. a basic sound.
@@ -40,7 +40,7 @@ public:
     uint8_t m_bankSelectMsb;    //!<    Bank select, upper 7 bits.
     uint8_t m_bankSelectLsb;    //!<    Bank select, lower 7 bits.
     uint8_t m_pCh;              //!<    Program change number.
-    char m_preset[PresetLength];   //!<    Textual representation of bank select and program change, according to Roland.
+    char m_preset[PresetLength];//!<    Textual representation of bank select and program change, according to Roland.
     uint8_t m_vol;              //!<    MIDI volume.
     int8_t m_transpose;         //!<    Transpose value, semitones.
     int8_t m_oct;               //!<    Octave transpose.
@@ -74,7 +74,7 @@ public:
     void restore(const Dump *d);
 };
 
-/*! \brief Class to upload and download parameters from and to the Fantom.
+/*! \brief Upload and download parameters from and to the Fantom.
  */
 struct Driver
 {

@@ -8,6 +8,7 @@
 #include <time.h>
 #include <cmath>
 #include "patcher.h"
+//! \brief A wrapper class for struct timespec from <time.h>.
 class TimeSpec: public timespec
 {
 public:

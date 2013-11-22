@@ -342,7 +342,7 @@ void Driver::setPerfName(const char *s)
  */
 void Driver::setPartName(int part, const char *s)
 {
-    uint8_t buf[NameLength+1];
+    uint8_t buf[NameLength];
     memset(buf, ' ', sizeof(buf));
     for (int i=0; s[i] && i<NameLength; i++)
     {

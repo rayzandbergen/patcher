@@ -14,10 +14,13 @@
 #include <xercesc/util/XMLChar.hpp>
 #include <iostream>
 #include <sstream>
-#include <vector>
 #include <list>
 #include <map>
 #include "error.h"
+
+#ifdef FAKE_STL // set in PREDEFINED in doxygen config
+namespace std { template <class K, class V> class map { public T key; V value; }; }
+#endif
 
 XERCES_CPP_NAMESPACE_USE
 

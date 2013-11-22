@@ -4,7 +4,6 @@
  *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
  */
 #include <stdio.h>
-//#include <iostream>
 #include <stdlib.h>
 #include <vector>
 #include "timestamp.h"
@@ -24,7 +23,7 @@ int ceilLog2(int x)
 
 } // anonymous namespace
 
-/* \brief Binary activity tree node.
+/*! \brief Binary activity tree node.
  *
  * Active means 'triggered recently'. Since the vast majority of
  * slots is inactive at any given time, a binary tree is used to
@@ -33,8 +32,8 @@ int ceilLog2(int x)
 class ActivityNode
 {
 public:
-    TimeSpec m_triggerTime;      //!<    Time of last trigger, valid for leaf nodes only, so slightly wasteful.
-    bool m_active;      //!<    This node, or at least 1 child is active.
+    TimeSpec m_triggerTime;     //!<    Time of last trigger, valid for leaf nodes only, so slightly wasteful.
+    bool m_active;              //!<    This node, or at least 1 child is active.
     //! \brief Default constructor.
     ActivityNode(): m_active(false) { }
 };
@@ -67,19 +66,18 @@ ActivityList::~ActivityList()
 
 /*! \brief Stores the current time at given major/minor location and updates the activity tree.
  *
- * \param[in]   major   Major location index.
- * \param[in]   minor   Minor location index.
- * \param[in]   now     Current time.
+ * \param[in]   majorIndex   Major location index.
+ * \param[in]   minorIndex   Minor location index.
+ * \param[in]   now          Current time.
  */
-void ActivityList::trigger(int major, int minor, const TimeSpec &now)
+void ActivityList::trigger(int majorIndex, int minorIndex, const TimeSpec &now)
 {
-    size_t i = m_size + offset(major, minor);
+    size_t i = m_size + offset(majorIndex, minorIndex);
     m_nodeList[i].m_triggerTime = now;
     if (!m_nodeList[i].m_active)
         m_dirty = true;
     do
     {
-        //std::cout << "trigger " << i << "\n";
         m_nodeList[i].m_active = true;
         i >>= 1;
     } while (i >= m_root);
@@ -87,16 +85,16 @@ void ActivityList::trigger(int major, int minor, const TimeSpec &now)
 
 /*! \brief Clear all acitvity.
  *
- * \param[in]   idx     Tree index at which to start.
+ * \param[in]   index     Tree index at which to start.
  */
-void ActivityList::clear(size_t idx)
+void ActivityList::clear(size_t index)
 {
-    if (m_nodeList[idx].m_active)
+    if (m_nodeList[index].m_active)
     {
-        m_nodeList[idx].m_active = false;
-        if (idx < m_size)
+        m_nodeList[index].m_active = false;
+        if (index < m_size)
         {
-            size_t child = idx << 1;
+            size_t child = index << 1;
             clear(child);
             clear(child+1);
         }
@@ -116,29 +114,28 @@ void ActivityList::clear()
  * This function clears activity slots that are expired.
  *
  * \param[in]   now      Current time.
- * \param[in]   idx     Tree index at which to start, default is root.
+ * \param[in]   index     Tree index at which to start, default is root.
  */
-void ActivityList::update(const TimeSpec &now, size_t idx)
+void ActivityList::update(const TimeSpec &now, size_t index)
 {
-    if (m_nodeList[idx].m_active)
+    if (m_nodeList[index].m_active)
     {
-        if (idx >= m_size)
+        if (index >= m_size)
         {
-            //std::cout << "checking " << idx << "\n";
             bool recentTrigger = 
-                timeDiffSeconds(m_nodeList[idx].m_triggerTime, now) < (Real)0.3;
+                timeDiffSeconds(m_nodeList[index].m_triggerTime, now) < (Real)0.3;
             if (!recentTrigger)
             {
                 m_dirty = true;
-                m_nodeList[idx].m_active = false;
+                m_nodeList[index].m_active = false;
             }
         }
         else
         {
-            size_t child = idx << 1;
+            size_t child = index << 1;
             update(now, child);
             update(now, child+1);
-            m_nodeList[idx].m_active = m_nodeList[child].m_active
+            m_nodeList[index].m_active = m_nodeList[child].m_active
                     || m_nodeList[child+1].m_active;
         }
     }

@@ -24,15 +24,15 @@ class ActivityList
     {
         return (major << m_minorBits) | minor;
     }
-    void clear(size_t idx);
+    void clear(size_t index);
 public:
     static const size_t m_root = 1;    //!<    Root node offset, slot 0 is not used.
     ActivityList(int majorSize, int minorSize);
     ~ActivityList();
     //! \brief Returns true if any change since last \a get().
     bool isDirty() const { return m_dirty; }
-    void trigger(int major, int minor, const TimeSpec &ts);
-    void update(const TimeSpec &ts, size_t idx = m_root);
+    void trigger(int majorIndex, int minorIndex, const TimeSpec &ts);
+    void update(const TimeSpec &ts, size_t index = m_root);
     void clear();
     void get(bool *b);
 };

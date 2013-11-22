@@ -27,6 +27,7 @@
 #include "alarm.h"
 #include "xml.h"
 #include "persistent.h"
+#include "fantomscroller.h"
 //#include "undupparts.h"
 
 #define VERSION "1.2.0"     //!< global version number
@@ -47,7 +48,7 @@ namespace MetaNote
     };
 }
 
-//! \brief The Patcher object is the object that does all the heavy lifting.
+//! \brief The master object that handles everything.
 class Patcher
 {
 private:
@@ -66,6 +67,10 @@ private:
     Sequencer m_sequencer;              //!< Global \a Sequencer object.
     Persist m_persist;                  //!< Global \a Persist object.
     bool m_metaMode;                    //!< Meta mode switch.
+    FantomScreenScroller m_fantomScroller;              //!< Fantom screen scroller.
+    int m_partOffsetBcf;                                //!< Either 0 or 8, since BCF only has 8 sliders to show 16 parameters
+    TimeSpec m_debouncePreviousTriggerTime;             //!< Absolute time of last debounce test.
+    TimeSpec m_eventRxTime;                             //!< Arrival time of the current Midi event.
     WINDOW *win() const { return m_screen->m_track; } //!< Convenience function to get to track window.
     Track *currentTrack() const {
         return m_trackList[m_trackIdx]; } //!< The current \a Track.
@@ -80,15 +85,6 @@ private:
         else
             return "<none>";
     } //!< The name of the next \a Track.
-    struct {
-        bool m_enabled;                                 //!< Enable switch for info mode.
-        TimeSpec m_previous;                            //!< Previous time the Fantom display was updated.
-        size_t m_offset;                                //!< Scroll offset.
-        std::string m_text;                             //!< Info text to be displayed.
-    } m_info;                                           //!< Fantom info display state.
-    int m_partOffsetBcf;                                //!< Either 0 or 8, since BCF only has 8 sliders to show 16 parameters
-    TimeSpec m_debouncePrev;                            //!< Absolute time of last debounce test.
-    TimeSpec m_eventInTime;                             //!< Arrival time of the current Midi event.
     void sendEventToFantom(uint8_t midiStatus,
                 uint8_t data1, uint8_t data2 = 255);
     void allNotesOff();
@@ -97,8 +93,6 @@ private:
     void prevSection();
     void changeTrack(uint8_t track, int updateFlags);
     void changeTrackByNote(uint8_t note);
-    void toggleInfoMode(uint8_t note);
-    void showInfo();
     void updateBcfFaders();
     void updateFantomDisplay();
     void updateScreen();
@@ -134,13 +128,10 @@ public:
         m_softPartActivity(64 /*see tracks.xsd*/, Midi::Note::max),
         m_screen(s), m_midi(m), m_fantom(f),
         m_trackIdx(0), m_trackIdxWithinSet(0), m_sectionIdx(0),
-        m_metaMode(false), m_partOffsetBcf(0)
+        m_metaMode(false), m_fantomScroller(f), m_partOffsetBcf(0)
     {
-        m_info.m_enabled = false;
-        m_info.m_offset = 0;
         m_trackIdx = m_setList[0];
-        getTime(m_debouncePrev);
-        m_info.m_previous = m_debouncePrev;
+        getTime(m_debouncePreviousTriggerTime);
     };
 };
 
@@ -289,9 +280,9 @@ void Patcher::eventLoop()
         int deviceRx = m_midi->wait();
         uint8_t byteRx = m_midi->getByte(deviceRx);
         g_timer.setTimeout(false);
-        getTime(m_eventInTime);
-        m_channelActivity.update(m_eventInTime);
-        m_softPartActivity.update(m_eventInTime);
+        getTime(m_eventRxTime);
+        m_channelActivity.update(m_eventRxTime);
+        m_softPartActivity.update(m_eventRxTime);
         if (byteRx < 0x80)
         {
             // data without status - skip
@@ -366,8 +357,10 @@ void Patcher::eventLoop()
                             {
                                 if (velo > 0)
                                 {
-                                    changeTrackByNote(note);
-                                    toggleInfoMode(note);
+                                    if (note == MetaNote::info)
+                                        m_fantomScroller.toggle();
+                                    else 
+                                        changeTrackByNote(note);
                                 }
                             }
                             else
@@ -511,8 +504,8 @@ void Patcher::eventLoop()
         m_screen->flushMidi();
         wnoutrefresh(win());
         doupdate();
-        if (m_metaMode && m_info.m_enabled)
-            showInfo();
+        if (m_metaMode)
+            m_fantomScroller.update(m_eventRxTime);
     }
 }
 
@@ -608,8 +601,8 @@ void Patcher::sendEventToFantom(uint8_t midiStatus,
             }
             if (isNoteData)
             {
-                m_channelActivity.trigger(swPart->m_channel, data1Out, m_eventInTime);
-                m_softPartActivity.trigger(i, data1Out, m_eventInTime);
+                m_channelActivity.trigger(swPart->m_channel, data1Out, m_eventRxTime);
+                m_softPartActivity.trigger(i, data1Out, m_eventRxTime);
             }
         }
     } // FOREACH part in current section
@@ -822,10 +815,10 @@ void Patcher::changeSection(uint8_t sectionIdx)
  */
 bool Patcher::debounced(Real delaySeconds)
 {
-    bool rv = timeDiffSeconds(m_debouncePrev, m_eventInTime) > delaySeconds;
+    bool rv = timeDiffSeconds(m_debouncePreviousTriggerTime, m_eventRxTime) > delaySeconds;
     if (rv)
     {
-        m_debouncePrev = m_eventInTime;
+        m_debouncePreviousTriggerTime = m_eventRxTime;
     }
     return rv;
 }
@@ -887,54 +880,6 @@ void Patcher::changeTrack(uint8_t track, int updateFlags)
     m_fantom->selectPerformance(m_trackIdx);
     show(updateFlags);
     m_persist.store(m_trackIdx, m_sectionIdx);
-}
-
-/*! \brief Toggle the info mode.
- *
- * In info mode, the Fantom display is used to display the available
- * network interface addresses. This is useful if you cannot find the
- * Pi on the network.
- *
- * \param [in] note     MIDI note. Only toggle if it matches \a MetaNote::info.
- */
-void Patcher::toggleInfoMode(uint8_t note)
-{
-    if (note == MetaNote::info)
-    {
-        m_info.m_enabled = !m_info.m_enabled;
-        if (m_info.m_enabled)
-        {
-            m_info.m_text = getNetworkInterfaceAddresses();
-        }
-    }
-}
-
-/*! \brief Update the info display on the Fantom.
- *
- * This function must be called periodically, since the info to be
- * displayed must be scrolled through, as there is only one line
- * available on the Fantom display.
- */
-void Patcher::showInfo()
-{
-    bool rv = timeDiffSeconds(m_info.m_previous, m_eventInTime) > 0.333;
-    if (rv)
-    {
-        m_info.m_previous = m_eventInTime;
-        // abuse the fantom screen to print some info
-        char buf[20];
-        for (size_t i=0, j=m_info.m_offset; i<sizeof(buf); i++)
-        {
-            j++;
-            if (j >= m_info.m_text.length())
-                j = 0;
-            buf[i] = m_info.m_text[j];
-        }
-        m_fantom->setPartName(0, buf);
-        m_info.m_offset++;
-        if (m_info.m_offset >= m_info.m_text.size())
-            m_info.m_offset = 0;
-    }
 }
 
 /*! \brief Switch to \a Track indicated by note number.

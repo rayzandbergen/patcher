@@ -34,6 +34,7 @@ set(patcherSources
     src/transposer.cpp
     src/timestamp.cpp
     src/persistent.cpp
+    src/fantomscroller.cpp
 #    src/undupparts.cpp
     now.h
 )
