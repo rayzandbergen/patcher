@@ -11,7 +11,7 @@ void Dump::save(const char *s) const
 {
     for (int i=0;;i++)
     {
-        write(m_fd, s+i, 1);
+        g_timer.write(m_fd, s+i, 1);
         if (s[i] == 0)
             break;
     }
@@ -20,7 +20,7 @@ void Dump::restore(char *s) const
 {
     for (int i=0;;i++)
     {
-        read(m_fd, s+i, 1);
+        g_timer.read(m_fd, s+i, 1);
         if (s[i] == 0)
             break;
     }
@@ -31,7 +31,7 @@ void Dump::restore(char **s) const
     size_t i;
     for (i=0;i<sizeof(buf);i++)
     {
-        read(m_fd, buf+i, 1);
+        g_timer.read(m_fd, buf+i, 1);
         if (buf[i] == 0)
             break;
     }

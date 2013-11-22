@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include "alarm.h"
 /*! \brief This object reads and writes binary dumps of other objects.
  */
 class Dump
@@ -19,12 +20,12 @@ public:
     //! \brief Write a binary image of an object.
     template <class T> void save(T &x) const
     {
-        write(m_fd, (const void*)&x, sizeof(x));
+        g_timer.write(m_fd, (const void*)&x, sizeof(x));
     }
     //! \brief restore a binary image of an object.
     template <class T> void restore(T &x) const
     {
-        read(m_fd, (void*)&x, sizeof(x));
+        g_timer.read(m_fd, (void*)&x, sizeof(x));
     }
     //! \brief Write a null-terminated string.
     void save(const char *s) const;
