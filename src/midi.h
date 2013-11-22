@@ -40,10 +40,15 @@ enum DataByte
 {
     continuous = 0,
     modulationWheel = 1,
+    BCFSpinner1 = 1,
     dataEntry = 6,
     mainVolume = 7,
     continuousController16 = 16, //!< FCB1010 right pedal
     sustain = 0x40,
+    BCFFader1 = 0x51,
+    BCFFader8 = 0x58,
+    BCFSwitchA = 0x59,
+    effects1Depth = 0x5b, //!< Reverb depth
     dataEntryInc = 0x60,
     dataEntryDec = 0x61,
     resetAllControllers = 121,

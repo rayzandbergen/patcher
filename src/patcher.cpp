@@ -28,6 +28,7 @@
 #include "xml.h"
 #include "persistent.h"
 #include "fantomscroller.h"
+#include "fcb1010.h"
 //#include "undupparts.h"
 
 #define VERSION "1.2.0"     //!< global version number
@@ -403,27 +404,27 @@ void Patcher::eventLoop()
                                 if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
                                     show(UpdateScreen);
                             }
-                            else if (deviceRx == Midi::Device::A30 && num == 0x5b)
+                            else if (deviceRx == Midi::Device::A30 && num == Midi::effects1Depth)
                             {
                                 m_metaMode = !!val;
                                 m_midi->putBytes(Midi::Device::BcfOut, Midi::controller|0,
-                                    0x59, val ? 127 : 0);
+                                    Midi::BCFSwitchA, val ? 127 : 0);
                                 show(UpdateScreen);
                             }
-                            else if (deviceRx == Midi::Device::BcfIn && num == 0x59)
+                            else if (deviceRx == Midi::Device::BcfIn && num == Midi::BCFSwitchA)
                             {
                                 m_metaMode = !!val;
                                 show(UpdateScreen);
                             }
-                            else if (deviceRx == Midi::Device::BcfIn && num == 0x5b)
+                            else if (deviceRx == Midi::Device::BcfIn && num == Midi::effects1Depth)
                             {
                                 m_partOffsetBcf ^= 8;
                                 show(UpdateFaders);
                             }
                             else if (deviceRx == Midi::Device::BcfIn
-                                    && num >= 0x51 && num <= 0x58)
+                                    && num >= Midi::BCFFader1 && num <= Midi::BCFFader8)
                             {
-                                uint8_t partNum = m_partOffsetBcf + (num - 0x51);
+                                uint8_t partNum = m_partOffsetBcf + (num - Midi::BCFFader1);
                                 Fantom::Part *p = currentPerf()->m_partList+partNum;
                                 p->m_vol = val;
                                 m_fantom->setVolume(partNum, val);
@@ -445,21 +446,21 @@ void Patcher::eventLoop()
 #endif
                             if (channelRx == masterProgramChangeChannel)
                             {
-                                if (num == 5)
+                                if (num == FCB1010::FootSwitch6)
                                 {
                                     m_metaMode = false;
                                     show(UpdateScreen);
                                 }
-                                else if (num == 6)
+                                else if (num == FCB1010::FootSwitch7)
                                 {
                                     m_metaMode = true;
                                     show(UpdateScreen);
                                 }
                                 else if (currentTrack()->m_chain)
                                 {
-                                    if (num <= 1)
+                                    if (num <= FCB1010::FootSwitch2)
                                         prevSection();
-                                    else if (num >=2)
+                                    else if (num >=FCB1010::FootSwitch3)
                                         nextSection();
                                 }
                                 else
@@ -748,9 +749,9 @@ void Patcher::updateBcfFaders()
         {
             int showPart = i - m_partOffsetBcf;
             m_midi->putBytes(Midi::Device::BcfOut, Midi::controller|0,
-                0x01+showPart, 0x80 + 4 * hwPart->m_oct);
+                Midi::BCFSpinner1+showPart, 0x80 + 4 * hwPart->m_oct);
             m_midi->putBytes(Midi::Device::BcfOut, Midi::controller|0,
-                0x51+showPart, hwPart->m_vol);
+                Midi::BCFFader1+showPart, hwPart->m_vol);
         }
     }
 }
