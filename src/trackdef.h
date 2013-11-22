@@ -20,6 +20,7 @@ namespace std { template <class T> class vector { public T entry[2]; }; }
 
 namespace Fantom {
     class Part;
+    class Performance;
 }
 //! \brief Contains some placeholder chaining constants, which are replaced by actual indexes after the TrackList is complete.
 namespace TrackDef {
@@ -103,6 +104,7 @@ public:
     SectionList m_sectionList;      //!< Section list.
     bool m_chain;                   //!< Chain mode switch. If enabled, FCB1010 program changes are interpreted as 'next' and 'previous' events.
     int m_startSection;             //!< Section index to switch to when this track starts.
+    Fantom::Performance *m_performance; //!< Fantom performance for this Track.
     Track(const char *name);
     ~Track();
     void clear();

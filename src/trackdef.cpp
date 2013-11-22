@@ -111,7 +111,7 @@ uint8_t SwPart::stringToNoteNum(const char *s)
 }
 
 //! \brief Construct a default Track with a given name.
-Track::Track(const char *name): m_name(name), m_chain(false), m_startSection(0)
+Track::Track(const char *name): m_name(name), m_chain(false), m_startSection(0), m_performance(0)
 {
 }
 
