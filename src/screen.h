@@ -19,14 +19,11 @@ class Screen
 {
     WINDOW *m_mainWindow;
     WINDOW *m_logWindow;
-    FILE *m_fpLog;                  //!< FILE pointer for witten logs.
-    void openLog();
 public:
     WINDOW *log() const { return m_logWindow; }
     WINDOW *main() const { return m_mainWindow; }
-    int printLog(const char *fmt, ...); //!< printf-like log function.
-    void dumpToLog(const uint8_t *data, int n); //!< dump a binary string to the log.
     static void showProgressBar(WINDOW *win, int y, int x, Real f); //!< show a progress bar at screen coordinates.
+    static void fprintfBinaryString(FILE *fp, const uint8_t *data, int n);
 	Screen(bool enableMain, bool enableLog);                       //!< Constructor.
 	~Screen();                      //!< Destructor.
 };

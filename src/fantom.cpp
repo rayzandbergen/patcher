@@ -114,18 +114,18 @@ void Part::restore(const Dump *d)
  * \param[in] screen Screen object to dump to
  * \param[in] prefix Print prefix.
  */
-void Part::dumpToLog(Screen *screen, const char *prefix) const
+void Part::toTextFile(FILE *fp, const char *prefix) const
 {
-    screen->printLog("%s.preset:%s\n", prefix, m_preset);
-    screen->printLog("%s.name:%s\n", prefix, m_patch.m_name);
-    screen->printLog("%s.channel:%d\n", prefix, 1+m_channel);
-    screen->printLog("%s.vol:%d\n", prefix, m_vol);
-    screen->printLog("%s.transpose:%d\n", prefix, m_transpose);
-    screen->printLog("%s.oct:%d\n", prefix, m_oct);
-    screen->printLog("%s.keyRangeLower:%s\n", prefix, Midi::noteName(m_keyRangeLower));
-    screen->printLog("%s.keyRangeUpper:%s\n", prefix, Midi::noteName(m_keyRangeUpper));
-    screen->printLog("%s.fadeWidthLower:%d\n", prefix, m_fadeWidthLower);
-    screen->printLog("%s.fadeWidthUpper:%d\n", prefix, m_fadeWidthUpper);
+    fprintf(fp, "%s.preset:%s\n", prefix, m_preset);
+    fprintf(fp, "%s.name:%s\n", prefix, m_patch.m_name);
+    fprintf(fp, "%s.channel:%d\n", prefix, 1+m_channel);
+    fprintf(fp, "%s.vol:%d\n", prefix, m_vol);
+    fprintf(fp, "%s.transpose:%d\n", prefix, m_transpose);
+    fprintf(fp, "%s.oct:%d\n", prefix, m_oct);
+    fprintf(fp, "%s.keyRangeLower:%s\n", prefix, Midi::noteName(m_keyRangeLower));
+    fprintf(fp, "%s.keyRangeUpper:%s\n", prefix, Midi::noteName(m_keyRangeUpper));
+    fprintf(fp, "%s.fadeWidthLower:%d\n", prefix, m_fadeWidthLower);
+    fprintf(fp, "%s.fadeWidthUpper:%d\n", prefix, m_fadeWidthUpper);
 }
 
 /*! \brief Save \a this to a \a Dump object.

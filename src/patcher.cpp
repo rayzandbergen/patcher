@@ -144,12 +144,15 @@ void Patcher::loadTrackDefs()
  */
 void Patcher::dumpTrackList()
 {
+    FILE *fp = fopen("log.txt", "w");
+    if (!fp)
+        throw(Error("fopen", errno));
     char prefix[100];
     int i=1;
     for (TrackList::const_iterator t = m_trackList.begin(); t != m_trackList.end(); t++, i++)
     {
         sprintf(prefix, "track%02d", i);
-        (*t)->dumpToLog(m_screen, prefix);
+        (*t)->toTextFile(fp, prefix);
     }
     //undupParts(m_performanceList, m_trackList);
 }

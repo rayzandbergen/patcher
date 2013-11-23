@@ -132,53 +132,53 @@ void Track::clear()
 }
 
 //! \brief Dump to a log file.
-void Track::dumpToLog(Screen *screen, const char *prefix) const
+void Track::toTextFile(FILE *fp, const char *prefix) const
 {
-    screen->printLog("%s.name:%s\n", prefix, m_name);
-    screen->printLog("%s.chain:%d\n", prefix, m_chain);
-    screen->printLog("%s.startSection:%d\n", prefix, m_startSection);
-    screen->printLog("%s.nofSections:%d\n", prefix, nofSections());
+    fprintf(fp, "%s.name:%s\n", prefix, m_name);
+    fprintf(fp, "%s.chain:%d\n", prefix, m_chain);
+    fprintf(fp, "%s.startSection:%d\n", prefix, m_startSection);
+    fprintf(fp, "%s.nofSections:%d\n", prefix, nofSections());
     char nestedPrefix[100];
     for (int i=0; i<nofSections(); i++)
     {
         sprintf(nestedPrefix, "%s.section%02d", prefix, 1+i);
-        m_sectionList[i]->dumpToLog(screen, nestedPrefix);
+        m_sectionList[i]->toTextFile(fp, nestedPrefix);
     }
 }
 
 //! \brief Dump to a log file.
-void Section::dumpToLog(Screen *screen, const char *prefix) const
+void Section::toTextFile(FILE *fp, const char *prefix) const
 {
-    screen->printLog("%s.name:%s\n", prefix, m_name);
-    screen->printLog("%s.noteOffEnter:%d\n", prefix, m_noteOffEnter);
-    screen->printLog("%s.noteOffLeave:%d\n", prefix, m_noteOffLeave);
-    screen->printLog("%s.nextTrack:%d\n", prefix, m_nextTrack);
-    screen->printLog("%s.nextSection:%d\n", prefix, m_nextSection);
-    screen->printLog("%s.previousTrack:%d\n", prefix, m_previousTrack);
-    screen->printLog("%s.previousSection:%d\n", prefix, m_previousSection);
-    screen->printLog("%s.nofSwParts:%d\n", prefix, nofParts());
+    fprintf(fp, "%s.name:%s\n", prefix, m_name);
+    fprintf(fp, "%s.noteOffEnter:%d\n", prefix, m_noteOffEnter);
+    fprintf(fp, "%s.noteOffLeave:%d\n", prefix, m_noteOffLeave);
+    fprintf(fp, "%s.nextTrack:%d\n", prefix, m_nextTrack);
+    fprintf(fp, "%s.nextSection:%d\n", prefix, m_nextSection);
+    fprintf(fp, "%s.previousTrack:%d\n", prefix, m_previousTrack);
+    fprintf(fp, "%s.previousSection:%d\n", prefix, m_previousSection);
+    fprintf(fp, "%s.nofSwParts:%d\n", prefix, nofParts());
     char nestedPrefix[100];
     for (int i=0; i<nofParts(); i++)
     {
         sprintf(nestedPrefix, "%s.swPart%02d", prefix, 1+i);
-        m_partList[i]->dumpToLog(screen, nestedPrefix);
+        m_partList[i]->toTextFile(fp, nestedPrefix);
     }
 }
 
 //! \brief Dump to a log file.
-void SwPart::dumpToLog(Screen *screen, const char *prefix) const
+void SwPart::toTextFile(FILE *fp, const char *prefix) const
 {
-    screen->printLog("%s.name:%s\n", prefix, m_name ? m_name : "noName");
-    screen->printLog("%s.channel:%d\n", prefix, m_channel);
-    screen->printLog("%s.transpose:%d\n", prefix, m_transpose);
-    screen->printLog("%s.rangeLower:%s\n", prefix, Midi::noteName(m_rangeLower));
-    screen->printLog("%s.rangeUpper:%s\n", prefix, Midi::noteName(m_rangeUpper));
-    screen->printLog("%s.nofHwParts:%d\n", prefix, m_hwPartList.size());
+    fprintf(fp, "%s.name:%s\n", prefix, m_name ? m_name : "noName");
+    fprintf(fp, "%s.channel:%d\n", prefix, m_channel);
+    fprintf(fp, "%s.transpose:%d\n", prefix, m_transpose);
+    fprintf(fp, "%s.rangeLower:%s\n", prefix, Midi::noteName(m_rangeLower));
+    fprintf(fp, "%s.rangeUpper:%s\n", prefix, Midi::noteName(m_rangeUpper));
+    fprintf(fp, "%s.nofHwParts:%d\n", prefix, m_hwPartList.size());
     char nestedPrefix[100];
     for (size_t i=0; i<m_hwPartList.size(); i++)
     {
         sprintf(nestedPrefix, "%s.hwPart%02d", prefix, 1+(int)m_hwPartList[i]->m_number);
-        m_hwPartList[i]->dumpToLog(screen, nestedPrefix);
+        m_hwPartList[i]->toTextFile(fp, nestedPrefix);
     }
 }
 

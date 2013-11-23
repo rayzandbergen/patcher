@@ -52,7 +52,7 @@ public:
     void constructPreset(bool &patchReadAllowed);
     void save(const Dump *d);
     void restore(const Dump *d);
-    void dumpToLog(Screen *screen, const char *prefix) const;
+    void toTextFile(FILE *fp, const char *prefix) const;
     /*! \brief Constructor */
     Part(): m_number(255), m_channel(255) { }
 };

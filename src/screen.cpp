@@ -13,7 +13,6 @@ Screen::Screen(bool enableMain, bool enableLog):m_mainWindow(0), m_logWindow(0)
 {
     const int lines = 25;
     int trackWinHeight = 0;
-    m_fpLog = 0;
     initscr();
     start_color();
     curs_set(0);
@@ -40,37 +39,17 @@ Screen::~Screen()
     endwin();
 }
 
-void Screen::openLog()
-{
-    if (!m_fpLog)
-    {
-        m_fpLog = fopen("log.txt", "w");
-        if (!m_fpLog)
-            throw(Error("fopen", errno));
-    }
-}
 
-int Screen::printLog(const char *fmt, ...)
+void Screen::fprintfBinaryString(FILE *fp, const uint8_t *data, int n)
 {
-    openLog();
-    va_list ap;
-    va_start(ap, fmt);
-    int rv = vfprintf(m_fpLog, fmt, ap);
-    va_end(ap);
-    return rv;
-}
-
-void Screen::dumpToLog(const uint8_t *data, int n)
-{
-    openLog();
     for (int i=0;i<n;i++)
     {
         if (!isprint(data[i]))
-            fprintf(m_fpLog, "\\%02x", data[i]);
+            fprintf(fp, "\\%02x", data[i]);
         else
-            fprintf(m_fpLog, "%c", data[i]);
+            fprintf(fp, "%c", data[i]);
     }
-    fprintf(m_fpLog, "\n");
+    fprintf(fp, "\n");
 }
 
 void Screen::showProgressBar(WINDOW *win, int y, int x, Real fraction)

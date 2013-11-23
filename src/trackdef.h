@@ -61,7 +61,7 @@ public:
     SwPart(const char *name);
     ~SwPart();
     void clear();
-    void dumpToLog(Screen *screen, const char *prefix) const;
+    void toTextFile(FILE *fp, const char *prefix) const;
 };
 
 //! \brief A list of \a Section object pointers.
@@ -90,7 +90,7 @@ public:
     //! \brief Return the number of parts in this \a Section.
     int nofParts() const { return (int)m_partList.size(); }
     //! \brief Dump this \a section to a log file.
-    void dumpToLog(Screen *screen, const char *prefix) const;
+    void toTextFile(FILE *fp, const char *prefix) const;
 };
 
 //! \brief A list of \a Section object pointers.
@@ -112,7 +112,7 @@ public:
     void addSection(Section *s) { m_sectionList.push_back(s); }
     //! \brief The number of sections in this Track.
     int nofSections() const { return (int)m_sectionList.size(); }
-    void dumpToLog(Screen *screen, const char *prefix) const;
+    void toTextFile(FILE *fp, const char *prefix) const;
 };
 
 typedef std::vector<Track*> TrackList;  //!< A list of \a Track object pointers.
