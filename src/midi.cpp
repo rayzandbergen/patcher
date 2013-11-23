@@ -63,21 +63,21 @@ void Driver::openDevices()
         sprintf(devStr, "hw:%d,%d,%d", dIn->m_card, dIn->m_sub1, dIn->m_sub2);
         if (dIn->m_id != Device::none && dOut->m_id != Device::none)
         {
-            m_screen->printMidi("opening %s\n%s\n", dIn->m_longDescription, devStr);
-            m_screen->printMidi("opening %s\n%s\n", dOut->m_longDescription, devStr);
-            m_screen->flushMidi();
+            wprintw(m_window, "opening %s\n%s\n", dIn->m_longDescription, devStr);
+            wprintw(m_window, "opening %s\n%s\n", dOut->m_longDescription, devStr);
+            wrefresh(m_window);
             dIn->m_fd = dOut->m_fd = openRaw(devStr, O_RDWR);
         }
         else if (dIn->m_id == Device::none && dOut->m_id != Device::none)
         {
-            m_screen->printMidi("opening %s\n%s\n", dOut->m_longDescription, devStr);
-            m_screen->flushMidi();
+            wprintw(m_window, "opening %s\n%s\n", dOut->m_longDescription, devStr);
+            wrefresh(m_window);
             dOut->m_fd = openRaw(devStr, O_WRONLY);
         }
         else if (dIn->m_id != Device::none && dOut->m_id == Device::none)
         {
-            m_screen->printMidi("opening %s\n%s\n", dIn->m_longDescription, devStr);
-            m_screen->flushMidi();
+            wprintw(m_window, "opening %s\n%s\n", dIn->m_longDescription, devStr);
+            wrefresh(m_window);
             dIn->m_fd = openRaw(devStr, O_RDONLY);
         }
         else
@@ -91,10 +91,10 @@ void Driver::openDevices()
     }
     for (int i=Device::none+1; i<Device::max; i++)
     {
-        m_screen->printMidi("dev = %d, devIdx = %d, fd = %d\n",
+        wprintw(m_window, "dev = %d, devIdx = %d, fd = %d\n",
             i, m_deviceIdToDeviceTabIdx[i], fd(i));
     }
-    m_screen->flushMidi();
+    wrefresh(m_window);
 }
 
 /*! \brief Convert a note number to a string.
@@ -137,7 +137,7 @@ int Driver::openRaw(const char *portName, int mode) const
    int status;
    if ((status =
         snd_rawmidi_open(&rawMidi1, &rawMidi2, portName, 0)) < 0) {
-        m_screen->printMidi("cannot open MIDI port %s: %s",
+        wprintw(m_window, "cannot open MIDI port %s: %s",
                 portName, snd_strerror(status));
     return -1;
    }
@@ -184,7 +184,7 @@ int Driver::wait(int usecTimeout, int device) const
     struct timeval tv;
     tv.tv_sec = 0;
     tv.tv_usec = usecTimeout;
-    m_screen->flushMidi();
+    wrefresh(m_window);
     int e;
     bool interrupted = false;
     do
@@ -203,7 +203,7 @@ int Driver::wait(int usecTimeout, int device) const
             FD_ISSET(m_deviceList[i].m_fd, &fdSet))
         {
 #if 0
-            m_screen->printMidi(
+            wprintw(m_window, 
                     "fd %d is ready, idx = %d, dev = %d\n",
                     m_deviceList[i].m_fd, i, m_deviceList[i].m_id);
 #endif
@@ -243,7 +243,7 @@ int Driver::cardNameToNum(const char *target) const
     fclose(fp);
     if (hwNum == -1)
     {
-        m_screen->printMidi("cannot find %s\n", target);
+        wprintw(m_window, "cannot find %s\n", target);
     }
     return hwNum;
 }
@@ -252,7 +252,7 @@ int Driver::cardNameToNum(const char *target) const
  *
  * \param[in] s     A \a Screen object to log to.
  */
-Driver::Driver(Screen *s): m_screen(s)
+Driver::Driver(WINDOW *w): m_window(w)
 {
     m_deviceList = &deviceList[0];
     openDevices();

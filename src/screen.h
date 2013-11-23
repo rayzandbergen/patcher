@@ -17,20 +17,17 @@
 //!  \brief Wraps an ncurses(3X) screen in an object with some convenience functions.
 class Screen
 {
-    enum Id                         //!< Screen ID for logging.
-        { track, midi, debug };
-	WINDOW *m_midiLog;              //!< curses MIDI window object.
-    int vprintf(Id id, const char *fmt, va_list);   //!< Low level log function.
+    WINDOW *m_mainWindow;
+    WINDOW *m_logWindow;
     FILE *m_fpLog;                  //!< FILE pointer for witten logs.
-    bool m_enableMidiLog;           //!< If true: enable the MIDI log screen.
+    void openLog();
 public:
-	WINDOW *m_track;                //!< curses track info window.
-    int printMidi(const char *fmt, ...); //!< printf-like MIDI log function.
-    void flushMidi();               //!< Update the MIDI log screen.
+    WINDOW *log() const { return m_logWindow; }
+    WINDOW *main() const { return m_mainWindow; }
     int printLog(const char *fmt, ...); //!< printf-like log function.
     void dumpToLog(const uint8_t *data, int n); //!< dump a binary string to the log.
     static void showProgressBar(WINDOW *win, int y, int x, Real f); //!< show a progress bar at screen coordinates.
-	Screen();                       //!< Constructor.
+	Screen(bool enableMain, bool enableLog);                       //!< Constructor.
 	~Screen();                      //!< Destructor.
 };
 #endif

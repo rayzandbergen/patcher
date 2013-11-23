@@ -72,7 +72,6 @@ private:
     int m_partOffsetBcf;                                //!< Either 0 or 8, since BCF only has 8 sliders to show 16 parameters
     TimeSpec m_debouncePreviousTriggerTime;             //!< Absolute time of last debounce test.
     TimeSpec m_eventRxTime;                             //!< Arrival time of the current Midi event.
-    WINDOW *win() const { return m_screen->m_track; } //!< Convenience function to get to track window.
     Track *currentTrack() const {
         return m_trackList[m_trackIdx]; } //!< The current \a Track.
     Section *currentSection() const {
@@ -130,6 +129,7 @@ public:
     {
         m_trackIdx = m_setList[0];
         getTime(m_debouncePreviousTriggerTime);
+        m_fantom->selectPerformanceFromMemCard();
     };
 };
 
@@ -162,7 +162,7 @@ void Patcher::mergePerformanceData()
     const char *cacheFileName = "fantom_cache.bin";
     if (performanceList.readFromCache(cacheFileName) != nofTracks())
     {
-        performanceList.download(m_fantom, m_screen->m_track, nofTracks());
+        performanceList.download(m_fantom, m_screen->main(), nofTracks());
         performanceList.writeToCache(cacheFileName);
     }
     for (size_t t = 0; t < nofTracks(); t++)
@@ -209,7 +209,7 @@ void Patcher::eventLoop()
     for (uint32_t j=0;;j++)
     {
 #ifndef RASPBIAN
-        mvwprintw(win(), 1, 69, "%09d\n", j);
+        mvwprintw(m_screen->main(), 1, 69, "%09d\n", j);
 #endif
         int deviceRx = m_midi->wait();
         uint8_t byteRx = m_midi->getByte(deviceRx);
@@ -223,7 +223,7 @@ void Patcher::eventLoop()
             int c = byteRx;
             if (!isprint(c))
                 c = ' ';
-            m_screen->printMidi("dropped %x '%c'\n", byteRx, c);
+            wprintw(m_screen->log(), "dropped %x '%c'\n", byteRx, c);
         }
         else
         {   // start of MIDI message
@@ -240,7 +240,7 @@ void Patcher::eventLoop()
                         show(UpdateScreen);
                     break;
                 case Midi::realtimeStart:
-                    mvwprintw(win(), 17, 0, "panic on\n");
+                    mvwprintw(m_screen->main(), 17, 0, "panic on\n");
                     for (int channel=0; channel<Midi::NofChannels; channel++)
                     {
                         m_midi->putBytes(Midi::Device::FantomOut,
@@ -250,7 +250,7 @@ void Patcher::eventLoop()
                     }
                     break;
                 case Midi::realtimeStop:
-                    mvwprintw(win(), 17, 0, "panic off\n");
+                    mvwprintw(m_screen->main(), 17, 0, "panic off\n");
                     break;
                 case Midi::sysEx:
                     consumeSysEx(deviceRx);
@@ -266,7 +266,7 @@ void Patcher::eventLoop()
                             uint8_t note = m_midi->getByte(deviceRx);
                             uint8_t velo = m_midi->getByte(deviceRx);
 #ifdef LOG_NOTE
-                            m_screen->printMidi(
+                            wprintw(m_screen->log(), 
                                 "note off %s ch %02x vel %02x\n",
                                 Midi::noteName(note), channelRx, velo);
 #endif
@@ -283,7 +283,7 @@ void Patcher::eventLoop()
                             uint8_t note = m_midi->getByte(deviceRx);
                             uint8_t velo = m_midi->getByte(deviceRx);
 #ifdef LOG_NOTE
-                            m_screen->printMidi(
+                            wprintw(m_screen->log(), 
                                 "note on %s ch %02x vel %02x\n",
                                 Midi::noteName(note), channelRx, velo);
 #endif
@@ -309,7 +309,7 @@ void Patcher::eventLoop()
                         {
                             uint8_t note = m_midi->getByte(deviceRx);
                             uint8_t val = m_midi->getByte(deviceRx);
-                            m_screen->printMidi(
+                            wprintw(m_screen->log(), 
                                 "aftertouch %s ch %02x val %02x\n",
                                 Midi::noteName(note), channelRx, val);
                             sendEventToFantom(Midi::aftertouch, note, val);
@@ -322,7 +322,7 @@ void Patcher::eventLoop()
                             uint8_t num = m_midi->getByte(deviceRx);
                             uint8_t val = m_midi->getByte(deviceRx);
 #ifdef LOG_CONTROLLER
-                            m_screen->printMidi(
+                            wprintw(m_screen->log(), 
                                 "controller ch %02x num %02x val %02x\n",
                                 channelRx, num, val);
 #endif
@@ -365,7 +365,7 @@ void Patcher::eventLoop()
                             }
                             else
                             {
-                                m_screen->printMidi("dropped controller %02x %02x\n", num, val);
+                                wprintw(m_screen->log(), "dropped controller %02x %02x\n", num, val);
                             }
                             break;
                         }
@@ -373,7 +373,7 @@ void Patcher::eventLoop()
                         {
                             uint8_t num = m_midi->getByte(deviceRx);
 #ifdef LOG_PROGRAM_CHANGE
-                            m_screen->printMidi(
+                            wprintw(m_screen->log(), 
                                 "program change ch %02x num %02x\n",
                                 channelRx, num);
 #endif
@@ -404,7 +404,7 @@ void Patcher::eventLoop()
                         case Midi::channelAftertouch:
                         {
                             uint8_t num = m_midi->getByte(deviceRx);
-                            m_screen->printMidi(
+                            wprintw(m_screen->log(), 
                                 "channelRx pressure channelRx %02x num %02x\n",
                                 channelRx, num);
                             sendEventToFantom(Midi::channelAftertouch, num);
@@ -417,7 +417,7 @@ void Patcher::eventLoop()
                             uint8_t num1 = m_midi->getByte(deviceRx);
                             uint8_t num2 = m_midi->getByte(deviceRx);
 #ifdef LOG_PITCHBEND
-                            m_screen->printMidi(
+                            wprintw(m_screen->log(), 
                                 "pitch bend ch %02x val %04x\n",
                                 channelRx, (uint16_t)num2<<7|(uint16_t)num1);
 #endif
@@ -429,14 +429,14 @@ void Patcher::eventLoop()
                         default:
                             // unknown status, just bail
                             // The next iteration will catch any status-less data.
-                            m_screen->printMidi("unknown %02x\n", byteRx);
+                            wprintw(m_screen->log(), "unknown %02x\n", byteRx);
                             break;
                     } // END per-channel status switch
                 } // END default status byte case
             } // END status byte switch
         } // END of MIDI message
-        m_screen->flushMidi();
-        wnoutrefresh(win());
+        wrefresh(m_screen->log());
+        wnoutrefresh(m_screen->main());
         doupdate();
         if (m_metaMode)
             m_fantomScroller.update(m_eventRxTime);
@@ -483,13 +483,13 @@ void Patcher::sendEventToFantom(uint8_t midiStatus,
                 if (isNoteOn && !swPart->m_monoFilter
                         .passNoteOn(data1, data2))
                 {
-                    m_screen->printMidi("note on dropped\n");
+                    wprintw(m_screen->log(), "note on dropped\n");
                     continue;
                 }
                 if (isNoteOff && !swPart->m_monoFilter
                         .passNoteOff(data1, data2))
                 {
-                    m_screen->printMidi("note off dropped\n");
+                    wprintw(m_screen->log(), "note off dropped\n");
                     continue;
                 }
             }
@@ -502,7 +502,7 @@ void Patcher::sendEventToFantom(uint8_t midiStatus,
             }
             if (!swPart->m_toggler.pass(midiStatus, data1Out, data2Out))
             {
-                m_screen->printMidi("note on dropped\n");
+                wprintw(m_screen->log(), "note on dropped\n");
                 continue;
             }
         }
@@ -511,12 +511,12 @@ void Patcher::sendEventToFantom(uint8_t midiStatus,
             if (data1 == Midi::sustain && swPart->m_mono)
             {
                 swPart->m_monoFilter.sustain(data2 != 0);
-                m_screen->printMidi("mono sustain\n");
+                wprintw(m_screen->log(), "mono sustain\n");
             }
             if (data1 == Midi::sustain && swPart->m_transposer)
             {
                 swPart->m_transposer->setSustain(data2 != 0);
-                m_screen->printMidi("transposer sustain\n");
+                wprintw(m_screen->log(), "transposer sustain\n");
                 drop = true;
             }
             swPart->m_controllerRemap->value(data1, data2, &data1Out, &data2Out);
@@ -563,29 +563,29 @@ void Patcher::show(int updateFlags)
  */
 void Patcher::updateScreen()
 {
-    werase(win());
-    wprintw(win(),
+    werase(m_screen->main());
+    wprintw(m_screen->main(),
         "*** Ray's MIDI patcher " VERSION ", rev " SVN ", " NOW " ***\n\n");
-    mvwprintw(win(), 2, 0,
+    mvwprintw(m_screen->main(), 2, 0,
         "track   %03d \"%s\"\nsection %03d/%03d \"%s\"\n",
         1+m_trackIdx, currentTrack()->m_name,
         1+m_sectionIdx, currentTrack()->nofSections(),
         currentSection()->m_name);
-    mvwprintw(win(), 2, 44,
+    mvwprintw(m_screen->main(), 2, 44,
         "%03d/%03d within setlist", 1+m_trackIdxWithinSet, m_setList.size());
-    mvwprintw(win(), 5, 0,
+    mvwprintw(m_screen->main(), 5, 0,
         "performance \"%s\"\n",
         currentTrack()->m_performance->m_name);
-    mvwprintw(win(), 3, 44,
+    mvwprintw(m_screen->main(), 3, 44,
         "next \"%s\"\n", nextTrackName());
-    mvwprintw(win(), 5, 30, "chain mode %s\n",
+    mvwprintw(m_screen->main(), 5, 30, "chain mode %s\n",
         currentTrack()->m_chain ?"on":"off");
     if (m_metaMode)
-        wattron(win(), COLOR_PAIR(1));
-    mvwprintw(win(), 5, 50, "meta mode %s\n",
+        wattron(m_screen->main(), COLOR_PAIR(1));
+    mvwprintw(m_screen->main(), 5, 50, "meta mode %s\n",
         m_metaMode?"on":"off");
     if (m_metaMode)
-        wattroff(win(), COLOR_PAIR(1));
+        wattroff(m_screen->main(), COLOR_PAIR(1));
     int partsShown = 0;
     //ool partActivity[Fantom::Performance::NofParts];
     bool channelActivity[Midi::NofChannels];
@@ -600,11 +600,11 @@ void Patcher::updateScreen()
         {
             bool active = channelActivity[part->m_channel];
             if (active)
-                wattron(win(), COLOR_PAIR(1));
-            mvwprintw(win(), y, x,
+                wattron(m_screen->main(), COLOR_PAIR(1));
+            mvwprintw(m_screen->main(), y, x,
                 "%2d %2d %s ", partIdx+1, 1+part->m_channel, part->m_preset);
             if (active)
-                wattroff(win(), COLOR_PAIR(1));
+                wattroff(m_screen->main(), COLOR_PAIR(1));
             partsShown++;
         }
     }
@@ -625,7 +625,7 @@ void Patcher::updateScreen()
                     x += 40;
                 int y = 6 + 5 + 2 + partsShown % colLength;
                 if (partsShown % colLength == 0)
-                    mvwprintw(win(), 6+5+1, x,
+                    mvwprintw(m_screen->main(), 6+5+1, x,
                         "prt range         patch        vol tps");
                 char keyL[20];
                 keyL[0] = 0;
@@ -642,13 +642,13 @@ void Patcher::updateScreen()
                         (int)hwPart->m_oct*12;
                 bool active = softPartActivity[i];
                 if (active)
-                    wattron(win(), COLOR_PAIR(1));
+                    wattron(m_screen->main(), COLOR_PAIR(1));
                 ASSERT(hwPart->m_patch.m_name[1] != '[');
-                mvwprintw(win(), y, x,
+                mvwprintw(m_screen->main(), y, x,
                     "%3d [%3s - %4s]  %12s %3d %3d", j+1, keyL, keyU,
                     hwPart->m_patch.m_name, hwPart->m_vol,transpose);
                 if (active)
-                    wattroff(win(), COLOR_PAIR(1));
+                    wattroff(m_screen->main(), COLOR_PAIR(1));
                 partsShown++;
             }
         }
@@ -711,7 +711,7 @@ void Patcher::allNotesOff()
             m_midi->putBytes(
                 Midi::Device::FantomOut,
                 Midi::controller|channel, Midi::sustain, 0);
-            m_screen->printMidi("all notes off ch %02x\n", channel+1);
+            wprintw(m_screen->log(), "all notes off ch %02x\n", channel+1);
             part->m_toggler.reset();
         }
     }
@@ -808,7 +808,7 @@ void Patcher::prevSection()
  */
 void Patcher::changeTrack(uint8_t track, int updateFlags)
 {
-    //m_screen->printMidi("change track %d\n", track);
+    //wprintw(m_screen->log(), "change track %d\n", track);
     m_trackIdx = track;
     m_sectionIdx = currentTrack()->m_startSection; // cannot use changeSection!
     m_fantom->selectPerformance(m_trackIdx);
@@ -856,18 +856,18 @@ void Patcher::changeTrackByNote(uint8_t note)
  */
 void Patcher::consumeSysEx(int device)
 {
-    m_screen->printMidi("sysEx ");
+    wprintw(m_screen->log(), "sysEx ");
     for (;;)
     {
         uint8_t byteRx = m_midi->getByte(device);
         int c = byteRx;
         if (!isprint(c))
             c = ' ';
-        m_screen->printMidi("%x '%c' ", byteRx, c);
+        wprintw(m_screen->log(), "%x '%c' ", byteRx, c);
         if (byteRx == Midi::EOX)
             break;
     }
-    m_screen->printMidi("\n");
+    wprintw(m_screen->log(), "\n");
 }
 
 /*! \brief The main entrypoint of the patcher.
@@ -900,11 +900,11 @@ int main(int argc, char **argv)
         return 0;
 #endif
         g_timer.setTimeout((Real)2.5);
-        Screen screen;
-        wprintw(screen.m_track, "   *** initialising ***\n\n");
-        wrefresh(screen.m_track);
-        Midi::Driver midi(&screen);
-        Fantom::Driver fantom(&screen, &midi);
+        Screen screen(true, true);
+        wprintw(screen.main(), "   *** initialising ***\n\n");
+        wrefresh(screen.main());
+        Midi::Driver midi(screen.log());
+        Fantom::Driver fantom(screen.log(), &midi);
         Patcher patcher(&screen, &midi, &fantom);
         patcher.loadTrackDefs();
         patcher.mergePerformanceData();

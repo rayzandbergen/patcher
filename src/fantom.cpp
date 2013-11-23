@@ -158,7 +158,7 @@ void Performance::restore(const Dump *d)
  */
 void Driver::setParam(const uint32_t addr, const uint32_t length, uint8_t *data)
 {
-    //m_screen->printLog("Driver::setParam %08x %08x\n", addr, length);
+    //wprintw(m_window, "Driver::setParam %08x %08x\n", addr, length);
     uint8_t txBuf[128];
     uint32_t checkSum = 0;
     uint32_t i=0;
@@ -185,9 +185,8 @@ void Driver::setParam(const uint32_t addr, const uint32_t length, uint8_t *data)
     txBuf[i++] = Midi::EOX;
     m_midi->putBytes(Midi::Device::FantomOut, txBuf, i);
 #if 0
-    m_screen->printMidi("sending sysEx %08x %08x\n", addr, length);
-    m_screen->dumpToLog(txBuf, i);
-    m_screen->flushMidi();
+    wprintw(m_window, "sending sysEx %08x %08x\n", addr, length);
+    wrefresh(m_window);
 #endif
 }
 
@@ -200,7 +199,7 @@ void Driver::setParam(const uint32_t addr, const uint32_t length, uint8_t *data)
 void Driver::getParam(const uint32_t addr, const uint32_t length, uint8_t *data)
 {
     const uint32_t rxHeaderLength = 10;
-    //m_screen->printLog("Driver::getParam %08x %08x\n", addr, length);
+    //wprintw(m_window, "Driver::getParam %08x %08x\n", addr, length);
     uint8_t txBuf[128];
     uint8_t rxBuf[128]; // debug only
     memset(rxBuf, 0, sizeof(rxBuf));
@@ -236,8 +235,8 @@ void Driver::getParam(const uint32_t addr, const uint32_t length, uint8_t *data)
         byteRx = m_midi->getByte(Midi::Device::FantomIn);
         if (byteRx == Midi::sysEx)
             break;
-        m_screen->printMidi("unexpected response, retry\n");
-        m_screen->flushMidi();
+        wprintw(m_window, "unexpected response, retry\n");
+        wrefresh(m_window);
     }
     rxBuf[0] = byteRx;
     for (i=1;;i++)
@@ -252,8 +251,7 @@ void Driver::getParam(const uint32_t addr, const uint32_t length, uint8_t *data)
         }
         // \todo check Rx header check and checksum
     }
-    //m_screen->printLog("received, length = %d\n", i);
-    //m_screen->dumpToLog(rxBuf, i);
+    //wprintw(m_window, "received, length = %d\n", i);
 }
 
 /*! \brief Set the volume of a part.
@@ -283,7 +281,7 @@ void Driver::getPartParams(Part *p, int idx)
     p->m_pCh = buf[6];
     p->m_vol = buf[0x07];
     p->m_transpose = buf[0x09] - 64;
-//    m_screen->printLog("transpose = %d\n", p->m_transpose);
+//    wprintw(m_window, "transpose = %d\n", p->m_transpose);
     p->m_oct = buf[0x15] - 64;
     p->m_keyRangeLower = buf[0x17];
     p->m_keyRangeUpper = buf[0x18];

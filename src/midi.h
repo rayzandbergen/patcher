@@ -82,7 +82,7 @@ struct Device
  * This object logs to a \a Screen object.
  */
 class Driver {
-    Screen *m_screen;                               //!< \a Screen object to log to.
+    WINDOW *m_window;
 	struct Device *m_deviceList;                    //!< List of all MIDI devices.
     int m_deviceIdToDeviceTabIdx[Device::max];      //!< Map from DeviceId to m_deviceList index.
     int m_suicideFd;                                //!< Activity on this file descriptor kills the process.
@@ -91,7 +91,7 @@ class Driver {
 	int openRaw(const char *portName, int mode) const;
     void openDevices();
 public:
-	Driver(Screen *screen);
+	Driver(WINDOW *window);
     int wait(int usecTimeout = 0, int device = Device::all) const;
 	uint8_t getByte(int device);
 	void putByte(int device, uint8_t b1);
