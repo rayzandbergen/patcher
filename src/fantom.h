@@ -31,6 +31,8 @@ public:
 };
 
 /*! \brief A Fantom 'part', i.e. a patch with some additional mix parameters.
+ *
+ *  All integer widths are specified so the binary dumps are portable.
  */
 class Part
 {
@@ -104,10 +106,10 @@ class PerformanceList
     static const uint32_t magic = 0x46a28f12;   //!<    Magic constant to mark the beginning of a cache dump.
     Fantom::Performance *m_performanceList;     //!<    List of \a Performance objects, stays even when \a this is destroyed.
     uint32_t m_magic;                           //!<    Magic constant read back from cache.
-    size_t m_size;                              //!<    Number of \a Perfomance objects.
+    uint32_t m_size;                            //!<    Number of \a Perfomance objects.
 public:
     //! \brief Number of \a Performance objects in this list.
-    size_t size() const { return m_size; }
+    size_t size() const { return (size_t)m_size; }
     void clear();   //!<    Clear this object.
     //! \brief Default constructor.
     PerformanceList(): m_performanceList(0) { }

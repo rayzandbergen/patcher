@@ -71,19 +71,19 @@ void Part::constructPreset(bool &patchReadAllowed)
  */
 void Part::save(const Dump *d)
 {
-    d->save(m_number);
-    d->save(m_channel);
-    d->save(m_bankSelectMsb);
-    d->save(m_bankSelectLsb);
-    d->save(m_pCh);
-    d->save(m_vol);
-    d->save(m_transpose);
-    d->save(m_oct);
+    d->saveInt(m_number);
+    d->saveInt(m_channel);
+    d->saveInt(m_bankSelectMsb);
+    d->saveInt(m_bankSelectLsb);
+    d->saveInt(m_pCh);
+    d->saveInt(m_vol);
+    d->saveInt(m_transpose);
+    d->saveInt(m_oct);
     d->save((const char*)m_preset);
-    d->save(m_keyRangeLower);
-    d->save(m_keyRangeUpper);
-    d->save(m_fadeWidthLower);
-    d->save(m_fadeWidthUpper);
+    d->saveInt(m_keyRangeLower);
+    d->saveInt(m_keyRangeUpper);
+    d->saveInt(m_fadeWidthLower);
+    d->saveInt(m_fadeWidthUpper);
     m_patch.save(d);
 }
 
@@ -93,19 +93,19 @@ void Part::save(const Dump *d)
  */
 void Part::restore(const Dump *d)
 {
-    d->restore(m_number);
-    d->restore(m_channel);
-    d->restore(m_bankSelectMsb);
-    d->restore(m_bankSelectLsb);
-    d->restore(m_pCh);
-    d->restore(m_vol);
-    d->restore(m_transpose);
-    d->restore(m_oct);
+    d->restoreInt(m_number);
+    d->restoreInt(m_channel);
+    d->restoreInt(m_bankSelectMsb);
+    d->restoreInt(m_bankSelectLsb);
+    d->restoreInt(m_pCh);
+    d->restoreInt(m_vol);
+    d->restoreInt(m_transpose);
+    d->restoreInt(m_oct);
     d->restore((char*)m_preset);
-    d->restore(m_keyRangeLower);
-    d->restore(m_keyRangeUpper);
-    d->restore(m_fadeWidthLower);
-    d->restore(m_fadeWidthUpper);
+    d->restoreInt(m_keyRangeLower);
+    d->restoreInt(m_keyRangeUpper);
+    d->restoreInt(m_fadeWidthLower);
+    d->restoreInt(m_fadeWidthUpper);
     m_patch.restore(d);
 }
 
@@ -395,10 +395,10 @@ size_t PerformanceList::readFromCache(const char *fantomPatchFile)
     Dump d;
     if (d.fopen(fantomPatchFile, O_RDONLY, 0))
     {
-        d.restore(m_magic);
+        d.restoreInt(m_magic);
         if (m_magic != magic)
             return 0;
-        d.restore(m_size);
+        d.restoreInt(m_size);
         m_performanceList = new Fantom::Performance[m_size];
         try
         {
@@ -478,8 +478,8 @@ void PerformanceList::writeToCache(const char *fantomPatchFile)
         throw(Error("open O_WRONLY|O_CREAT", errno));
     }
     m_magic = magic;
-    d.save(m_magic);
-    d.save(m_size);
+    d.saveInt(m_magic);
+    d.saveInt(m_size);
     for (size_t i=0; i<m_size; i++)
     {
         m_performanceList[i].save(&d);
