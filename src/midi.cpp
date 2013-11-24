@@ -203,7 +203,7 @@ int Driver::wait(int usecTimeout, int device) const
             FD_ISSET(m_deviceList[i].m_fd, &fdSet))
         {
 #if 0
-            wprintw(m_window, 
+            wprintw(m_window,
                     "fd %d is ready, idx = %d, dev = %d\n",
                     m_deviceList[i].m_fd, i, m_deviceList[i].m_id);
 #endif
@@ -250,9 +250,9 @@ int Driver::cardNameToNum(const char *target) const
 
 /*! \brief Construct a MIDI \a Driver object
  *
- * \param[in] s     A \a Screen object to log to.
+ * \param[in] win     A curses WINDOW object to log to.
  */
-Driver::Driver(WINDOW *w): m_window(w)
+Driver::Driver(WINDOW *win): m_window(win)
 {
     m_deviceList = &deviceList[0];
     openDevices();

@@ -9,6 +9,11 @@
 #include "screen.h"
 #include "error.h"
 
+/*! \brief Construct a Screen object.
+ *
+ * \param[in]       enableMain  Enable the main window.
+ * \param[in]       enableLog   Enable the log window.
+ */
 Screen::Screen(bool enableMain, bool enableLog):m_mainWindow(0), m_logWindow(0)
 {
     const int lines = 25;
@@ -30,6 +35,7 @@ Screen::Screen(bool enableMain, bool enableLog):m_mainWindow(0), m_logWindow(0)
     }
 }
 
+//! \brief Destructor.
 Screen::~Screen()
 {
     if (m_mainWindow)
@@ -40,6 +46,12 @@ Screen::~Screen()
 }
 
 
+/*! \brief  Print a binary string to a FILE as a hex string.
+ *
+ *  \param[in]  fp      FILE to write to.
+ *  \param[in]  data    Start of binary data.
+ *  \param[in]  n       Size of binary data.
+ */
 void Screen::fprintfBinaryString(FILE *fp, const uint8_t *data, int n)
 {
     for (int i=0;i<n;i++)

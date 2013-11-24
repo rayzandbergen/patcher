@@ -19,7 +19,8 @@
 #include "error.h"
 
 #ifdef FAKE_STL // set in PREDEFINED in doxygen config
-namespace std { template <class K, class V> class map { public T key; V value; }; }
+namespace std { /*! \brief STL map */ template <class K, class V> class map {
+        public T key; /*!< Key. */ V value; /*!< Value. */ }; }
 #endif
 
 XERCES_CPP_NAMESPACE_USE

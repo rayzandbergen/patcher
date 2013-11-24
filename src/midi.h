@@ -61,7 +61,7 @@ enum InOut { none, in = 100, out };
 //! \brief State of a single MIDI device.
 struct Device
 {
-    //!<    \brief My hardware.
+    //! \brief My hardware.
     enum DeviceId { none = 0, A30, Fcb1010, FantomOut, FantomIn, BcfOut, BcfIn, max, all };
     const char *m_cardName;     //!< ALSA driver name.
     int m_card;                 //!< ALSA card number.
@@ -82,7 +82,7 @@ struct Device
  * This object logs to a \a Screen object.
  */
 class Driver {
-    WINDOW *m_window;
+    WINDOW *m_window;                               //!< a curses WINDOW object to log to.
 	struct Device *m_deviceList;                    //!< List of all MIDI devices.
     int m_deviceIdToDeviceTabIdx[Device::max];      //!< Map from DeviceId to m_deviceList index.
     int m_suicideFd;                                //!< Activity on this file descriptor kills the process.

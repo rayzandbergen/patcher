@@ -18,6 +18,12 @@ public:
 
 void alarmHandler(int dummy);
 
+/*! \brief Timer class.
+ *
+ * This class can deliver timeout signals, so system calls can be
+ * interrupted after a set timeout.
+ * It also contains read and write functions that throw on timeout.
+ */
 class Timer
 {
 friend void alarmHandler(int);

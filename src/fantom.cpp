@@ -109,9 +109,9 @@ void Part::restore(const Dump *d)
     m_patch.restore(d);
 }
 
-/*! \brief Dump \a this to \a Screen.
+/*! \brief Dump \a this to a FILE..
  *
- * \param[in] screen Screen object to dump to
+ * \param[in] fp     FILE object to dump to
  * \param[in] prefix Print prefix.
  */
 void Part::toTextFile(FILE *fp, const char *prefix) const
@@ -384,6 +384,11 @@ void PerformanceList::clear()
     m_size = 0;
 }
 
+/*! \brief Read contents from a cache file
+ *
+ * \param[in]   fantomPatchFile     File name.
+ * \return      The number of \a Performance entries read, 0 indicates failure.
+ */
 size_t PerformanceList::readFromCache(const char *fantomPatchFile)
 {
     clear();
@@ -395,7 +400,7 @@ size_t PerformanceList::readFromCache(const char *fantomPatchFile)
             return 0;
         d.restore(m_size);
         m_performanceList = new Fantom::Performance[m_size];
-        try 
+        try
         {
             for (size_t i=0; i<m_size; i++)
             {
@@ -413,10 +418,18 @@ size_t PerformanceList::readFromCache(const char *fantomPatchFile)
     return 0;
 }
 
-void PerformanceList::download(Fantom::Driver *fantom, WINDOW *win, size_t nofTracks)
+/*! \brief Download contents from Fantom.
+ *
+ * This is time consuming, so avoid this by trying the cache first.
+ *
+ * \param[in]   fantom      Fantom driver.
+ * \param[in]   win         Curses screen object to log to.
+ * \param[in]   nofPerformances   The number of Performances to download.
+ */
+void PerformanceList::download(Fantom::Driver *fantom, WINDOW *win, size_t nofPerformances)
 {
     clear();
-    m_size = nofTracks;
+    m_size = nofPerformances;
     m_performanceList = new Fantom::Performance[m_size];
     char nameBuf[Fantom::NameLength+1];
     TimeSpec fantomPerformanceSelectDelay((Real)0.01);
@@ -453,6 +466,10 @@ void PerformanceList::download(Fantom::Driver *fantom, WINDOW *win, size_t nofTr
     }
 }
 
+/*! \brief Write contents to a cache file, throw on failure.
+ *
+ * \param[in]   fantomPatchFile     File name.
+ */
 void PerformanceList::writeToCache(const char *fantomPatchFile)
 {
     Dump d;

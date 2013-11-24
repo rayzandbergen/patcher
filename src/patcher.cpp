@@ -269,7 +269,7 @@ void Patcher::eventLoop()
                             uint8_t note = m_midi->getByte(deviceRx);
                             uint8_t velo = m_midi->getByte(deviceRx);
 #ifdef LOG_NOTE
-                            wprintw(m_screen->log(), 
+                            wprintw(m_screen->log(),
                                 "note off %s ch %02x vel %02x\n",
                                 Midi::noteName(note), channelRx, velo);
 #endif
@@ -286,7 +286,7 @@ void Patcher::eventLoop()
                             uint8_t note = m_midi->getByte(deviceRx);
                             uint8_t velo = m_midi->getByte(deviceRx);
 #ifdef LOG_NOTE
-                            wprintw(m_screen->log(), 
+                            wprintw(m_screen->log(),
                                 "note on %s ch %02x vel %02x\n",
                                 Midi::noteName(note), channelRx, velo);
 #endif
@@ -296,7 +296,7 @@ void Patcher::eventLoop()
                                 {
                                     if (note == MetaNote::info)
                                         m_fantomScroller.toggle();
-                                    else 
+                                    else
                                         changeTrackByNote(note);
                                 }
                             }
@@ -312,7 +312,7 @@ void Patcher::eventLoop()
                         {
                             uint8_t note = m_midi->getByte(deviceRx);
                             uint8_t val = m_midi->getByte(deviceRx);
-                            wprintw(m_screen->log(), 
+                            wprintw(m_screen->log(),
                                 "aftertouch %s ch %02x val %02x\n",
                                 Midi::noteName(note), channelRx, val);
                             sendEventToFantom(Midi::aftertouch, note, val);
@@ -325,7 +325,7 @@ void Patcher::eventLoop()
                             uint8_t num = m_midi->getByte(deviceRx);
                             uint8_t val = m_midi->getByte(deviceRx);
 #ifdef LOG_CONTROLLER
-                            wprintw(m_screen->log(), 
+                            wprintw(m_screen->log(),
                                 "controller ch %02x num %02x val %02x\n",
                                 channelRx, num, val);
 #endif
@@ -376,7 +376,7 @@ void Patcher::eventLoop()
                         {
                             uint8_t num = m_midi->getByte(deviceRx);
 #ifdef LOG_PROGRAM_CHANGE
-                            wprintw(m_screen->log(), 
+                            wprintw(m_screen->log(),
                                 "program change ch %02x num %02x\n",
                                 channelRx, num);
 #endif
@@ -407,7 +407,7 @@ void Patcher::eventLoop()
                         case Midi::channelAftertouch:
                         {
                             uint8_t num = m_midi->getByte(deviceRx);
-                            wprintw(m_screen->log(), 
+                            wprintw(m_screen->log(),
                                 "channelRx pressure channelRx %02x num %02x\n",
                                 channelRx, num);
                             sendEventToFantom(Midi::channelAftertouch, num);
@@ -420,7 +420,7 @@ void Patcher::eventLoop()
                             uint8_t num1 = m_midi->getByte(deviceRx);
                             uint8_t num2 = m_midi->getByte(deviceRx);
 #ifdef LOG_PITCHBEND
-                            wprintw(m_screen->log(), 
+                            wprintw(m_screen->log(),
                                 "pitch bend ch %02x val %04x\n",
                                 channelRx, (uint16_t)num2<<7|(uint16_t)num1);
 #endif

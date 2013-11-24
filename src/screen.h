@@ -14,17 +14,19 @@
 #endif
 #include <stdint.h>
 #include "patcher.h"
-//!  \brief Wraps an ncurses(3X) screen in an object with some convenience functions.
+//!  \brief Wraps ncurses(3X) screens "main" and "log" in an object with some convenience functions.
 class Screen
 {
-    WINDOW *m_mainWindow;
-    WINDOW *m_logWindow;
+    WINDOW *m_mainWindow;       //!<    The main window.
+    WINDOW *m_logWindow;        //!<    The log window.
 public:
-    WINDOW *log() const { return m_logWindow; }
+    //! \brief Return the main window.
     WINDOW *main() const { return m_mainWindow; }
-    static void showProgressBar(WINDOW *win, int y, int x, Real f); //!< show a progress bar at screen coordinates.
+    //! \brief Return the log window.
+    WINDOW *log() const { return m_logWindow; }
+    static void showProgressBar(WINDOW *win, int y, int x, Real f); //!< show a progress bar at screen coordinates (x,y).
     static void fprintfBinaryString(FILE *fp, const uint8_t *data, int n);
-	Screen(bool enableMain, bool enableLog);                       //!< Constructor.
-	~Screen();                      //!< Destructor.
+	Screen(bool enableMain, bool enableLog);
+	~Screen();
 };
 #endif

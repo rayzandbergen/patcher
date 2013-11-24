@@ -15,7 +15,8 @@
 #include "screen.h"
 
 #ifdef FAKE_STL // set in PREDEFINED in doxygen config
-namespace std { template <class T> class vector { public T entry[2]; }; }
+namespace std { /*! \brief STL vector */ template <class T> class vector {
+        public T entry[2]; /*!< Entry. */ }; }
 #endif
 
 namespace Fantom {

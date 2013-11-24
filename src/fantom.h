@@ -78,7 +78,7 @@ public:
  */
 struct Driver
 {
-    WINDOW *m_window;
+    WINDOW *m_window;           //!< A curses WINDOW object to log to.
     Midi::Driver *m_midi;       //!< A MIDI driver object.
     /* \brief Constructor
      *
@@ -98,23 +98,27 @@ struct Driver
     void selectPerformanceFromMemCard() const;
 };
 
+//! \brief List of Performances that can download itself from the Fantom.
 class PerformanceList
-{    
-    static const uint32_t magic = 0x46a28f12;
-    Fantom::Performance *m_performanceList;
-    uint32_t m_magic;
-    size_t m_size;
+{
+    static const uint32_t magic = 0x46a28f12;   //!<    Magic constant to mark the beginning of a cache dump.
+    Fantom::Performance *m_performanceList;     //!<    List of \a Performance objects, stays even when \a this is destroyed.
+    uint32_t m_magic;                           //!<    Magic constant read back from cache.
+    size_t m_size;                              //!<    Number of \a Perfomance objects.
 public:
+    //! \brief Number of \a Performance objects in this list.
     size_t size() const { return m_size; }
-    void clear();
+    void clear();   //!<    Clear this object.
+    //! \brief Default constructor.
     PerformanceList(): m_performanceList(0) { }
-    Fantom::Performance *operator[](size_t index) const
+    //! \brief index operator, returns i'th \a Performance.
+    Fantom::Performance *operator[](size_t i) const
     {
-        return &m_performanceList[index];
+        return &m_performanceList[i];
     }
     size_t readFromCache(const char *fantomPatchFile);
     void writeToCache(const char *fantomPatchFile);
-    void download(Fantom::Driver *fantom, WINDOW *win, size_t nofTracks);
+    void download(Fantom::Driver *fantom, WINDOW *win, size_t nofPerformances);
 };
 
 } // Fantom namespace
