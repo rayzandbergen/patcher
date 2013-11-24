@@ -29,6 +29,7 @@
 #include "persistent.h"
 #include "fantomscroller.h"
 #include "fcb1010.h"
+#include "queue.h"
 //#include "undupparts.h"
 
 #define VERSION "1.2.0"     //!< global version number
@@ -72,6 +73,7 @@ private:
     int m_partOffsetBcf;                                //!< Either 0 or 8, since BCF only has 8 sliders to show 16 parameters
     TimeSpec m_debouncePreviousTriggerTime;             //!< Absolute time of last debounce test.
     TimeSpec m_eventRxTime;                             //!< Arrival time of the current Midi event.
+    Queue m_queue;
     Track *currentTrack() const {
         return m_trackList[m_trackIdx]; } //!< The current \a Track.
     Section *currentSection() const {
@@ -125,9 +127,11 @@ public:
         m_softPartActivity(64 /*see tracks.xsd*/, Midi::Note::max),
         m_screen(s), m_midi(m), m_fantom(f),
         m_trackIdx(0), m_trackIdxWithinSet(0), m_sectionIdx(0),
-        m_metaMode(false), m_fantomScroller(f), m_partOffsetBcf(0)
+        m_metaMode(false), m_fantomScroller(f), m_partOffsetBcf(0),
+        m_queue(false)
     {
         m_trackIdx = m_setList[0];
+        m_queue.createWrite();
         getTime(m_debouncePreviousTriggerTime);
         m_fantom->selectPerformanceFromMemCard();
     };

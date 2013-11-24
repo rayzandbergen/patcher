@@ -17,25 +17,26 @@ endif()
 include_directories(src ${CMAKE_CURRENT_BINARY_DIR})
 
 set(patcherSources
-    src/fantom.cpp
-    src/monofilter.cpp
-    src/patcher.cpp
-    src/midi.cpp
-    src/networkif.cpp
-    src/toggler.cpp
-    src/timer.cpp
-    src/xml.cpp
-    src/dump.cpp
     src/activity.cpp
-    src/trackdef.cpp
-    src/sequencer.cpp
     src/controller.cpp
-    src/screen.cpp
-    src/transposer.cpp
-    src/timestamp.cpp
-    src/persistent.cpp
+    src/dump.cpp
+    src/fantom.cpp
     src/fantomscroller.cpp
+    src/midi.cpp
+    src/monofilter.cpp
+    src/networkif.cpp
+    src/patcher.cpp
+    src/persistent.cpp
+    src/queue.cpp
+    src/screen.cpp
+    src/sequencer.cpp
+    src/timer.cpp
+    src/timestamp.cpp
+    src/toggler.cpp
+    src/trackdef.cpp
+    src/transposer.cpp
 #    src/undupparts.cpp
+    src/xml.cpp
     now.h
 )
 
