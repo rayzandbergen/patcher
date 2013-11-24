@@ -213,6 +213,17 @@ void Patcher::restoreState()
  */
 void Patcher::eventLoop()
 {
+    {
+        LogMessage msg;
+        msg.m_currentTrack = m_trackIdx;
+        msg.m_currentSection = m_sectionIdx;
+        msg.m_type = LogMessage::Ready;
+        msg.m_part = LogMessage::Unknown;
+        msg.m_midi[0] = LogMessage::Unknown;
+        msg.m_midi[1] = LogMessage::Unknown;
+        msg.m_midi[2] = LogMessage::Unknown;
+        m_queue.send(msg);
+    }
     for (uint32_t j=0;;j++)
     {
 #ifndef RASPBIAN
@@ -555,7 +566,7 @@ void Patcher::sendEventToFantom(uint8_t midiStatus,
                 msg.m_part = i;
                 msg.m_midi[0] = midiStatus|swPart->m_channel;
                 msg.m_midi[1] = data1Out;
-                msg.m_midi[2] = 0;
+                msg.m_midi[2] = LogMessage::Unknown;
                 m_queue.send(msg);
             }
             if (isNoteData)

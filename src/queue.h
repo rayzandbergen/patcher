@@ -9,9 +9,13 @@ class LogMessage
 public:
     enum Type
     {
-        MidiOut1Byte = 1,
-        MidiOut2Bytes = 2,
-        MidiOut3Bytes = 3
+        Ready = 10,
+        MidiOut1Byte,
+        MidiOut2Bytes,
+        MidiOut3Bytes,
+        MidiIn1Byte,
+        MidiIn2Bytes,
+        MidiIn3Bytes
     };
     static const uint8_t Unknown = 255;
     uint8_t m_currentTrack;
