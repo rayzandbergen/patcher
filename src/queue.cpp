@@ -2,10 +2,15 @@
 #include <fcntl.h>
 #include <errno.h>
 #include "error.h"
+#include <sstream>
 
 void Queue::createWrite()
 {
-    m_descriptor = mq_open(m_name, O_WRONLY|O_NONBLOCK|O_CREAT, S_IWUSR, 0);
+    struct mq_attr attr;
+    attr.mq_flags = O_NONBLOCK;
+    attr.mq_maxmsg = 10;
+    attr.mq_msgsize = sizeof(LogMessage);
+    m_descriptor = mq_open(m_name, O_WRONLY|O_NONBLOCK|O_CREAT, S_IRUSR|S_IWUSR, &attr);
     if (m_descriptor == -1)
     {
         throw(Error("mq_open O_WRONLY|O_NONBLOCK|O_CREAT", errno));
@@ -34,9 +39,14 @@ void Queue::send(const LogMessage &message)
 {
     int rv = mq_send(m_descriptor, 
             (const char*)&message, sizeof(message), 0);
-    if (rv == EAGAIN)
+    if (rv == -1)
     {
-        m_overruns++;
+        if (errno == EAGAIN)
+            m_overruns++;
+        else
+        {
+            throw(Error("mq_send", errno));
+        }
     }
 }
 
@@ -48,4 +58,38 @@ void Queue::receive(LogMessage &message)
     {
         throw(Error("mq_receive", errno));
     }
+}
+
+std::string LogMessage::toString()
+{
+    std::stringstream ss;
+    ss.setf(std::ios::hex, std::ios::basefield);
+    ss.setf(std::ios::adjustfield, std::ios::right);
+    //ss.setf(std::ios::showbase); // completely useless when combined with 'fill'
+    ss << "0x"; ss.width(2); ss.fill('0');
+    ss << (int)m_currentTrack << " ";
+    ss << "0x"; ss.width(2); ss.fill('0');
+    ss << (int)m_currentSection << " ";
+    ss << "0x"; ss.width(2); ss.fill('0');
+    ss << (int)m_type << " ";
+    ss << "0x"; ss.width(2); ss.fill('0');
+    ss << (int)m_part << " ";
+    ss << "0x"; ss.width(2); ss.fill('0');
+    ss << (int)m_midi[0] << " ";
+    ss << "0x"; ss.width(2); ss.fill('0');
+    ss << (int)m_midi[1] << " ";
+    ss << "0x"; ss.width(2); ss.fill('0');
+    ss << (int)m_midi[2];
+    return ss.str();
+}
+
+std::string Queue::getAttr()
+{
+    std::stringstream ss;
+    struct mq_attr attr;
+    mq_getattr(m_descriptor, &attr);
+    ss << "flags = " << attr.mq_flags <<
+          ", maxmsg = " << attr.mq_maxmsg <<
+          ", msgsize = " << attr.mq_msgsize;
+    return ss.str();
 }

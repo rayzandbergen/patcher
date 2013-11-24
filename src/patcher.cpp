@@ -534,11 +534,29 @@ void Patcher::sendEventToFantom(uint8_t midiStatus,
             {
                 m_midi->putBytes(Midi::Device::FantomOut,
                     midiStatus|swPart->m_channel, data1Out, data2Out);
+                LogMessage msg;
+                msg.m_currentTrack = m_trackIdx;
+                msg.m_currentSection = m_sectionIdx;
+                msg.m_type = LogMessage::MidiOut3Bytes;
+                msg.m_part = i;
+                msg.m_midi[0] = midiStatus|swPart->m_channel;
+                msg.m_midi[1] = data1Out;
+                msg.m_midi[2] = data2Out;
+                m_queue.send(msg);
             }
             else
             {
                 m_midi->putBytes(Midi::Device::FantomOut,
                     midiStatus|swPart->m_channel, data1Out);
+                LogMessage msg;
+                msg.m_currentTrack = m_trackIdx;
+                msg.m_currentSection = m_sectionIdx;
+                msg.m_type = LogMessage::MidiOut2Bytes;
+                msg.m_part = i;
+                msg.m_midi[0] = midiStatus|swPart->m_channel;
+                msg.m_midi[1] = data1Out;
+                msg.m_midi[2] = 0;
+                m_queue.send(msg);
             }
             if (isNoteData)
             {

@@ -41,6 +41,7 @@ set(patcherSources
 )
 
 add_executable(patcher ${patcherSources})
+add_executable(queue_listener src/queue_listener.cpp src/queue.cpp)
 
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/now.h
@@ -52,6 +53,7 @@ add_custom_target(tags DEPENDS ${patcherSources} COMMAND ctags -R)
 add_dependencies(patcher tags)
 
 set(patcherlibs "-lrt -lxerces-c -lasound")
+set(queue_listenerlibs "-lrt")
 
 if(RASPBIAN)
     set(patcherlibs "${patcherlibs} -lncurses")
@@ -65,4 +67,5 @@ if (mudflap)
 endif()
 
 set_target_properties(patcher PROPERTIES LINK_FLAGS ${patcherlibs})
+set_target_properties(queue_listener PROPERTIES LINK_FLAGS ${queue_listenerlibs})
 
