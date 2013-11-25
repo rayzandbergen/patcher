@@ -20,6 +20,7 @@ set(patcherSources
     src/activity.cpp
     src/controller.cpp
     src/dump.cpp
+    src/fantomdef.cpp
     src/fantomdriver.cpp
     src/fantomscroller.cpp
     src/mididriver.cpp
@@ -44,7 +45,7 @@ set(patcherSources
 set(queue_listenerSources
     src/controller.cpp
     src/dump.cpp
-    #src/fantomdriver.cpp
+    src/fantomdef.cpp
     src/mididef.cpp
     src/monofilter.cpp
     src/queue.cpp
@@ -52,8 +53,8 @@ set(queue_listenerSources
     src/screen.cpp
     src/timer.cpp
     src/toggler.cpp
-    #src/trackdef.cpp
-    #src/xml.cpp
+    src/trackdef.cpp
+    src/xml.cpp
 )
 add_executable(patcher ${patcherSources})
 add_executable(queue_listener ${queue_listenerSources})

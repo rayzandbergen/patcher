@@ -1,7 +1,7 @@
 #include <queue.h>
 #include <iostream>
 #include "screen.h"
-//#include "trackdef.h"
+#include "trackdef.h"
 #include "xml.h"
 #include "error.h"
 #include "patcher.h"
@@ -22,7 +22,7 @@ public:
 
 void QueueListener::loadTrackDefs()
 {
-    //importTracks(TRACK_DEF, m_trackList, m_setList);
+    importTracks(TRACK_DEF, m_trackList, m_setList);
 }
 
 void QueueListener::eventLoop()
