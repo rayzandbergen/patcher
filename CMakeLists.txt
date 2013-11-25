@@ -22,8 +22,8 @@ set(patcherSources
     src/dump.cpp
     src/fantom.cpp
     src/fantomscroller.cpp
-    src/midi.cpp
-    src/midi_note.cpp
+    src/mididriver.cpp
+    src/mididef.cpp
     src/monofilter.cpp
     src/networkif.cpp
     src/patcher.cpp
@@ -45,7 +45,7 @@ set(queue_listenerSources
     src/controller.cpp
     src/dump.cpp
     #src/fantom.cpp
-    src/midi_note.cpp
+    src/mididef.cpp
     src/monofilter.cpp
     src/queue.cpp
     src/queue_listener.cpp

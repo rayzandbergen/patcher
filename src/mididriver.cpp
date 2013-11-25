@@ -1,4 +1,4 @@
-/*! \file midi.h
+/*! \file mididriver.cpp
  *  \brief Contains objects that handle all MIDI traffic.
  *
  *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
@@ -14,7 +14,7 @@
 #include <string.h>
 #include <alsa/asoundlib.h>
 #include "error.h"
-#include "midi.h"
+#include "mididriver.h"
 #include "timer.h"
 #include "patcher.h"
 

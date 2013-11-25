@@ -1,10 +1,10 @@
-/*! \file midi_note.h
+/*! \file mididef.h
  *  \brief Contains a list of all MIDI notes wrapped in an enum.
  *
  *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
  */
-#ifndef MIDI_NOTE_H
-#define MIDI_NOTE_H
+#ifndef MIDI_DEF_H
+#define MIDI_DEF_H
 namespace Midi {
     //! \brief Names for all permissible MIDI notes.
     namespace Note {
@@ -193,4 +193,4 @@ bool isNoteOff(uint8_t status, uint8_t data1, uint8_t data2);
 bool isController(uint8_t status);
 
 } // namespace Midi
-#endif // MIDI_NOTE_H
+#endif // MIDI_DEF_H

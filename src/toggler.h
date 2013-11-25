@@ -6,7 +6,7 @@
 #ifndef TOGGLER_H
 #define TOGGLER_H
 #include <stdint.h>
-#include "midi.h"
+#include "mididriver.h"
 /*! \brief This class toggles on note on events.
  */
 class Toggler

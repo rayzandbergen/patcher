@@ -7,7 +7,7 @@
 #define MONOFILTER_H
 #include <stdint.h>
 #include "screen.h"
-#include "midi_note.h"
+#include "mididef.h"
 /*! \brief This class allows only one note to sound.
  */
 class MonoFilter

@@ -12,7 +12,8 @@
 #include <ctype.h>
 #include "trackdef.h"
 #include "screen.h"
-#include "midi.h"
+#include "mididef.h"
+#include "mididriver.h"
 #include "dump.h"
 #include "fantom.h"
 #include "transposer.h"
@@ -21,7 +22,6 @@
 #include "activity.h"
 #include "error.h"
 #include "patcher.h"
-#include "midi_note.h"
 #include "networkif.h"
 #include "sequencer.h"
 #include "timer.h"

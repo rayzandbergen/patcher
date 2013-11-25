@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
-#include "midi_note.h"
+#include "mididef.h"
 
 namespace Midi
 {

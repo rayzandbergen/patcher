@@ -6,8 +6,8 @@
 #ifndef TRANSPOSER_H
 #define TRANSPOSER_H
 #include <stdint.h>
-#include "midi.h"
-#include "midi_note.h"
+#include "mididef.h"
+#include "mididriver.h"
 /*! \brief This class transposes only when sustain is active.
  */
 class Transposer

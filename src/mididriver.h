@@ -1,10 +1,10 @@
-/*! \file midi.h
+/*! \file mididriver.h
  *  \brief Contains objects that handle all MIDI traffic.
  *
  *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
  */
-#ifndef MIDI_H
-#define MIDI_H
+#ifndef MIDI_DRIVER_H
+#define MIDI_DRIVER_H
 #include <stdint.h>
 #include "screen.h"
 
@@ -61,4 +61,4 @@ public:
 
 } // namespace Midi
 
-#endif // MIDI_H
+#endif // MIDI_DRIVER_H
