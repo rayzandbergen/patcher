@@ -768,6 +768,16 @@ void Patcher::changeSection(uint8_t sectionIdx)
         m_sectionIdx = sectionIdx;
         show(UpdateScreen|UpdateFantomDisplay);
         m_persist.store(m_trackIdx, m_sectionIdx);
+        LogMessage msg;
+        msg.m_currentTrack = m_trackIdx;
+        msg.m_currentSection = m_sectionIdx;
+        msg.m_type = LogMessage::Ready;
+        msg.m_deviceId = LogMessage::Unknown;
+        msg.m_part = LogMessage::Unknown;
+        msg.m_midi[0] = LogMessage::Unknown;
+        msg.m_midi[1] = LogMessage::Unknown;
+        msg.m_midi[2] = LogMessage::Unknown;
+        m_queue.send(msg);
     }
 }
 
