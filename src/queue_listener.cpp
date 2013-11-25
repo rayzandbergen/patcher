@@ -30,10 +30,12 @@ void QueueListener::eventLoop()
     LogMessage msg;
     wprintw(m_screen->main(), "q.getattr: %s\n", m_queue.getAttr().c_str());
     wprintw(m_screen->main(), "sizeof msg: %d\n", (int)sizeof(msg));
+    wrefresh(m_screen->main());
     for (;;)
     {
         m_queue.receive(msg);
         wprintw(m_screen->log(), "%s\n", msg.toString().c_str());
+        wrefresh(m_screen->log());
     }
 }
 
