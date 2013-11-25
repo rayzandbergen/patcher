@@ -4,12 +4,12 @@
 #include <stdint.h>
 #include <string>
 
-class LogMessage
+class __attribute__ ((__packed__)) LogMessage
 {
 public:
     enum Type
     {
-        Ready = 10,
+        Ready = 0,
         MidiOut1Byte,
         MidiOut2Bytes,
         MidiOut3Bytes,
@@ -18,24 +18,32 @@ public:
         MidiIn3Bytes
     };
     static const uint8_t Unknown = 255;
+    static uint32_t m_sequenceNumber;
+    uint16_t m_packetCounter;
     uint8_t m_currentTrack;
     uint8_t m_currentSection;
-
-    Type m_type;
+    uint8_t m_type;
+    uint8_t m_deviceId;
     uint8_t m_part;
     uint8_t m_midi[3];
     std::string toString();
+    LogMessage(): m_packetCounter((uint16_t)m_sequenceNumber)
+    {
+        m_sequenceNumber++;
+    }
 };
 
 class Queue
 {
     mqd_t   m_descriptor;
     const char *m_name;
-public:
     void createWrite();
     void createRead();
+public:
+    static const bool Read = true;
+    static const bool Write = false;
     int m_overruns;
-    Queue(bool readOnly = true);
+    Queue(bool readWrite = Read);
     void send(const LogMessage &message);
     void receive(LogMessage &message);
     std::string getAttr();

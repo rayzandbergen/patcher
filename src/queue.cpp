@@ -4,6 +4,8 @@
 #include "error.h"
 #include <sstream>
 
+uint32_t LogMessage::m_sequenceNumber = 0;
+
 void Queue::createWrite()
 {
     struct mq_attr attr;
@@ -26,10 +28,10 @@ void Queue::createRead()
     }
 }
 
-Queue::Queue(bool readOnly): m_overruns(0)
+Queue::Queue(bool readWrite): m_overruns(0)
 {
     m_name = "/patcher_queue";
-    if (readOnly)
+    if (readWrite == Read)
         createRead();
     else
         createWrite();
@@ -66,12 +68,16 @@ std::string LogMessage::toString()
     ss.setf(std::ios::hex, std::ios::basefield);
     ss.setf(std::ios::adjustfield, std::ios::right);
     //ss.setf(std::ios::showbase); // completely useless when combined with 'fill'
+    ss << "0x"; ss.width(4); ss.fill('0');
+    ss << (int)m_packetCounter << " ";
     ss << "0x"; ss.width(2); ss.fill('0');
     ss << (int)m_currentTrack << " ";
     ss << "0x"; ss.width(2); ss.fill('0');
     ss << (int)m_currentSection << " ";
     ss << "0x"; ss.width(2); ss.fill('0');
     ss << (int)m_type << " ";
+    ss << "0x"; ss.width(2); ss.fill('0');
+    ss << (int)m_deviceId << " ";
     ss << "0x"; ss.width(2); ss.fill('0');
     ss << (int)m_part << " ";
     ss << "0x"; ss.width(2); ss.fill('0');
