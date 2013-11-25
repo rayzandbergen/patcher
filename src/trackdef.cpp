@@ -173,7 +173,7 @@ void SwPart::toTextFile(FILE *fp, const char *prefix) const
     fprintf(fp, "%s.transpose:%d\n", prefix, m_transpose);
     fprintf(fp, "%s.rangeLower:%s\n", prefix, Midi::noteName(m_rangeLower));
     fprintf(fp, "%s.rangeUpper:%s\n", prefix, Midi::noteName(m_rangeUpper));
-    fprintf(fp, "%s.nofHwParts:%d\n", prefix, m_hwPartList.size());
+    fprintf(fp, "%s.nofHwParts:%d\n", prefix, (int)m_hwPartList.size());
     char nestedPrefix[100];
     for (size_t i=0; i<m_hwPartList.size(); i++)
     {
