@@ -43,6 +43,7 @@ set(patcherSources
 )
 
 set(queue_listenerSources
+    src/activity.cpp
     src/controller.cpp
     src/dump.cpp
     src/fantomdef.cpp
@@ -52,6 +53,7 @@ set(queue_listenerSources
     src/queue_listener.cpp
     src/screen.cpp
     src/timer.cpp
+    src/timestamp.cpp
     src/toggler.cpp
     src/trackdef.cpp
     src/xml.cpp

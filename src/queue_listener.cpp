@@ -8,10 +8,13 @@
 #include "patcher.h"
 #include "timestamp.h"
 #include "now.h"
+#include "activity.h"
 #define VERSION "1.2.0"     //!< global version number
 
 class QueueListener
 {
+    ActivityList m_channelActivity;     //!< Per-channel \a Activity.
+    ActivityList m_softPartActivity;    //!< Per-\a SwPart \a Activity.
     Screen *m_screen;
     Queue m_queue;
     TrackList m_trackList;              //!< Global \a Track list.
@@ -21,6 +24,7 @@ class QueueListener
     int m_trackIdxWithinSet;            //!< Current track index within \a SetList.
     int m_sectionIdx;                   //!< Current section index.
     bool m_metaMode;                    //!< Meta mode switch.
+    TimeSpec m_eventRxTime;                             //!< Arrival time of the current Midi event.
 public:
     size_t nofTracks() const { return m_trackList.size(); } //!< The number of \a Tracks.
     Track *currentTrack() const {
@@ -37,7 +41,10 @@ public:
     void mergePerformanceData();
     void updateScreen();
     void eventLoop();
-    QueueListener(Screen *s): m_screen(s),
+    QueueListener(Screen *s):
+        m_channelActivity(Midi::NofChannels, Midi::Note::max),
+        m_softPartActivity(64 /*see tracks.xsd*/, Midi::Note::max),
+        m_screen(s),
         m_trackIdx(0), m_trackIdxWithinSet(0), m_sectionIdx(0),
         m_metaMode(false)
     {
@@ -70,10 +77,9 @@ void QueueListener::updateScreen()
     if (m_metaMode)
         wattroff(m_screen->main(), COLOR_PAIR(1));
     int partsShown = 0;
-    //ool partActivity[Fantom::Performance::NofParts];
+    //bool partActivity[Fantom::Performance::NofParts];
     bool channelActivity[Midi::NofChannels];
-    //m_channelActivity.get(channelActivity);
-    for (int b = 0; b<Midi::NofChannels; b++) channelActivity[b] = false;
+    m_channelActivity.get(channelActivity);
     for (int partIdx=0; partIdx<Fantom::Performance::NofParts;partIdx++)
     {
         int x = (partsShown / 4) * 19;
@@ -95,8 +101,7 @@ void QueueListener::updateScreen()
     partsShown = 0;
     const int colLength = 3;
     bool softPartActivity[64];
-    //m_softPartActivity.get(softPartActivity);
-    for (int b = 0; b<64; b++) softPartActivity[b] = false;
+    m_softPartActivity.get(softPartActivity);
     for (int i=0; i<currentSection()->nofParts(); i++)
     {
         const SwPart *swPart = currentSection()->m_partList[i];
@@ -153,12 +158,26 @@ void QueueListener::eventLoop()
     for (;;)
     {
         m_queue.receive(msg);
+        getTime(m_eventRxTime);
+        m_channelActivity.update(m_eventRxTime);
+        m_softPartActivity.update(m_eventRxTime);
         wprintw(m_screen->log(), "%s\n", msg.toString().c_str());
         wrefresh(m_screen->log());
         if (msg.m_currentTrack != LogMessage::Unknown)
             m_trackIdx = msg.m_currentTrack;
         if (msg.m_currentSection != LogMessage::Unknown)
             m_sectionIdx = msg.m_currentSection;
+        if (msg.m_type == LogMessage::MidiOut3Bytes &&
+            msg.m_deviceId == Midi::Device::FantomOut)
+        {
+            bool isNoteData = Midi::isNote(msg.m_midi[0]);
+            if (isNoteData)
+            {
+                uint8_t channel = msg.m_midi[0] & 0x0f;
+                m_channelActivity.trigger(channel, msg.m_midi[1], m_eventRxTime);
+                m_softPartActivity.trigger(msg.m_part, msg.m_midi[1], m_eventRxTime);
+            }
+        }
         updateScreen();
         wrefresh(m_screen->main());
     }
