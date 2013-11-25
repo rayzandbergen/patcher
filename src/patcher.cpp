@@ -164,7 +164,7 @@ void Patcher::dumpTrackList()
  */
 void Patcher::mergePerformanceData()
 {
-    Fantom::PerformanceList performanceList;
+    Fantom::PerformanceListLive performanceList;
     const char *cacheFileName = "fantom_cache.bin";
     if (performanceList.readFromCache(cacheFileName) != nofTracks())
     {

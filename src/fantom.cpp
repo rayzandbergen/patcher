@@ -427,7 +427,7 @@ size_t PerformanceList::readFromCache(const char *fantomPatchFile)
  * \param[in]   win         Curses screen object to log to.
  * \param[in]   nofPerformances   The number of Performances to download.
  */
-void PerformanceList::download(Fantom::Driver *fantom, WINDOW *win, size_t nofPerformances)
+void PerformanceListLive::download(Fantom::Driver *fantom, WINDOW *win, size_t nofPerformances)
 {
     clear();
     m_size = nofPerformances;

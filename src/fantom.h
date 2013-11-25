@@ -101,12 +101,13 @@ struct Driver
     void selectPerformanceFromMemCard() const;
 };
 
-//! \brief List of Performances that can download itself from the Fantom.
+//! \brief List of Performances that can cache itself.
 class PerformanceList
 {
     static const uint32_t magic = 0x46a28f12;   //!<    Magic constant to mark the beginning of a cache dump.
-    Fantom::Performance *m_performanceList;     //!<    List of \a Performance objects, stays even when \a this is destroyed.
     uint32_t m_magic;                           //!<    Magic constant read back from cache.
+protected:
+    Fantom::Performance *m_performanceList;     //!<    List of \a Performance objects, stays even when \a this is destroyed.
     uint32_t m_size;                            //!<    Number of \a Perfomance objects.
 public:
     //! \brief Number of \a Performance objects in this list.
@@ -121,6 +122,12 @@ public:
     }
     size_t readFromCache(const char *fantomPatchFile);
     void writeToCache(const char *fantomPatchFile);
+};
+
+//! \brief List of Performances that can cache itself and download itself from the Fantom.
+class PerformanceListLive: public PerformanceList
+{
+public:
     void download(Fantom::Driver *fantom, WINDOW *win, size_t nofPerformances);
 };
 
