@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include "screen.h"
 #include "midi.h"
+#include "midi_note.h"
 #include "dump.h"
 
 //! \brief Namespace for Fantom driver objects.

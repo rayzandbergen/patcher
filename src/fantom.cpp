@@ -7,6 +7,7 @@
 #include "error.h"
 #include "timestamp.h"
 #include "screen.h"
+#include "midi_note.h"
 
 namespace Fantom
 {

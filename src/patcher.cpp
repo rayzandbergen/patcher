@@ -128,10 +128,9 @@ public:
         m_screen(s), m_midi(m), m_fantom(f),
         m_trackIdx(0), m_trackIdxWithinSet(0), m_sectionIdx(0),
         m_metaMode(false), m_fantomScroller(f), m_partOffsetBcf(0),
-        m_queue(false)
+        m_queue(Queue::Write)
     {
         m_trackIdx = m_setList[0];
-        m_queue.createWrite();
         getTime(m_debouncePreviousTriggerTime);
         m_fantom->selectPerformanceFromMemCard();
     };
@@ -218,6 +217,7 @@ void Patcher::eventLoop()
         msg.m_currentTrack = m_trackIdx;
         msg.m_currentSection = m_sectionIdx;
         msg.m_type = LogMessage::Ready;
+        msg.m_deviceId = LogMessage::Unknown;
         msg.m_part = LogMessage::Unknown;
         msg.m_midi[0] = LogMessage::Unknown;
         msg.m_midi[1] = LogMessage::Unknown;
@@ -541,34 +541,29 @@ void Patcher::sendEventToFantom(uint8_t midiStatus,
         }
         if (!drop)
         {
+            uint8_t messageType;
             if (data2 != 255)
             {
                 m_midi->putBytes(Midi::Device::FantomOut,
                     midiStatus|swPart->m_channel, data1Out, data2Out);
-                LogMessage msg;
-                msg.m_currentTrack = m_trackIdx;
-                msg.m_currentSection = m_sectionIdx;
-                msg.m_type = LogMessage::MidiOut3Bytes;
-                msg.m_part = i;
-                msg.m_midi[0] = midiStatus|swPart->m_channel;
-                msg.m_midi[1] = data1Out;
-                msg.m_midi[2] = data2Out;
-                m_queue.send(msg);
+                messageType = LogMessage::MidiOut3Bytes;
             }
             else
             {
                 m_midi->putBytes(Midi::Device::FantomOut,
                     midiStatus|swPart->m_channel, data1Out);
-                LogMessage msg;
-                msg.m_currentTrack = m_trackIdx;
-                msg.m_currentSection = m_sectionIdx;
-                msg.m_type = LogMessage::MidiOut2Bytes;
-                msg.m_part = i;
-                msg.m_midi[0] = midiStatus|swPart->m_channel;
-                msg.m_midi[1] = data1Out;
-                msg.m_midi[2] = LogMessage::Unknown;
-                m_queue.send(msg);
+                messageType = LogMessage::MidiOut2Bytes;
             }
+            LogMessage msg;
+            msg.m_currentTrack = m_trackIdx;
+            msg.m_currentSection = m_sectionIdx;
+            msg.m_type = messageType;
+            msg.m_deviceId = Midi::Device::FantomOut;
+            msg.m_part = i;
+            msg.m_midi[0] = midiStatus|swPart->m_channel;
+            msg.m_midi[1] = data1Out;
+            msg.m_midi[2] = data2Out;
+            m_queue.send(msg);
             if (isNoteData)
             {
                 m_channelActivity.trigger(swPart->m_channel, data1Out, m_eventRxTime);

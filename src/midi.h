@@ -12,49 +12,7 @@
 namespace Midi
 {
 
-const int NofChannels = 16; //!< The number of MIDI channels.
-
-//! \brief MIDI protocol: status bytes.
-enum StatusByte
-{
-    noteOff = 0x80,
-    noteOn = 0x90,
-    aftertouch = 0xa0,
-    controller = 0xb0,
-    programChange = 0xc0,
-    channelAftertouch = 0xd0,
-    pitchBend = 0xe0,
-    sysEx = 0xf0,
-    tuneRequest = 0xf6,
-    EOX = 0xf7,
-    timingClock = 0xf8,
-    realtimeStart = 0xfa,
-    realtimeContinue = 0xfb,
-    realtimeStop = 0xfc,
-    activeSensing = 0xfe,
-    sysReset = 0xff
-};
-
-//! \brief MIDI protocol: controller numbers.
-enum DataByte
-{
-    continuous = 0,
-    modulationWheel = 1,
-    BCFSpinner1 = 1,
-    dataEntry = 6,
-    mainVolume = 7,
-    continuousController16 = 16, //!< FCB1010 right pedal
-    sustain = 0x40,
-    BCFFader1 = 0x51,
-    BCFFader8 = 0x58,
-    BCFSwitchA = 0x59,
-    effects1Depth = 0x5b, //!< Reverb depth
-    dataEntryInc = 0x60,
-    dataEntryDec = 0x61,
-    resetAllControllers = 121,
-    allNotesOff = 123
-};
-
+#ifndef NO_MIDI_DRIVER
 //! \brief Direction of MIDI data, as seen from Pi.
 enum InOut { none, in = 100, out };
 
@@ -99,13 +57,7 @@ public:
 	void putBytes(int device, uint8_t b1, uint8_t b2);
 	void putBytes(int device, uint8_t b1, uint8_t b2, uint8_t b3);
 };
-
-const char *noteName(uint8_t num);
-void noteName(uint8_t num, char *s);
-bool isNote(uint8_t status);
-bool isNoteOn(uint8_t status, uint8_t data1, uint8_t data2);
-bool isNoteOff(uint8_t status, uint8_t data1, uint8_t data2);
-bool isController(uint8_t status);
+#endif // NO_MIDI_DRIVER
 
 } // namespace Midi
 

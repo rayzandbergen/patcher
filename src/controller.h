@@ -7,7 +7,7 @@
 #define CONTROLLER_REMAP_H
 #include "stdint.h"
 #include "patcher.h"
-#include "midi.h"
+#include "midi_note.h"
 
 //! \brief Namespace for controller remap objects.
 namespace ControllerRemap {

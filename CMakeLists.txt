@@ -23,6 +23,7 @@ set(patcherSources
     src/fantom.cpp
     src/fantomscroller.cpp
     src/midi.cpp
+    src/midi_note.cpp
     src/monofilter.cpp
     src/networkif.cpp
     src/patcher.cpp
@@ -40,8 +41,22 @@ set(patcherSources
     now.h
 )
 
+set(queue_listenerSources
+    src/controller.cpp
+    src/dump.cpp
+    #src/fantom.cpp
+    src/midi_note.cpp
+    src/monofilter.cpp
+    src/queue.cpp
+    src/queue_listener.cpp
+    src/screen.cpp
+    src/timer.cpp
+    src/toggler.cpp
+    #src/trackdef.cpp
+    #src/xml.cpp
+)
 add_executable(patcher ${patcherSources})
-add_executable(queue_listener src/queue_listener.cpp src/queue.cpp)
+add_executable(queue_listener ${queue_listenerSources})
 
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/now.h
@@ -53,13 +68,15 @@ add_custom_target(tags DEPENDS ${patcherSources} COMMAND ctags -R)
 add_dependencies(patcher tags)
 
 set(patcherlibs "-lrt -lxerces-c -lasound")
-set(queue_listenerlibs "-lrt")
+set(queue_listenerlibs "-lrt -lxerces-c")
 
 if(RASPBIAN)
     set(patcherlibs "${patcherlibs} -lncurses")
+    set(queue_listenerlibs "${queue_listenerlibs} -lncurses")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DRASPBIAN")
 else()
     set(patcherlibs "${patcherlibs} -lcurses")
+    set(queue_listenerlibs "${queue_listenerlibs} -lcurses")
 endif()
 
 if (mudflap)
