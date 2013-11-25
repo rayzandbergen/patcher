@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "trackdef.h"
-#include "fantom.h"
+#include "fantomdriver.h"
 #include "error.h"
 
 //! \brief Construct a default Section with a given name.

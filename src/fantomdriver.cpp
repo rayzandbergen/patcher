@@ -1,9 +1,9 @@
-/*! \file fantom.h
+/*! \file fantomdriver.cpp
  *  \brief Contains classes to store patches/parts/performances (Roland-speak) from the Fantom.
  *
  *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
  */
-#include "fantom.h"
+#include "fantomdriver.h"
 #include "error.h"
 #include "timestamp.h"
 #include "screen.h"

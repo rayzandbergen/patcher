@@ -1,10 +1,10 @@
-/*! \file fantom.h
+/*! \file fantomdriver.h
  *  \brief Contains classes to store patches/parts/performances (Roland-speak) from the Fantom.
  *
  *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
  */
-#ifndef FANTOM_H
-#define FANTOM_H
+#ifndef FANTOM_DRIVER_H
+#define FANTOM_DRIVER_H
 #include <stdint.h>
 #include "screen.h"
 #include "mididef.h"
@@ -132,4 +132,4 @@ public:
 };
 
 } // Fantom namespace
-#endif // FANTOM_H
+#endif // FANTOM_DRIVER_H

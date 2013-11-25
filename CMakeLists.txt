@@ -20,7 +20,7 @@ set(patcherSources
     src/activity.cpp
     src/controller.cpp
     src/dump.cpp
-    src/fantom.cpp
+    src/fantomdriver.cpp
     src/fantomscroller.cpp
     src/mididriver.cpp
     src/mididef.cpp
@@ -44,7 +44,7 @@ set(patcherSources
 set(queue_listenerSources
     src/controller.cpp
     src/dump.cpp
-    #src/fantom.cpp
+    #src/fantomdriver.cpp
     src/mididef.cpp
     src/monofilter.cpp
     src/queue.cpp

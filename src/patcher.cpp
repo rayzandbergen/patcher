@@ -15,7 +15,7 @@
 #include "mididef.h"
 #include "mididriver.h"
 #include "dump.h"
-#include "fantom.h"
+#include "fantomdriver.h"
 #include "transposer.h"
 #include "now.h"
 #include "timestamp.h"

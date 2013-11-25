@@ -2,7 +2,7 @@
 #define FANTOM_SCREEN_SCROLLER_H
 
 #include <string>
-#include "fantom.h"
+#include "fantomdriver.h"
 #include "timestamp.h"
 
 //! \brief Show the current network interface on the Fantom screen.
