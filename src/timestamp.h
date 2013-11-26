@@ -36,5 +36,7 @@ public:
 void getTime(TimeSpec &now);
 Real timeDiffSeconds(const TimeSpec &then, const TimeSpec &now);
 void timeDiff(TimeSpec &diff, const TimeSpec &then, const TimeSpec &now);
+bool timeGreaterThanOrEqual(const TimeSpec &a, const TimeSpec &b);
+void timeSum(TimeSpec &sum, const TimeSpec &a, const TimeSpec &b);
 #endif
 

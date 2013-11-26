@@ -35,6 +35,36 @@ void timeDiff(TimeSpec &diff, const TimeSpec &then, const TimeSpec &now)
     }
 }
 
+/*! \brief Adds to Timespecs.
+ *
+ * \param[out] sum      The summed time.
+ * \param[in]  a        Absolute time or time interval.
+ * \param[in]  b        Absolute time or time interval.
+ */
+void timeSum(TimeSpec &sum, const TimeSpec &a, const TimeSpec &b)
+{
+    sum.tv_sec = a.tv_sec + b.tv_sec;
+    sum.tv_nsec = a.tv_nsec + b.tv_nsec;
+    if (sum.tv_nsec >= (time_t)1000000000)
+    {
+        sum.tv_nsec -= (time_t)1000000000;
+        sum.tv_sec++;
+    }
+}
+
+/*! \brief Test 'greater than or equal' inequality of TimeSpecs.
+ *
+ * \param[in]  a        Left hand side.
+ * \param[in]  b        Right hand side.
+ * \return     True if a >= b.
+ */
+bool timeGreaterThanOrEqual(const TimeSpec &a, const TimeSpec &b)
+{
+    if (a.tv_sec == b.tv_sec)
+        return a.tv_nsec >= b.tv_nsec;
+    return a.tv_sec > b.tv_sec;
+}
+
 /*! \brief Calculates a time difference in seconds.
  *
  * \param[in]  then     Previous time.

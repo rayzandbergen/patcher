@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.4)
 
-#set(CMAKE_BUILD_TYPE DEBUG)
-set(CMAKE_BUILD_TYPE RELEASE)
+set(CMAKE_BUILD_TYPE DEBUG)
+#set(CMAKE_BUILD_TYPE RELEASE)
 
 project(patcher)
 set(RASPBIAN 1)
