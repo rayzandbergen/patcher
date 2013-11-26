@@ -62,6 +62,19 @@ void Queue::receive(LogMessage &message)
     }
 }
 
+bool Queue::receive(LogMessage &message, const TimeSpec &absTime)
+{
+    ssize_t rv = mq_timedreceive(m_descriptor, 
+            (char *)&message, sizeof(message), 0, &absTime);
+    if (rv < 0)
+    {
+        if (errno == ETIMEDOUT)
+            return false;
+        throw(Error("mq_receive", errno));
+    }
+    return true;
+}
+
 std::string LogMessage::toString()
 {
     std::stringstream ss;

@@ -25,6 +25,7 @@ class QueueListener
     int m_sectionIdx;                   //!< Current section index.
     bool m_metaMode;                    //!< Meta mode switch.
     TimeSpec m_eventRxTime;                             //!< Arrival time of the current Midi event.
+    int m_screenUpdates;
 public:
     size_t nofTracks() const { return m_trackList.size(); } //!< The number of \a Tracks.
     Track *currentTrack() const {
@@ -46,16 +47,18 @@ public:
         m_softPartActivity(64 /*see tracks.xsd*/, Midi::Note::max),
         m_screen(s),
         m_trackIdx(0), m_trackIdxWithinSet(0), m_sectionIdx(0),
-        m_metaMode(false)
+        m_metaMode(false), m_screenUpdates(0)
     {
     }
 };
 
 void QueueListener::updateScreen()
 {
+    m_screenUpdates++;
     werase(m_screen->main());
     wprintw(m_screen->main(),
         "*** Ray's MIDI patcher " VERSION ", rev " SVN ", " NOW " ***\n\n");
+    mvwprintw(m_screen->main(), 1, 63, "%08d", m_screenUpdates);
     mvwprintw(m_screen->main(), 2, 0,
         "track   %03d \"%s\"\nsection %03d/%03d \"%s\"\n",
         1+m_trackIdx, currentTrack()->m_name,
@@ -157,19 +160,34 @@ void QueueListener::eventLoop()
     wrefresh(m_screen->main());
     for (;;)
     {
-        m_queue.receive(msg);
+        TimeSpec nextTime;
+        bool timedOut = false;
+        if (m_channelActivity.nextExpiry(nextTime))
+        {
+            //timeSum(nextTime, nextTime, TimeSpec((Real)100.0));
+            timedOut = !m_queue.receive(msg, nextTime);
+        }
+        else
+        {
+            m_queue.receive(msg);
+        }
         getTime(m_eventRxTime);
         m_channelActivity.update(m_eventRxTime);
         m_softPartActivity.update(m_eventRxTime);
-        wprintw(m_screen->log(), "%s\n", msg.toString().c_str());
-        wrefresh(m_screen->log());
-        if (msg.m_currentTrack != LogMessage::Unknown)
-            m_trackIdx = msg.m_currentTrack;
-        if (msg.m_currentSection != LogMessage::Unknown)
-            m_sectionIdx = msg.m_currentSection;
-        if (msg.m_type == LogMessage::MidiOut3Bytes &&
-            msg.m_deviceId == Midi::Device::FantomOut)
+        if (timedOut)
         {
+            wprintw(m_screen->log(), "timeout\n");
+        }
+        else
+        {
+            wprintw(m_screen->log(), "%s\n", msg.toString().c_str());
+            if (msg.m_currentTrack != LogMessage::Unknown)
+                m_trackIdx = msg.m_currentTrack;
+            if (msg.m_currentSection != LogMessage::Unknown)
+                m_sectionIdx = msg.m_currentSection;
+            if (msg.m_type == LogMessage::MidiOut3Bytes &&
+                msg.m_deviceId == Midi::Device::FantomOut)
+            wrefresh(m_screen->log());
             bool isNoteData = Midi::isNote(msg.m_midi[0]);
             if (isNoteData)
             {

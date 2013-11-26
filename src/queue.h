@@ -3,6 +3,7 @@
 #include <mqueue.h>
 #include <stdint.h>
 #include <string>
+#include "timestamp.h"
 
 class __attribute__ ((__packed__)) LogMessage
 {
@@ -46,6 +47,7 @@ public:
     Queue(bool readWrite = Read);
     void send(const LogMessage &message);
     void receive(LogMessage &message);
+    bool receive(LogMessage &message, const TimeSpec &absTime);
     std::string getAttr();
 };
 #endif // QUEUE_H

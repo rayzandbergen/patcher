@@ -18,7 +18,6 @@ public:
         m_major(major), m_minor(minor)
     {
         timeSum(m_expireTime, now, TimeSpec((Real)0.3));
-        //ASSERT(std::abs(timeDiffSeconds(now, m_expireTime) - 1.0) < 0.01);
     }
     bool expired(const TimeSpec &now)
     {
