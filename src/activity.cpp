@@ -122,7 +122,7 @@ void ActivityList::update(const TimeSpec &now, size_t index)
     {
         if (index >= m_size)
         {
-            bool recentTrigger = 
+            bool recentTrigger =
                 timeDiffSeconds(m_nodeList[index].m_triggerTime, now) < (Real)0.3;
             if (!recentTrigger)
             {
@@ -155,3 +155,8 @@ void ActivityList::get(bool *activity)
     m_dirty = false;
 }
 
+//! \brief Returns true if any activity
+bool ActivityList::any() const
+{
+    return m_nodeList[m_root].m_active;
+}
