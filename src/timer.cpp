@@ -83,9 +83,13 @@ void Timer::write(int fd, const void *buf, size_t count)
         {
             throw(TimeoutError("write timeout"));
         }
-        if (rv == -1 && errno != EINTR)
+        if (rv == -1)
         {
-            throw(Error("write", errno));
+            if (errno != EINTR)
+            {
+                throw(Error("write", errno));
+            }
+            rv = 0;
         }
         if (rv == (ssize_t)count)
         {
