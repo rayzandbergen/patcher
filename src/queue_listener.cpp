@@ -11,21 +11,22 @@
 #include "activity.h"
 #define VERSION "1.2.0"     //!< global version number
 
+//! \brief Screen logger object.
 class QueueListener
 {
     ActivityList m_channelActivity;     //!< Per-channel \a Activity.
     ActivityList m_softPartActivity;    //!< Per-\a SwPart \a Activity.
-    Screen *m_screen;
-    Queue m_queue;
+    Screen *m_screen;                   //!< Screen object to log to.
+    Queue m_eventRxQueue;               //!< Event RX queue.
     TrackList m_trackList;              //!< Global \a Track list.
-    Fantom::PerformanceList m_performanceList;
+    Fantom::PerformanceList m_performanceList; //!< Performance list.
     SetList m_setList;                  //!< Global \a SetList object.
     int m_trackIdx;                     //!< Current track index
     int m_trackIdxWithinSet;            //!< Current track index within \a SetList.
     int m_sectionIdx;                   //!< Current section index.
     bool m_metaMode;                    //!< Meta mode switch.
-    TimeSpec m_eventRxTime;                             //!< Arrival time of the current Midi event.
-    int m_screenUpdates;
+    TimeSpec m_eventRxTime;             //!< Arrival time of the current Midi event.
+    int m_nofScreenUpdates;             //!< Screen update counter.
 public:
     size_t nofTracks() const { return m_trackList.size(); } //!< The number of \a Tracks.
     Track *currentTrack() const {
@@ -47,18 +48,18 @@ public:
         m_softPartActivity(64 /*see tracks.xsd*/, Midi::Note::max),
         m_screen(s),
         m_trackIdx(0), m_trackIdxWithinSet(0), m_sectionIdx(0),
-        m_metaMode(false), m_screenUpdates(0)
+        m_metaMode(false), m_nofScreenUpdates(0)
     {
     }
 };
 
 void QueueListener::updateScreen()
 {
-    m_screenUpdates++;
+    m_nofScreenUpdates++;
     werase(m_screen->main());
     wprintw(m_screen->main(),
         "*** Ray's MIDI patcher " VERSION ", rev " SVN ", " NOW " ***\n\n");
-    mvwprintw(m_screen->main(), 1, 63, "%08d", m_screenUpdates);
+    mvwprintw(m_screen->main(), 1, 63, "%08d", m_nofScreenUpdates);
     mvwprintw(m_screen->main(), 2, 0,
         "track   %03d \"%s\"\nsection %03d/%03d \"%s\"\n",
         1+m_trackIdx, currentTrack()->m_name,
@@ -154,9 +155,9 @@ void QueueListener::loadTrackDefs()
 
 void QueueListener::eventLoop()
 {
-    LogMessage msg;
-    wprintw(m_screen->main(), "q.getattr: %s\n", m_queue.getAttr().c_str());
-    wprintw(m_screen->main(), "sizeof msg: %d\n", (int)sizeof(msg));
+    Event event;
+    wprintw(m_screen->main(), "q.getattr: %s\n", m_eventRxQueue.getAttr().c_str());
+    wprintw(m_screen->main(), "sizeof event: %d\n", (int)sizeof(event));
     wrefresh(m_screen->main());
     for (;;)
     {
@@ -165,11 +166,11 @@ void QueueListener::eventLoop()
         if (m_channelActivity.nextExpiry(nextTime))
         {
             //timeSum(nextTime, nextTime, TimeSpec((Real)100.0));
-            timedOut = !m_queue.receive(msg, nextTime);
+            timedOut = !m_eventRxQueue.receive(event, nextTime);
         }
         else
         {
-            m_queue.receive(msg);
+            m_eventRxQueue.receive(event);
         }
         getTime(m_eventRxTime);
         m_channelActivity.update(m_eventRxTime);
@@ -180,20 +181,22 @@ void QueueListener::eventLoop()
         }
         else
         {
-            wprintw(m_screen->log(), "%s\n", msg.toString().c_str());
-            if (msg.m_currentTrack != LogMessage::Unknown)
-                m_trackIdx = msg.m_currentTrack;
-            if (msg.m_currentSection != LogMessage::Unknown)
-                m_sectionIdx = msg.m_currentSection;
-            if (msg.m_type == LogMessage::MidiOut3Bytes &&
-                msg.m_deviceId == Midi::Device::FantomOut)
+            wprintw(m_screen->log(), "%s\n", event.toString().c_str());
+            if (event.m_currentTrack != Event::Unknown)
+                m_trackIdx = event.m_currentTrack;
+            if (event.m_currentSection != Event::Unknown)
+                m_sectionIdx = event.m_currentSection;
+            if (event.m_trackIdxWithinSet != Event::Unknown)
+                m_trackIdxWithinSet = event.m_trackIdxWithinSet;
+            if (event.m_type == Event::MidiOut3Bytes &&
+                event.m_deviceId == Midi::Device::FantomOut)
             wrefresh(m_screen->log());
-            bool isNoteData = Midi::isNote(msg.m_midi[0]);
+            bool isNoteData = Midi::isNote(event.m_midi[0]);
             if (isNoteData)
             {
-                uint8_t channel = msg.m_midi[0] & 0x0f;
-                m_channelActivity.trigger(channel, msg.m_midi[1], m_eventRxTime);
-                m_softPartActivity.trigger(msg.m_part, msg.m_midi[1], m_eventRxTime);
+                uint8_t channel = event.m_midi[0] & 0x0f;
+                m_channelActivity.trigger(channel, event.m_midi[1], m_eventRxTime);
+                m_softPartActivity.trigger(event.m_part, event.m_midi[1], m_eventRxTime);
             }
         }
         updateScreen();
@@ -235,7 +238,7 @@ void QueueListener::mergePerformanceData()
 int main(void)
 {
 #if 0
-    LogMessage m;
+    Event m;
     std::cout << sizeof(m) << "\n";
     return 0;
 #endif

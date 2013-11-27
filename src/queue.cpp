@@ -1,17 +1,22 @@
+/*! \file queue.cpp
+ *  \brief Contains a \a POSIX queue object.
+ *
+ *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
+ */
 #include "queue.h"
 #include <fcntl.h>
 #include <errno.h>
 #include "error.h"
 #include <sstream>
 
-uint32_t LogMessage::m_sequenceNumber = 0;
+uint32_t Event::m_sequenceNumber = 0;
 
 void Queue::createWrite()
 {
     struct mq_attr attr;
     attr.mq_flags = O_NONBLOCK;
     attr.mq_maxmsg = 10;
-    attr.mq_msgsize = sizeof(LogMessage);
+    attr.mq_msgsize = sizeof(Event);
     m_descriptor = mq_open(m_name, O_WRONLY|O_NONBLOCK|O_CREAT, S_IRUSR|S_IWUSR, &attr);
     if (m_descriptor == -1)
     {
@@ -28,6 +33,7 @@ void Queue::createRead()
     }
 }
 
+//! \brief Construct a Queue, 'read' by default.
 Queue::Queue(bool readWrite): m_overruns(0)
 {
     m_name = "/patcher_queue";
@@ -37,10 +43,11 @@ Queue::Queue(bool readWrite): m_overruns(0)
         createWrite();
 }
 
-void Queue::send(const LogMessage &message)
+//! \brief Send an Event.
+void Queue::send(const Event &event)
 {
-    int rv = mq_send(m_descriptor, 
-            (const char*)&message, sizeof(message), 0);
+    int rv = mq_send(m_descriptor,
+            (const char*)&event, sizeof(event), 0);
     if (rv == -1)
     {
         if (errno == EAGAIN)
@@ -52,20 +59,29 @@ void Queue::send(const LogMessage &message)
     }
 }
 
-void Queue::receive(LogMessage &message)
+/*! \brief Receive an event.
+ * \param[out]  event     The event.
+ */
+void Queue::receive(Event &event)
 {
-    ssize_t rv = mq_receive(m_descriptor, 
-            (char *)&message, sizeof(message), 0);
+    ssize_t rv = mq_receive(m_descriptor,
+            (char *)&event, sizeof(event), 0);
     if (rv < 0)
     {
         throw(Error("mq_receive", errno));
     }
 }
 
-bool Queue::receive(LogMessage &message, const TimeSpec &absTime)
+/*! \brief Receive an event.
+ *
+ * \param[out]  event       The event.
+ * \param[in]   absTime     Expiration time.
+ * \return true if reception succeeds, false if expired.
+ */
+bool Queue::receive(Event &event, const TimeSpec &absTime)
 {
-    ssize_t rv = mq_timedreceive(m_descriptor, 
-            (char *)&message, sizeof(message), 0, &absTime);
+    ssize_t rv = mq_timedreceive(m_descriptor,
+            (char *)&event, sizeof(event), 0, &absTime);
     if (rv < 0)
     {
         if (errno == ETIMEDOUT)
@@ -75,24 +91,11 @@ bool Queue::receive(LogMessage &message, const TimeSpec &absTime)
     return true;
 }
 
-std::string LogMessage::toString()
+std::string Event::toMidiString()
 {
     std::stringstream ss;
     ss.setf(std::ios::hex, std::ios::basefield);
     ss.setf(std::ios::adjustfield, std::ios::right);
-    //ss.setf(std::ios::showbase); // completely useless when combined with 'fill'
-    ss << "0x"; ss.width(4); ss.fill('0');
-    ss << (int)m_packetCounter << " ";
-    ss << "0x"; ss.width(2); ss.fill('0');
-    ss << (int)m_currentTrack << " ";
-    ss << "0x"; ss.width(2); ss.fill('0');
-    ss << (int)m_currentSection << " ";
-    ss << "0x"; ss.width(2); ss.fill('0');
-    ss << (int)m_type << " ";
-    ss << "0x"; ss.width(2); ss.fill('0');
-    ss << (int)m_deviceId << " ";
-    ss << "0x"; ss.width(2); ss.fill('0');
-    ss << (int)m_part << " ";
     ss << "0x"; ss.width(2); ss.fill('0');
     ss << (int)m_midi[0] << " ";
     ss << "0x"; ss.width(2); ss.fill('0');
@@ -102,6 +105,58 @@ std::string LogMessage::toString()
     return ss.str();
 }
 
+std::string Event::toString()
+{
+    std::stringstream ss;
+    ss.setf(std::ios::hex, std::ios::basefield);
+    ss.setf(std::ios::adjustfield, std::ios::right);
+    //ss.setf(std::ios::showbase); // completely useless when combined with 'fill'
+    ss << "0x"; ss.width(4); ss.fill('0');
+    ss << (int)m_packetCounter << " ";
+    ss << "T0x"; ss.width(2); ss.fill('0');
+    ss << (int)m_currentTrack << " ";
+    ss << "S0x"; ss.width(2); ss.fill('0');
+    ss << (int)m_currentSection << " ";
+    ss << "L0x"; ss.width(2); ss.fill('0');
+    ss << (int)m_trackIdxWithinSet << " ";
+    switch(m_type)
+    {
+        case Ready:
+            ss << "Ready";
+            break;
+        case MidiOut1Byte:
+            ss << "MidiOut1Byte";
+            break;
+        case MidiOut2Bytes:
+            ss << "MidiOut2Bytes";
+            break;
+        case MidiOut3Bytes:
+            ss << "MidiOut3Bytes";
+            break;
+        case MidiIn1Byte:
+            ss << "MidiIn1Byte";
+            break;
+        case MidiIn2Bytes:
+            ss << "MidiIn2Bytes";
+            break;
+        case MidiIn3Bytes:
+            ss << "MidiIn3Bytes";
+            break;
+        default:
+            ss << "Unknown Type 0x";
+            ss.width(2); ss.fill('0');
+            ss << (int)m_type;
+            break;
+    }
+    ss << " D0x"; ss.width(2); ss.fill('0');
+    ss << (int)m_deviceId << " ";
+    ss << "P0x"; ss.width(2); ss.fill('0');
+    ss << (int)m_part << " ";
+    ss << toMidiString();
+    return ss.str();
+}
+
+//! \brief Get some info on the Queue.
 std::string Queue::getAttr()
 {
     std::stringstream ss;

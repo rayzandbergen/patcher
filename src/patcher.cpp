@@ -73,7 +73,7 @@ private:
     int m_partOffsetBcf;                                //!< Either 0 or 8, since BCF only has 8 sliders to show 16 parameters
     TimeSpec m_debouncePreviousTriggerTime;             //!< Absolute time of last debounce test.
     TimeSpec m_eventRxTime;                             //!< Arrival time of the current Midi event.
-    Queue m_queue;
+    Queue m_eventTxQueue;                      //!< Event queue to write to.
     Track *currentTrack() const {
         return m_trackList[m_trackIdx]; } //!< The current \a Track.
     Section *currentSection() const {
@@ -128,7 +128,7 @@ public:
         m_screen(s), m_midi(m), m_fantom(f),
         m_trackIdx(0), m_trackIdxWithinSet(0), m_sectionIdx(0),
         m_metaMode(false), m_fantomScroller(f), m_partOffsetBcf(0),
-        m_queue(Queue::Write)
+        m_eventTxQueue(Queue::Write)
     {
         m_trackIdx = m_setList[0];
         getTime(m_debouncePreviousTriggerTime);
@@ -213,16 +213,17 @@ void Patcher::restoreState()
 void Patcher::eventLoop()
 {
     {
-        LogMessage msg;
-        msg.m_currentTrack = m_trackIdx;
-        msg.m_currentSection = m_sectionIdx;
-        msg.m_type = LogMessage::Ready;
-        msg.m_deviceId = LogMessage::Unknown;
-        msg.m_part = LogMessage::Unknown;
-        msg.m_midi[0] = LogMessage::Unknown;
-        msg.m_midi[1] = LogMessage::Unknown;
-        msg.m_midi[2] = LogMessage::Unknown;
-        m_queue.send(msg);
+        Event event;
+        event.m_currentTrack = m_trackIdx;
+        event.m_currentSection = m_sectionIdx;
+        event.m_trackIdxWithinSet = m_trackIdxWithinSet;
+        event.m_type = Event::Ready;
+        event.m_deviceId = Event::Unknown;
+        event.m_part = Event::Unknown;
+        event.m_midi[0] = Event::Unknown;
+        event.m_midi[1] = Event::Unknown;
+        event.m_midi[2] = Event::Unknown;
+        m_eventTxQueue.send(event);
     }
     for (uint32_t j=0;;j++)
     {
@@ -546,24 +547,25 @@ void Patcher::sendEventToFantom(uint8_t midiStatus,
             {
                 m_midi->putBytes(Midi::Device::FantomOut,
                     midiStatus|swPart->m_channel, data1Out, data2Out);
-                messageType = LogMessage::MidiOut3Bytes;
+                messageType = Event::MidiOut3Bytes;
             }
             else
             {
                 m_midi->putBytes(Midi::Device::FantomOut,
                     midiStatus|swPart->m_channel, data1Out);
-                messageType = LogMessage::MidiOut2Bytes;
+                messageType = Event::MidiOut2Bytes;
             }
-            LogMessage msg;
-            msg.m_currentTrack = m_trackIdx;
-            msg.m_currentSection = m_sectionIdx;
-            msg.m_type = messageType;
-            msg.m_deviceId = Midi::Device::FantomOut;
-            msg.m_part = i;
-            msg.m_midi[0] = midiStatus|swPart->m_channel;
-            msg.m_midi[1] = data1Out;
-            msg.m_midi[2] = data2Out;
-            m_queue.send(msg);
+            Event event;
+            event.m_currentTrack = m_trackIdx;
+            event.m_currentSection = m_sectionIdx;
+            event.m_trackIdxWithinSet = m_trackIdxWithinSet;
+            event.m_type = messageType;
+            event.m_deviceId = Midi::Device::FantomOut;
+            event.m_part = i;
+            event.m_midi[0] = midiStatus|swPart->m_channel;
+            event.m_midi[1] = data1Out;
+            event.m_midi[2] = data2Out;
+            m_eventTxQueue.send(event);
             if (isNoteData)
             {
                 m_channelActivity.trigger(swPart->m_channel, data1Out, m_eventRxTime);
@@ -768,16 +770,17 @@ void Patcher::changeSection(uint8_t sectionIdx)
         m_sectionIdx = sectionIdx;
         show(UpdateScreen|UpdateFantomDisplay);
         m_persist.store(m_trackIdx, m_sectionIdx);
-        LogMessage msg;
-        msg.m_currentTrack = m_trackIdx;
-        msg.m_currentSection = m_sectionIdx;
-        msg.m_type = LogMessage::Ready;
-        msg.m_deviceId = LogMessage::Unknown;
-        msg.m_part = LogMessage::Unknown;
-        msg.m_midi[0] = LogMessage::Unknown;
-        msg.m_midi[1] = LogMessage::Unknown;
-        msg.m_midi[2] = LogMessage::Unknown;
-        m_queue.send(msg);
+        Event event;
+        event.m_currentTrack = m_trackIdx;
+        event.m_currentSection = m_sectionIdx;
+        event.m_trackIdxWithinSet = m_trackIdxWithinSet;
+        event.m_type = Event::Ready;
+        event.m_deviceId = Event::Unknown;
+        event.m_part = Event::Unknown;
+        event.m_midi[0] = Event::Unknown;
+        event.m_midi[1] = Event::Unknown;
+        event.m_midi[2] = Event::Unknown;
+        m_eventTxQueue.send(event);
     }
 }
 
