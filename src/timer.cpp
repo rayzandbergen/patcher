@@ -60,9 +60,13 @@ void Timer::read(int fd, void *buf, size_t count)
         {
             throw(TimeoutError("read timeout"));
         }
-        if (n < 0 && (errno != EAGAIN && errno != EINTR))
+        if (n < 0)
         {
-            throw(Error("read", errno));
+            if (errno != EAGAIN && errno != EINTR)
+            {
+                throw(Error("read", errno));
+            }
+            n = 0;
         }
         buf = (void*)(((char*)buf) + n);
         count -= n;

@@ -97,8 +97,7 @@ void Driver::getParam(const uint32_t addr, const uint32_t length, uint8_t *data)
         byteRx = m_midi->getByte(Midi::Device::FantomIn);
         if (byteRx == Midi::sysEx)
             break;
-        wprintw(m_window, "unexpected response, retry\n");
-        wrefresh(m_window);
+        throw(Error("Driver::getParam: unexpected response"));
     }
     rxBuf[0] = byteRx;
     for (i=1;;i++)
@@ -250,7 +249,7 @@ void PerformanceListLive::download(Fantom::Driver *fantom, WINDOW *win, size_t n
     m_size = nofPerformances;
     m_performanceList = new Fantom::Performance[m_size];
     char nameBuf[Fantom::NameLength+1];
-    TimeSpec fantomPerformanceSelectDelay((Real)0.01);
+    TimeSpec fantomPerformanceSelectDelay((Real)0.10);
     mvwprintw(win, 2, 3, "Downloading Fantom Performance data:");
     for (size_t i=0; i<m_size; i++)
     {
