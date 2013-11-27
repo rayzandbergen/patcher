@@ -111,6 +111,7 @@ public:
     void mergePerformanceData();
     void show(int updateFlags);
     void eventLoop();
+    void sendReadyEvent();
     void restoreState();
     void loadTrackDefs();
     /*! \brief constructor for Patcher
@@ -206,25 +207,30 @@ void Patcher::restoreState()
     changeSection(s);
 }
 
+/*! \brief Sends a 'ready' event to inform clients of a non MIDI status change.
+ */
+void Patcher::sendReadyEvent()
+{
+    Event event;
+    event.m_currentTrack = m_trackIdx;
+    event.m_currentSection = m_sectionIdx;
+    event.m_trackIdxWithinSet = m_trackIdxWithinSet;
+    event.m_type = Event::Ready;
+    event.m_deviceId = Event::Unknown;
+    event.m_part = Event::Unknown;
+    event.m_midi[0] = Event::Unknown;
+    event.m_midi[1] = Event::Unknown;
+    event.m_midi[2] = Event::Unknown;
+    m_eventTxQueue.send(event);
+}
+
 /*! \brief Run the event loop.
  *
  *  This function processes incoming events. It never returns.
  */
 void Patcher::eventLoop()
 {
-    {
-        Event event;
-        event.m_currentTrack = m_trackIdx;
-        event.m_currentSection = m_sectionIdx;
-        event.m_trackIdxWithinSet = m_trackIdxWithinSet;
-        event.m_type = Event::Ready;
-        event.m_deviceId = Event::Unknown;
-        event.m_part = Event::Unknown;
-        event.m_midi[0] = Event::Unknown;
-        event.m_midi[1] = Event::Unknown;
-        event.m_midi[2] = Event::Unknown;
-        m_eventTxQueue.send(event);
-    }
+    sendReadyEvent();
     for (uint32_t j=0;;j++)
     {
 #ifndef RASPBIAN
@@ -770,17 +776,7 @@ void Patcher::changeSection(uint8_t sectionIdx)
         m_sectionIdx = sectionIdx;
         show(UpdateScreen|UpdateFantomDisplay);
         m_persist.store(m_trackIdx, m_sectionIdx);
-        Event event;
-        event.m_currentTrack = m_trackIdx;
-        event.m_currentSection = m_sectionIdx;
-        event.m_trackIdxWithinSet = m_trackIdxWithinSet;
-        event.m_type = Event::Ready;
-        event.m_deviceId = Event::Unknown;
-        event.m_part = Event::Unknown;
-        event.m_midi[0] = Event::Unknown;
-        event.m_midi[1] = Event::Unknown;
-        event.m_midi[2] = Event::Unknown;
-        m_eventTxQueue.send(event);
+        sendReadyEvent();
     }
 }
 
@@ -891,6 +887,7 @@ void Patcher::changeTrackByNote(uint8_t note)
     {
         changeTrack((uint8_t)m_trackIdx, UpdateAll);
     }
+    sendReadyEvent();
 }
 
 /*! \brief Consume a sysEx message from a device.
