@@ -44,7 +44,7 @@ void ActivityList::trigger(int majorIndex, int minorIndex, const TimeSpec &now)
 {
     m_queue.push(ActivityTrigger(majorIndex, minorIndex, now));
     m_triggerCount[majorIndex] += 1;
-    m_dirty = true;
+    m_dirty = m_triggerCount[majorIndex] == 1;
 }
 
 /*! \brief  Returns the next expiry time, if any.
@@ -75,7 +75,7 @@ bool ActivityList::update(const TimeSpec &now)
         {
             int major = m_queue.front().m_major;
             m_triggerCount[major] -= 1;
-            m_dirty = m_dirty || true;
+            m_dirty = m_dirty || (m_triggerCount[major] == 0);
             m_queue.pop();
         }
         else

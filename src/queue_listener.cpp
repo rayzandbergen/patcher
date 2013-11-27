@@ -59,7 +59,14 @@ void QueueListener::updateScreen()
     werase(m_screen->main());
     wprintw(m_screen->main(),
         "*** Ray's MIDI patcher " VERSION ", rev " SVN ", " NOW " ***\n\n");
+#if 0
+    for (int i=0; i<16; i++)
+    {
+        mvwprintw(m_screen->main(), 1, i*4, "%02d ", m_channelActivity.m_triggerCount[i]);
+    }
+#else
     mvwprintw(m_screen->main(), 1, 63, "%08d", m_nofScreenUpdates);
+#endif
     mvwprintw(m_screen->main(), 2, 0,
         "track   %03d \"%s\"\nsection %03d/%03d \"%s\"\n",
         1+m_trackIdx, currentTrack()->m_name,
@@ -178,6 +185,11 @@ void QueueListener::eventLoop()
         if (timedOut)
         {
             wprintw(m_screen->log(), "timeout\n");
+            if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
+            {
+                updateScreen();
+                wrefresh(m_screen->main());
+            }
         }
         else
         {
@@ -200,12 +212,17 @@ void QueueListener::eventLoop()
                     m_channelActivity.trigger(channel, event.m_midi[1], m_eventRxTime);
                     m_softPartActivity.trigger(event.m_part, event.m_midi[1], m_eventRxTime);
                 }
+                if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
+                {
+                    updateScreen();
+                    wrefresh(m_screen->main());
+                }
             }
-        }
-        if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
-        {
-            updateScreen();
-            wrefresh(m_screen->main());
+            else
+            {
+                updateScreen();
+                wrefresh(m_screen->main());
+            }
         }
     }
 }
