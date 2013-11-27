@@ -212,6 +212,7 @@ void Patcher::restoreState()
 void Patcher::sendReadyEvent()
 {
     Event event;
+    event.m_metaMode = m_metaMode ? 1 : 0;
     event.m_currentTrack = m_trackIdx;
     event.m_currentSection = m_sectionIdx;
     event.m_trackIdxWithinSet = m_trackIdxWithinSet;
@@ -368,11 +369,13 @@ void Patcher::eventLoop()
                                 m_midi->putBytes(Midi::Device::BcfOut, Midi::controller|0,
                                     Midi::BCFSwitchA, val ? 127 : 0);
                                 show(UpdateScreen);
+                                sendReadyEvent();
                             }
                             else if (deviceRx == Midi::Device::BcfIn && num == Midi::BCFSwitchA)
                             {
                                 m_metaMode = !!val;
                                 show(UpdateScreen);
+                                sendReadyEvent();
                             }
                             else if (deviceRx == Midi::Device::BcfIn && num == Midi::effects1Depth)
                             {
@@ -408,11 +411,13 @@ void Patcher::eventLoop()
                                 {
                                     m_metaMode = false;
                                     show(UpdateScreen);
+                                    sendReadyEvent();
                                 }
                                 else if (num == FCB1010::FootSwitch7)
                                 {
                                     m_metaMode = true;
                                     show(UpdateScreen);
+                                    sendReadyEvent();
                                 }
                                 else if (currentTrack()->m_chain)
                                 {
@@ -562,6 +567,7 @@ void Patcher::sendEventToFantom(uint8_t midiStatus,
                 messageType = Event::MidiOut2Bytes;
             }
             Event event;
+            event.m_metaMode = m_metaMode ? 1 : 0;
             event.m_currentTrack = m_trackIdx;
             event.m_currentSection = m_sectionIdx;
             event.m_trackIdxWithinSet = m_trackIdxWithinSet;

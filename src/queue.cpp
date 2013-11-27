@@ -113,6 +113,8 @@ std::string Event::toString()
     //ss.setf(std::ios::showbase); // completely useless when combined with 'fill'
     ss << "0x"; ss.width(4); ss.fill('0');
     ss << (int)m_packetCounter << " ";
+    ss << "M0x"; ss.width(2); ss.fill('0');
+    ss << (int)m_metaMode << " ";
     ss << "T0x"; ss.width(2); ss.fill('0');
     ss << (int)m_currentTrack << " ";
     ss << "S0x"; ss.width(2); ss.fill('0');

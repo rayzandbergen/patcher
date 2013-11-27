@@ -182,6 +182,7 @@ void QueueListener::eventLoop()
         else
         {
             wprintw(m_screen->log(), "%s\n", event.toString().c_str());
+            m_metaMode = !!event.m_metaMode;
             if (event.m_currentTrack != Event::Unknown)
                 m_trackIdx = event.m_currentTrack;
             if (event.m_currentSection != Event::Unknown)
@@ -190,17 +191,22 @@ void QueueListener::eventLoop()
                 m_trackIdxWithinSet = event.m_trackIdxWithinSet;
             if (event.m_type == Event::MidiOut3Bytes &&
                 event.m_deviceId == Midi::Device::FantomOut)
-            wrefresh(m_screen->log());
-            bool isNoteData = Midi::isNote(event.m_midi[0]);
-            if (isNoteData)
             {
-                uint8_t channel = event.m_midi[0] & 0x0f;
-                m_channelActivity.trigger(channel, event.m_midi[1], m_eventRxTime);
-                m_softPartActivity.trigger(event.m_part, event.m_midi[1], m_eventRxTime);
+                wrefresh(m_screen->log());
+                bool isNoteData = Midi::isNote(event.m_midi[0]);
+                if (isNoteData)
+                {
+                    uint8_t channel = event.m_midi[0] & 0x0f;
+                    m_channelActivity.trigger(channel, event.m_midi[1], m_eventRxTime);
+                    m_softPartActivity.trigger(event.m_part, event.m_midi[1], m_eventRxTime);
+                }
             }
         }
-        updateScreen();
-        wrefresh(m_screen->main());
+        if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
+        {
+            updateScreen();
+            wrefresh(m_screen->main());
+        }
     }
 }
 

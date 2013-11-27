@@ -32,6 +32,7 @@ public:
     static const uint8_t Unknown = 255; //!<    Placeholder value.
     static uint32_t m_sequenceNumber;   //!<    Global sequence number.
     uint16_t m_packetCounter;           //!<    Sequential counter.
+    uint8_t m_metaMode;                 //!<    Meta mode switch.
     uint8_t m_currentTrack;             //!<    Current track.
     uint8_t m_currentSection;           //!<    Current section.
     uint8_t m_trackIdxWithinSet;        //!<    Setlist index.
