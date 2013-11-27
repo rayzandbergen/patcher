@@ -1,3 +1,8 @@
+/*! \file fantomscroller.cpp
+ *  \brief Contains an object produces scrolling text on the Fantom screen.
+ *
+ *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
+ */
 #include "fantomscroller.h"
 #include "networkif.h"
 #include "patcher.h"

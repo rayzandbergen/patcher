@@ -1,6 +1,11 @@
+/*! \file fcb1010.h
+ *  \brief Contains some FCB1010 definitions.
+ *
+ *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
+ */
 #ifndef FCB1010_H
 #define FCB1010_H
-//! \brief FDB1010 definitions.
+//! \brief FCB1010 definitions.
 namespace FCB1010
 {
     //! \brief MIDI program change numbers for foot switches.

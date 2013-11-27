@@ -1,3 +1,8 @@
+/*! \file fantomscroller.h
+ *  \brief Contains an object produces scrolling text on the Fantom screen.
+ *
+ *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
+ */
 #ifndef FANTOM_SCREEN_SCROLLER_H
 #define FANTOM_SCREEN_SCROLLER_H
 
