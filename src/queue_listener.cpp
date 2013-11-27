@@ -201,16 +201,23 @@ void QueueListener::eventLoop()
                 m_sectionIdx = event.m_currentSection;
             if (event.m_trackIdxWithinSet != Event::Unknown)
                 m_trackIdxWithinSet = event.m_trackIdxWithinSet;
-            if (event.m_type == Event::MidiOut3Bytes &&
+            if ((event.m_type == Event::MidiOut3Bytes ||
+                 event.m_type == Event::MidiOut2Bytes ||
+                 event.m_type == Event::MidiOut1Byte) &&
                 event.m_deviceId == Midi::Device::FantomOut)
             {
                 wrefresh(m_screen->log());
-                bool isNoteData = Midi::isNote(event.m_midi[0]);
-                if (isNoteData)
+                if (Midi::isNote(event.m_midi[0]))
                 {
                     uint8_t channel = event.m_midi[0] & 0x0f;
                     m_channelActivity.trigger(channel, event.m_midi[1], m_eventRxTime);
                     m_softPartActivity.trigger(event.m_part, event.m_midi[1], m_eventRxTime);
+                }
+                else if (Midi::isController)
+                {
+                    uint8_t channel = event.m_midi[0] & 0x0f;
+                    m_channelActivity.trigger(channel, 0, m_eventRxTime);
+                    m_softPartActivity.trigger(event.m_part, 0, m_eventRxTime);
                 }
                 if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
                 {
