@@ -42,16 +42,21 @@ ActivityList::~ActivityList()
  */
 void ActivityList::trigger(int majorIndex, int minorIndex, const TimeSpec &now)
 {
-    m_queue.push(ActivityNode(majorIndex, minorIndex, now));
+    m_queue.push(ActivityTrigger(majorIndex, minorIndex, now));
     m_triggerCount[majorIndex] += 1;
     m_dirty = true;
 }
 
-bool ActivityList::nextExpiry(TimeSpec &ts) const
+/*! \brief  Returns the next expiry time, if any.
+ *
+ * \param[out]  expireTime  Next expiry time
+ * \return True if there is a next expiry time, false otherwise.
+ */
+bool ActivityList::nextExpiry(TimeSpec &expireTime) const
 {
     if (m_queue.empty())
         return false;
-    ts = m_queue.front().m_expireTime;
+    expireTime = m_queue.front().m_expireTime;
     return true;
 }
 
@@ -60,7 +65,7 @@ bool ActivityList::nextExpiry(TimeSpec &ts) const
  * This function clears activity slots that are expired.
  *
  * \param[in]   now      Current time.
- * \param[in]   index     Tree index at which to start, default is root.
+ * \return  \sa getDirty().
  */
 bool ActivityList::update(const TimeSpec &now)
 {
@@ -81,7 +86,7 @@ bool ActivityList::update(const TimeSpec &now)
 
 /*! \brief Get list of activity flags, and clear the dirty flag.
  *
- * \param[out]  activity    Bool array, must be at least majorSize entries.
+ * \param[out]  b    Bool array, must be at least majorSize entries.
  */
 void ActivityList::get(bool *b)
 {
