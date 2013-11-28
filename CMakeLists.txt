@@ -58,8 +58,14 @@ set(queue_listenerSources
     src/trackdef.cpp
     src/xml.cpp
 )
+
+set(adminSources
+    src/admin.cpp
+)
+
 add_executable(patcher ${patcherSources})
 add_executable(queue_listener ${queue_listenerSources})
+add_executable(admin ${adminSources})
 
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/now.h
@@ -72,6 +78,7 @@ add_dependencies(patcher tags)
 
 set(patcherlibs "-lrt -lxerces-c -lasound")
 set(queue_listenerlibs "-lrt -lxerces-c")
+set(adminlibs "-lrt")
 
 if(RASPBIAN)
     set(patcherlibs "${patcherlibs} -lncurses")
@@ -88,4 +95,5 @@ endif()
 
 set_target_properties(patcher PROPERTIES LINK_FLAGS ${patcherlibs})
 set_target_properties(queue_listener PROPERTIES LINK_FLAGS ${queue_listenerlibs})
+set_target_properties(admin PROPERTIES LINK_FLAGS ${adminlibs})
 
