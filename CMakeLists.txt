@@ -45,7 +45,7 @@ set(patcher_coreSources
 set(curses_clientSources
     src/activity.cpp
     src/controller.cpp
-    src/curses_client.cpp
+    src/cursesclient.cpp
     src/dump.cpp
     src/fantomdef.cpp
     src/mididef.cpp
