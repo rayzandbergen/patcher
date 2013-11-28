@@ -60,15 +60,15 @@ set(curses_clientSources
     now.h
 )
 
-set(adminSources
-    src/admin.cpp
+set(patcherSources
+    src/patcher.cpp
     src/queue.cpp
     now.h
 )
 
 add_executable(patcher_core ${patcher_coreSources})
 add_executable(curses_client ${curses_clientSources})
-add_executable(admin ${adminSources})
+add_executable(patcher ${patcherSources})
 
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/now.h
@@ -81,7 +81,7 @@ add_dependencies(patcher_core tags)
 
 set(patcher_corelibs "-lrt -lxerces-c -lasound")
 set(curses_clientlibs "-lrt -lxerces-c")
-set(adminlibs "-lrt")
+set(patcherlibs "-lrt")
 
 if(RASPBIAN)
     set(patcher_corelibs "${patcher_corelibs} -lncurses")
@@ -98,5 +98,5 @@ endif()
 
 set_target_properties(patcher_core PROPERTIES LINK_FLAGS ${patcher_corelibs})
 set_target_properties(curses_client PROPERTIES LINK_FLAGS ${curses_clientlibs})
-set_target_properties(admin PROPERTIES LINK_FLAGS ${adminlibs})
+set_target_properties(patcher PROPERTIES LINK_FLAGS ${patcherlibs})
 
