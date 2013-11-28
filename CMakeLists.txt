@@ -61,6 +61,7 @@ set(queue_listenerSources
 
 set(adminSources
     src/admin.cpp
+    src/queue.cpp
 )
 
 add_executable(patcher ${patcherSources})

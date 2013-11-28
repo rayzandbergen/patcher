@@ -50,6 +50,7 @@ public:
         m_trackIdx(0), m_trackIdxWithinSet(0), m_sectionIdx(0),
         m_metaMode(false), m_nofScreenUpdates(0)
     {
+        m_eventRxQueue.openRead();
     }
 };
 
@@ -157,6 +158,8 @@ void QueueListener::updateScreen()
 }
 void QueueListener::loadTrackDefs()
 {
+    Event event;
+    m_eventRxQueue.receive(event);
     importTracks(TRACK_DEF, m_trackList, m_setList);
 }
 

@@ -57,13 +57,15 @@ class Queue
 #endif
     mqd_t   m_descriptor;   //!<    Queue descriptor.
     const char *m_name;     //!<    Resource name.
-    void createWrite();     //!<    Create queue for writing.
-    void createRead();      //!<    Create queue for reading.
 public:
-    static const bool Read = true;      //!<    Inidiate Read queue.
-    static const bool Write = false;    //!<    Indicate Write queue.
+    void create();          //!<    Create queue.
+    void openWrite();       //!<    Open queue for writing.
+    void openRead();        //!<    Open queue for reading.
+    void unlink();          //!<    Remove queue.
+//    static const bool Read = true;      //!<    Inidiate Read queue.
+//    static const bool Write = false;    //!<    Indicate Write queue.
     int m_overruns;                     //!<    Overrun counter.
-    Queue(bool readWrite = Read);
+    Queue();
     void send(const Event &event);
     void receive(Event &event);
     bool receive(Event &event, const TimeSpec &absTime);

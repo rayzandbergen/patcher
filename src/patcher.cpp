@@ -129,9 +129,9 @@ public:
         m_softPartActivity(64 /*see tracks.xsd*/, Midi::Note::max),
         m_screen(s), m_midi(m), m_fantom(f),
         m_trackIdx(0), m_trackIdxWithinSet(0), m_sectionIdx(0),
-        m_metaMode(false), m_fantomScroller(f), m_partOffsetBcf(0),
-        m_eventTxQueue(Queue::Write)
+        m_metaMode(false), m_fantomScroller(f), m_partOffsetBcf(0)
     {
+        m_eventTxQueue.openWrite();
         m_trackIdx = m_setList[0];
         getTime(m_debouncePreviousTriggerTime);
         m_fantom->selectPerformanceFromMemCard();

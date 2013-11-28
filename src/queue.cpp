@@ -11,7 +11,12 @@
 
 uint32_t Event::m_sequenceNumber = 0;
 
-void Queue::createWrite()
+void Queue::unlink()
+{
+    mq_unlink(m_name);
+}
+
+void Queue::create()
 {
     struct mq_attr attr;
     attr.mq_flags = O_NONBLOCK;
@@ -24,7 +29,20 @@ void Queue::createWrite()
     }
 }
 
-void Queue::createRead()
+void Queue::openWrite()
+{
+    struct mq_attr attr;
+    attr.mq_flags = O_NONBLOCK;
+    attr.mq_maxmsg = 10;
+    attr.mq_msgsize = sizeof(Event);
+    m_descriptor = mq_open(m_name, O_WRONLY|O_NONBLOCK, S_IRUSR|S_IWUSR, &attr);
+    if (m_descriptor == -1)
+    {
+        throw(Error("mq_open O_WRONLY|O_NONBLOCK|O_CREAT", errno));
+    }
+}
+
+void Queue::openRead()
 {
     m_descriptor = mq_open(m_name, O_RDONLY, S_IRUSR, 0);
     if (m_descriptor == -1)
@@ -34,13 +52,9 @@ void Queue::createRead()
 }
 
 //! \brief Construct a Queue, 'read' by default.
-Queue::Queue(bool readWrite): m_overruns(0)
+Queue::Queue(): m_overruns(0)
 {
     m_name = "/patcher_queue";
-    if (readWrite == Read)
-        createRead();
-    else
-        createWrite();
 }
 
 //! \brief Send an Event.

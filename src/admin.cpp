@@ -8,6 +8,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <errno.h>
+#include "queue.h"
 
 static struct
 {
@@ -19,6 +20,7 @@ static struct
 
 void sigChldHandler(int x)
 {
+    (void)x;
     printf("sigChldHandler\n");
     waitpid(-1, 0, WNOHANG);
     global.m_nofChildren--;
@@ -26,17 +28,25 @@ void sigChldHandler(int x)
 
 void sigTermHandler(int x)
 {
+    (void)x;
     global.m_terminate = true;
     printf("sigTermHandler\n");
 }
 
 void signalHandler(int sigNum, siginfo_t *sigInfo, void *data)
 {
+    (void)sigNum;
+    (void)sigInfo;
+    (void)data;
     abort();
 }
 
 int main(void)
 {
+    const char *coreProcess = "./patcher";
+    const char *screenProcess = "./queue_listener";
+    Queue q;
+    q.create();
     static struct sigaction act;
     act.sa_sigaction = signalHandler;
     act.sa_handler = sigChldHandler;
@@ -47,14 +57,16 @@ int main(void)
     act.sa_handler = sigTermHandler;
     if (sigaction(SIGTERM, &act, 0) < 0)
         perror("sigaction");
+    if (sigaction(SIGINT, &act, 0) < 0)
+        perror("sigaction");
     global.m_corePid = fork();
     global.m_nofChildren = 2;
     if (global.m_corePid == 0)
     {
-        printf("launching patcher\n");
-        execl("./patcher", "./patcher");
-        std::cout << "fail ./patcher\n";
-        return 0;
+        std::cout << "launching " << coreProcess << "\n";
+        execl(coreProcess, coreProcess);
+        std::cout << "cannot launch " << coreProcess << "\n";
+        return -1;
     }
     if (global.m_corePid == -1)
     {
@@ -63,30 +75,26 @@ int main(void)
     global.m_queue_listenerPid = fork();
     if (global.m_queue_listenerPid == 0)
     {
-        sleep(1);
-        printf("launching queue_listener\n");
-        execl("./queue_listener", "./queue_listener");
-        std::cout << "fail ./queue_listener\n";
-        return 0;
+        std::cout << "launching " << screenProcess << "\n";
+        execl(screenProcess, screenProcess);
+        std::cout << "cannot launch " << screenProcess << "\n";
+        return -1;
     }
     if (global.m_corePid == -1)
     {
         global.m_nofChildren--;
     }
-    printf("waiting\n");
+    std::cout << "waiting\n";
     for (;;)
     {
         pause();
-        std::cout << global.m_corePid << " "
-            << global.m_queue_listenerPid  << " "
-            << global.m_nofChildren << "\n";
-        if (global.m_nofChildren < 2)
-            break;
-        if (global.m_terminate)
+        std::cout << "caught signal, " << global.m_nofChildren << " children left\n";
+        if (global.m_terminate || global.m_nofChildren < 2)
             break;
     }
     kill(global.m_queue_listenerPid, SIGTERM);
     kill(global.m_corePid, SIGTERM);
-    std::cout << "exit parent\n";
+    q.unlink();
+    std::cout << "exit admin\n";
     return 0;
 }
