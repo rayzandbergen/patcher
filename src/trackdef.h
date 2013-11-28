@@ -7,7 +7,7 @@
 #define TRACKDEF_H
 #include <vector>
 #include <stdint.h>
-#include "patcher.h"
+#include "patchercore.h"
 #include "monofilter.h"
 #include "transposer.h"
 #include "controller.h"

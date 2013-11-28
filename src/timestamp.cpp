@@ -3,7 +3,7 @@
  *
  *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
  */
-#include "patcher.h"
+#include "patchercore.h"
 #include "timestamp.h"
 
 /*! \brief Obtains the current time.

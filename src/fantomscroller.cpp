@@ -5,7 +5,7 @@
  */
 #include "fantomscroller.h"
 #include "networkif.h"
-#include "patcher.h"
+#include "patchercore.h"
 
 //! \brief Default constructor.
 FantomScreenScroller::FantomScreenScroller(Fantom::Driver *fantomDriver):

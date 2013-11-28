@@ -8,7 +8,7 @@
 #include "timestamp.h"
 #include "activity.h"
 #include "error.h"
-#include "patcher.h"
+#include "patchercore.h"
 
 /*! \brief Constructor.
  *

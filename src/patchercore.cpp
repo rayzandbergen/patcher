@@ -1,4 +1,4 @@
-/*! \file patcher.cpp
+/*! \file patchercore.cpp
  *  \brief Contains the \a Patcher object and the main entrypoint.
  *
  *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
@@ -22,7 +22,7 @@
 #include "timestamp.h"
 #include "activity.h"
 #include "error.h"
-#include "patcher.h"
+#include "patchercore.h"
 #include "networkif.h"
 #include "sequencer.h"
 #include "timer.h"

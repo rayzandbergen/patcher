@@ -6,7 +6,7 @@
 #ifndef ALARM_H
 #define ALARM_H
 #include "error.h"
-#include "patcher.h"
+#include "patchercore.h"
 
 //! \brief Timeout exception.
 class TimeoutError: public Error

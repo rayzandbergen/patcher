@@ -5,7 +5,7 @@
  */
 #include <stdint.h>
 #include "transposer.h"
-#include "patcher.h"
+#include "patchercore.h"
 //! \brief Apply possible transpose to MIDI message.
 void Transposer::transpose(uint8_t midiStatus, uint8_t &data1, uint8_t &data2)
 {

@@ -13,7 +13,7 @@
 #include <ncursesw/ncurses.h>
 #endif
 #include <stdint.h>
-#include "patcher.h"
+#include "patchercore.h"
 //!  \brief Wraps ncurses(3X) screens "main" and "log" in an object with some convenience functions.
 class Screen
 {

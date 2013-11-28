@@ -27,7 +27,7 @@ set(patcher_coreSources
     src/mididriver.cpp
     src/monofilter.cpp
     src/networkif.cpp
-    src/patcher.cpp
+    src/patchercore.cpp
     src/persistent.cpp
     src/queue.cpp
     src/screen.cpp

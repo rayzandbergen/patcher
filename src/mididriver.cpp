@@ -16,7 +16,7 @@
 #include "error.h"
 #include "mididriver.h"
 #include "timer.h"
-#include "patcher.h"
+#include "patchercore.h"
 
 namespace Midi {
 

@@ -1,4 +1,4 @@
-/*! \file patcher.h
+/*! \file patchercore.h
  *  \brief Contains global definitions.
  *
  *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)

@@ -5,7 +5,7 @@
 #include "fantomdef.h"
 #include "xml.h"
 #include "error.h"
-#include "patcher.h"
+#include "patchercore.h"
 #include "timestamp.h"
 #include "now.h"
 #include "activity.h"
