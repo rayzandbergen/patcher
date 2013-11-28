@@ -43,7 +43,7 @@ void signalHandler(int sigNum, siginfo_t *sigInfo, void *data)
 
 int main(void)
 {
-    const char *coreProcess = "./patcher";
+    const char *coreProcess = "./patcher_core";
     const char *screenProcess = "./queue_listener";
     Queue q;
     q.create();

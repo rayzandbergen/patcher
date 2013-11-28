@@ -156,6 +156,7 @@ void QueueListener::updateScreen()
         }
     }
 }
+
 void QueueListener::loadTrackDefs()
 {
     Event event;

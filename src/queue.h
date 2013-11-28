@@ -62,9 +62,7 @@ public:
     void openWrite();       //!<    Open queue for writing.
     void openRead();        //!<    Open queue for reading.
     void unlink();          //!<    Remove queue.
-//    static const bool Read = true;      //!<    Inidiate Read queue.
-//    static const bool Write = false;    //!<    Indicate Write queue.
-    int m_overruns;                     //!<    Overrun counter.
+    int m_overruns;         //!<    Overrun counter.
     Queue();
     void send(const Event &event);
     void receive(Event &event);

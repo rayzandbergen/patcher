@@ -64,7 +64,7 @@ set(adminSources
     src/queue.cpp
 )
 
-add_executable(patcher ${patcherSources})
+add_executable(patcher_core ${patcherSources})
 add_executable(queue_listener ${queue_listenerSources})
 add_executable(admin ${adminSources})
 
@@ -75,7 +75,7 @@ add_custom_command(
 
 add_custom_target(tags DEPENDS ${patcherSources} COMMAND ctags -R)
 
-add_dependencies(patcher tags)
+add_dependencies(patcher_core tags)
 
 set(patcherlibs "-lrt -lxerces-c -lasound")
 set(queue_listenerlibs "-lrt -lxerces-c")
@@ -94,7 +94,7 @@ if (mudflap)
     set(patcherlibs "${patcherlibs} -lmudflap")
 endif()
 
-set_target_properties(patcher PROPERTIES LINK_FLAGS ${patcherlibs})
+set_target_properties(patcher_core PROPERTIES LINK_FLAGS ${patcherlibs})
 set_target_properties(queue_listener PROPERTIES LINK_FLAGS ${queue_listenerlibs})
 set_target_properties(admin PROPERTIES LINK_FLAGS ${adminlibs})
 
