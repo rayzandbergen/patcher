@@ -44,7 +44,7 @@ void signalHandler(int sigNum, siginfo_t *sigInfo, void *data)
 int main(void)
 {
     const char *coreProcess = "./patcher_core";
-    const char *screenProcess = "./queue_listener";
+    const char *screenProcess = "./curses_client";
     Queue q;
     q.create();
     static struct sigaction act;

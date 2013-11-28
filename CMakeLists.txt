@@ -16,15 +16,15 @@ endif()
 
 include_directories(src ${CMAKE_CURRENT_BINARY_DIR})
 
-set(patcherSources
+set(patcher_coreSources
     src/activity.cpp
     src/controller.cpp
     src/dump.cpp
     src/fantomdef.cpp
     src/fantomdriver.cpp
     src/fantomscroller.cpp
-    src/mididriver.cpp
     src/mididef.cpp
+    src/mididriver.cpp
     src/monofilter.cpp
     src/networkif.cpp
     src/patcher.cpp
@@ -42,30 +42,32 @@ set(patcherSources
     now.h
 )
 
-set(queue_listenerSources
+set(curses_clientSources
     src/activity.cpp
     src/controller.cpp
+    src/curses_client.cpp
     src/dump.cpp
     src/fantomdef.cpp
     src/mididef.cpp
     src/monofilter.cpp
     src/queue.cpp
-    src/queue_listener.cpp
     src/screen.cpp
     src/timer.cpp
     src/timestamp.cpp
     src/toggler.cpp
     src/trackdef.cpp
     src/xml.cpp
+    now.h
 )
 
 set(adminSources
     src/admin.cpp
     src/queue.cpp
+    now.h
 )
 
-add_executable(patcher_core ${patcherSources})
-add_executable(queue_listener ${queue_listenerSources})
+add_executable(patcher_core ${patcher_coreSources})
+add_executable(curses_client ${curses_clientSources})
 add_executable(admin ${adminSources})
 
 add_custom_command(
@@ -73,28 +75,28 @@ add_custom_command(
     COMMAND ./stamp.sh ${CMAKE_CURRENT_BINARY_DIR}/now.h
 )
 
-add_custom_target(tags DEPENDS ${patcherSources} COMMAND ctags -R)
+add_custom_target(tags DEPENDS ${patcher_coreSources} COMMAND ctags -R)
 
 add_dependencies(patcher_core tags)
 
-set(patcherlibs "-lrt -lxerces-c -lasound")
-set(queue_listenerlibs "-lrt -lxerces-c")
+set(patcher_corelibs "-lrt -lxerces-c -lasound")
+set(curses_clientlibs "-lrt -lxerces-c")
 set(adminlibs "-lrt")
 
 if(RASPBIAN)
-    set(patcherlibs "${patcherlibs} -lncurses")
-    set(queue_listenerlibs "${queue_listenerlibs} -lncurses")
+    set(patcher_corelibs "${patcher_corelibs} -lncurses")
+    set(curses_clientlibs "${curses_clientlibs} -lncurses")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DRASPBIAN")
 else()
-    set(patcherlibs "${patcherlibs} -lcurses")
-    set(queue_listenerlibs "${queue_listenerlibs} -lcurses")
+    set(patcher_corelibs "${patcher_corelibs} -lcurses")
+    set(curses_clientlibs "${curses_clientlibs} -lcurses")
 endif()
 
 if (mudflap)
-    set(patcherlibs "${patcherlibs} -lmudflap")
+    set(patcher_corelibs "${patcher_corelibs} -lmudflap")
 endif()
 
-set_target_properties(patcher_core PROPERTIES LINK_FLAGS ${patcherlibs})
-set_target_properties(queue_listener PROPERTIES LINK_FLAGS ${queue_listenerlibs})
+set_target_properties(patcher_core PROPERTIES LINK_FLAGS ${patcher_corelibs})
+set_target_properties(curses_client PROPERTIES LINK_FLAGS ${curses_clientlibs})
 set_target_properties(admin PROPERTIES LINK_FLAGS ${adminlibs})
 
