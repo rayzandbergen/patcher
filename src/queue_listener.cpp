@@ -213,7 +213,7 @@ void QueueListener::eventLoop()
                     m_channelActivity.trigger(channel, event.m_midi[1], m_eventRxTime);
                     m_softPartActivity.trigger(event.m_part, event.m_midi[1], m_eventRxTime);
                 }
-                else if (Midi::isController)
+                else if (Midi::isController(event.m_midi[0]))
                 {
                     uint8_t channel = event.m_midi[0] & 0x0f;
                     m_channelActivity.trigger(channel, 0, m_eventRxTime);
