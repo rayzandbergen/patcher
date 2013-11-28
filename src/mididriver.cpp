@@ -65,21 +65,30 @@ void Driver::openDevices()
         sprintf(devStr, "hw:%d,%d,%d", dIn->m_card, dIn->m_sub1, dIn->m_sub2);
         if (dIn->m_id != Device::none && dOut->m_id != Device::none)
         {
-            wprintw(m_window, "opening %s\n%s\n", dIn->m_longDescription, devStr);
-            wprintw(m_window, "opening %s\n%s\n", dOut->m_longDescription, devStr);
-            wrefresh(m_window);
+            if (m_window)
+            {
+                wprintw(m_window, "opening %s\n%s\n", dIn->m_longDescription, devStr);
+                wprintw(m_window, "opening %s\n%s\n", dOut->m_longDescription, devStr);
+                wrefresh(m_window);
+            }
             dIn->m_fd = dOut->m_fd = openRaw(devStr, O_RDWR);
         }
         else if (dIn->m_id == Device::none && dOut->m_id != Device::none)
         {
-            wprintw(m_window, "opening %s\n%s\n", dOut->m_longDescription, devStr);
-            wrefresh(m_window);
+            if (m_window)
+            {
+                wprintw(m_window, "opening %s\n%s\n", dOut->m_longDescription, devStr);
+                wrefresh(m_window);
+            }
             dOut->m_fd = openRaw(devStr, O_WRONLY);
         }
         else if (dIn->m_id != Device::none && dOut->m_id == Device::none)
         {
-            wprintw(m_window, "opening %s\n%s\n", dIn->m_longDescription, devStr);
-            wrefresh(m_window);
+            if (m_window)
+            {
+                wprintw(m_window, "opening %s\n%s\n", dIn->m_longDescription, devStr);
+                wrefresh(m_window);
+            }
             dIn->m_fd = openRaw(devStr, O_RDONLY);
         }
         else
@@ -91,12 +100,15 @@ void Driver::openDevices()
         dIn += 2;
         deviceIdx += 2;
     }
-    for (int i=Device::none+1; i<Device::max; i++)
+    if (m_window)
     {
-        wprintw(m_window, "dev = %d, devIdx = %d, fd = %d\n",
-            i, m_deviceIdToDeviceTabIdx[i], fd(i));
+        for (int i=Device::none+1; i<Device::max; i++)
+        {
+            wprintw(m_window, "dev = %d, devIdx = %d, fd = %d\n",
+                i, m_deviceIdToDeviceTabIdx[i], fd(i));
+        }
+        wrefresh(m_window);
     }
-    wrefresh(m_window);
 }
 
 /*! \brief Open a raw midi device.
@@ -112,7 +124,8 @@ int Driver::openRaw(const char *portName, int mode) const
    int status;
    if ((status =
         snd_rawmidi_open(&rawMidi1, &rawMidi2, portName, 0)) < 0) {
-        wprintw(m_window, "cannot open MIDI port %s: %s",
+        if (m_window)
+            wprintw(m_window, "cannot open MIDI port %s: %s",
                 portName, snd_strerror(status));
     return -1;
    }
@@ -159,7 +172,8 @@ int Driver::wait(int usecTimeout, int device) const
     struct timeval tv;
     tv.tv_sec = 0;
     tv.tv_usec = usecTimeout;
-    wrefresh(m_window);
+    if (m_window)
+        wrefresh(m_window);
     int e;
     bool interrupted = false;
     do
@@ -216,7 +230,7 @@ int Driver::cardNameToNum(const char *target) const
         hwNum = -1;
     }
     fclose(fp);
-    if (hwNum == -1)
+    if (hwNum == -1 && m_window)
     {
         wprintw(m_window, "cannot find %s\n", target);
     }

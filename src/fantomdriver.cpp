@@ -250,16 +250,20 @@ void PerformanceListLive::download(Fantom::Driver *fantom, WINDOW *win, size_t n
     m_performanceList = new Fantom::Performance[m_size];
     char nameBuf[Fantom::NameLength+1];
     TimeSpec fantomPerformanceSelectDelay((Real)0.10);
-    mvwprintw(win, 2, 3, "Downloading Fantom Performance data:");
+    if (win)
+        mvwprintw(win, 2, 3, "Downloading Fantom Performance data:");
     for (size_t i=0; i<m_size; i++)
     {
         fantom->selectPerformance(i);
         nanosleep(&fantomPerformanceSelectDelay, NULL);
         fantom->getPerfName(nameBuf);
         g_timer.setTimeout(false);
-        mvwprintw(win, 4, 3, "Performance: '%s'", nameBuf);
-        Screen::showProgressBar(win, 4, 32, ((Real)i)/m_size);
-        wrefresh(win);
+        if (win)
+        {
+            mvwprintw(win, 4, 3, "Performance: '%s'", nameBuf);
+            Screen::showProgressBar(win, 4, 32, ((Real)i)/m_size);
+            wrefresh(win);
+        }
         strcpy(m_performanceList[i].m_name, nameBuf);
         for (int j=0; j<Fantom::Performance::NofParts; j++)
         {
@@ -276,9 +280,12 @@ void PerformanceListLive::download(Fantom::Driver *fantom, WINDOW *win, size_t n
             {
                 strcpy(hwPart->m_patch.m_name, "secret GM   ");
             }
-            mvwprintw(win, 5, 3, "Part:        '%s'", hwPart->m_patch.m_name);
-            Screen::showProgressBar(win, 5, 32, ((Real)(j+1))/Fantom::Performance::NofParts);
-            wrefresh(win);
+            if (win)
+            {
+                mvwprintw(win, 5, 3, "Part:        '%s'", hwPart->m_patch.m_name);
+                Screen::showProgressBar(win, 5, 32, ((Real)(j+1))/Fantom::Performance::NofParts);
+                wrefresh(win);
+            }
         }
     }
 }

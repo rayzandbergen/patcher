@@ -16,6 +16,9 @@
  */
 Screen::Screen(bool enableMain, bool enableLog):m_mainWindow(0), m_logWindow(0)
 {
+    if (!enableMain && !enableLog)
+        return;
+
     const int lines = 25;
     int trackWinHeight = 0;
     initscr();
