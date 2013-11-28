@@ -9,10 +9,10 @@
 #include "timestamp.h"
 #include "now.h"
 #include "activity.h"
-#define VERSION "1.2.0"     //!< global version number
+#define VERSION "1.4.0"     //!< global version number
 
 //! \brief Screen logger object.
-class QueueListener
+class CursesClient
 {
     ActivityList m_channelActivity;     //!< Per-channel \a Activity.
     ActivityList m_softPartActivity;    //!< Per-\a SwPart \a Activity.
@@ -43,7 +43,7 @@ public:
     void mergePerformanceData();
     void updateScreen();
     void eventLoop();
-    QueueListener(Screen *s):
+    CursesClient(Screen *s):
         m_channelActivity(Midi::NofChannels, Midi::Note::max),
         m_softPartActivity(64 /*see tracks.xsd*/, Midi::Note::max),
         m_screen(s),
@@ -54,7 +54,7 @@ public:
     }
 };
 
-void QueueListener::updateScreen()
+void CursesClient::updateScreen()
 {
     m_nofScreenUpdates++;
     werase(m_screen->main());
@@ -157,14 +157,14 @@ void QueueListener::updateScreen()
     }
 }
 
-void QueueListener::loadTrackDefs()
+void CursesClient::loadTrackDefs()
 {
     Event event;
     m_eventRxQueue.receive(event);
     importTracks(TRACK_DEF, m_trackList, m_setList);
 }
 
-void QueueListener::eventLoop()
+void CursesClient::eventLoop()
 {
     Event event;
     wprintw(m_screen->main(), "q.getattr: %s\n", m_eventRxQueue.getAttr().c_str());
@@ -238,7 +238,7 @@ void QueueListener::eventLoop()
     }
 }
 
-void QueueListener::mergePerformanceData()
+void CursesClient::mergePerformanceData()
 {
     Fantom::PerformanceList performanceList;
     const char *cacheFileName = "fantom_cache.bin";
@@ -271,18 +271,13 @@ void QueueListener::mergePerformanceData()
 
 int main(void)
 {
-#if 0
-    Event m;
-    std::cout << sizeof(m) << "\n";
-    return 0;
-#endif
     try
     {
         Screen screen(true, true);
-        QueueListener q(&screen);
-        q.loadTrackDefs();
-        q.mergePerformanceData();
-        q.eventLoop();
+        CursesClient cursesClient(&screen);
+        cursesClient.loadTrackDefs();
+        cursesClient.mergePerformanceData();
+        cursesClient.eventLoop();
     }
     catch (Error &e)
     {
