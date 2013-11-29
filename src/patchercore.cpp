@@ -277,9 +277,9 @@ void Patcher::eventLoop()
                         mvwprintw(m_screen->main(), 17, 0, "panic on\n");
                     for (int channel=0; channel<Midi::NofChannels; channel++)
                     {
-                        m_midi->putBytes(Midi::Device::FantomOut,
+                        sendMidi(Midi::Device::FantomOut, 255,
                             Midi::controller|channel, Midi::allNotesOff, 0);
-                        m_midi->putBytes(Midi::Device::FantomOut,
+                        sendMidi(Midi::Device::FantomOut, 255,
                             Midi::controller|channel, Midi::resetAllControllers, 0);
                     }
                     break;
@@ -379,7 +379,7 @@ void Patcher::eventLoop()
                             else if (deviceRx == Midi::Device::A30 && num == Midi::effects1Depth)
                             {
                                 m_metaMode = !!val;
-                                m_midi->putBytes(Midi::Device::BcfOut, Midi::controller|0,
+                                sendMidi(Midi::Device::BcfOut, 255, Midi::controller|0,
                                     Midi::BCFSwitchA, val ? 127 : 0);
                                 show(UpdateScreen);
                                 sendReadyEvent();
@@ -765,9 +765,9 @@ void Patcher::updateBcfFaders()
         if (i >= m_partOffsetBcf && i< m_partOffsetBcf + 8)
         {
             int showPart = i - m_partOffsetBcf;
-            m_midi->putBytes(Midi::Device::BcfOut, Midi::controller|0,
+            sendMidi(Midi::Device::BcfOut, 255, Midi::controller|0,
                 Midi::BCFSpinner1+showPart, 0x80 + 4 * hwPart->m_oct);
-            m_midi->putBytes(Midi::Device::BcfOut, Midi::controller|0,
+            sendMidi(Midi::Device::BcfOut, 255, Midi::controller|0,
                 Midi::BCFFader1+showPart, hwPart->m_vol);
         }
     }
@@ -789,11 +789,9 @@ void Patcher::allNotesOff()
         if (!channelsCleared[i])
         {
             channelsCleared[i] = true;
-            m_midi->putBytes(
-                Midi::Device::FantomOut,
+            sendMidi(Midi::Device::FantomOut, 255,
                 Midi::controller|channel, Midi::allNotesOff, 0);
-            m_midi->putBytes(
-                Midi::Device::FantomOut,
+            sendMidi(Midi::Device::FantomOut, 255,
                 Midi::controller|channel, Midi::sustain, 0);
             if (m_screen->log())
                 wprintw(m_screen->log(), "all notes off ch %02x\n", channel+1);
