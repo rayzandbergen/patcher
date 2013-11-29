@@ -87,6 +87,7 @@ private:
     } //!< The name of the next \a Track.
     void sendEventToFantom(uint8_t midiStatus,
                 uint8_t data1, uint8_t data2 = 255);
+    void sendMidi(int deviceId, uint8_t part, uint8_t status, uint8_t data1, uint8_t data2 = 255);
     void allNotesOff();
     void changeSection(uint8_t sectionIdx);
     void nextSection();
@@ -579,30 +580,7 @@ void Patcher::sendEventToFantom(uint8_t midiStatus,
         if (!drop)
         {
             uint8_t messageType;
-            if (data2 != 255)
-            {
-                m_midi->putBytes(Midi::Device::FantomOut,
-                    midiStatus|swPart->m_channel, data1Out, data2Out);
-                messageType = Event::MidiOut3Bytes;
-            }
-            else
-            {
-                m_midi->putBytes(Midi::Device::FantomOut,
-                    midiStatus|swPart->m_channel, data1Out);
-                messageType = Event::MidiOut2Bytes;
-            }
-            Event event;
-            event.m_metaMode = m_metaMode ? 1 : 0;
-            event.m_currentTrack = m_trackIdx;
-            event.m_currentSection = m_sectionIdx;
-            event.m_trackIdxWithinSet = m_trackIdxWithinSet;
-            event.m_type = messageType;
-            event.m_deviceId = Midi::Device::FantomOut;
-            event.m_part = i;
-            event.m_midi[0] = midiStatus|swPart->m_channel;
-            event.m_midi[1] = data1Out;
-            event.m_midi[2] = data2Out;
-            m_eventTxQueue.send(event);
+            sendMidi(Midi::Device::FantomOut, i, midiStatus|swPart->m_channel, data1Out, data2Out);
             if (isNoteData)
             {
                 if (m_screen->main())
@@ -613,6 +591,37 @@ void Patcher::sendEventToFantom(uint8_t midiStatus,
             }
         }
     } // FOREACH part in current section
+}
+
+/*  \brief Send a MIDI event to MIDI driver and duplicate it to event queue.
+ *
+ *  \param[in]  deviceId    Device ID to send to.
+ *  \param[in]  part        Patcher part.
+ *  \param[in]  status      MIDI status.
+ *  \param[in]  data1       MIDI data byte 1.
+ *  \param[in]  data2       Optional MIDI data byte 2.
+ */
+void Patcher::sendMidi(int deviceId, uint8_t part, uint8_t status, uint8_t data1, uint8_t data2)
+{
+    if (data2 == 255)
+        m_midi->putBytes(deviceId, status, data1);
+    else
+        m_midi->putBytes(deviceId, status, data1, data2);
+    Event event;
+    event.m_metaMode = m_metaMode ? 1 : 0;
+    event.m_currentTrack = m_trackIdx;
+    event.m_currentSection = m_sectionIdx;
+    event.m_trackIdxWithinSet = m_trackIdxWithinSet;
+    if (data2 == 255)
+        event.m_type = Event::MidiOut2Bytes;
+    else
+        event.m_type = Event::MidiOut3Bytes;
+    event.m_deviceId = deviceId;
+    event.m_part = part;
+    event.m_midi[0] = status;
+    event.m_midi[1] = data1;
+    event.m_midi[2] = data2;
+    m_eventTxQueue.send(event);
 }
 
 /*! \brief Update the \a Screen, BCF faders, and the Fantom display.
