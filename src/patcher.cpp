@@ -8,92 +8,135 @@
 #include <iostream>
 #include <stdio.h>
 #include <errno.h>
+#include <map>
 #include "queue.h"
 
-static struct
+namespace
 {
-    pid_t m_corePid;
-    pid_t m_queue_listenerPid;
+
+const int nofSubProcesses = 2;
+
+class Process
+{
+public:
+    std::string m_name;
+    pid_t   m_pid;
+};
+
+void signalHandler(int sigNum, siginfo_t *sigInfo, void *unused);
+
+struct Admin
+{
+    Process m_process[nofSubProcesses];
     bool m_terminate;
-    int m_nofChildren;
-} global;
+    void startProcess(int i, const char *name)
+    {
+        pid_t pid = fork();
+        if (pid == 0)
+        {
+            std::cout << "launching " << name << " " << getpid() << std::endl;
+#if 1
+            execl(name, name, 0);
+#else
+            int s = 2 + (getpid() % 4);
+            std::cout << "sleep " << s << std::endl;
+            sleep(s);
+#endif
+            std::cout << "execl " << name << ": "
+                << strerror(errno) << "\n";
+            exit(1);
+        }
+        m_process[i].m_name = std::string(name);
+        m_process[i].m_pid = pid;
+    }
+    size_t nofProcesses()
+    {
+        size_t n = 0;
+        for (int i=0; i<nofSubProcesses; i++)
+            if (m_process[i].m_pid != -1)
+                n++;
+        return n;
+    }
+    void dropProcess(pid_t pid)
+    {
+        for (int i=0; i<nofSubProcesses; i++)
+            if (m_process[i].m_pid == pid)
+            {
+                m_process[i].m_pid = -1;
+                break;
+            }
+    }
+    void killAll()
+    {
+        for (int i=0; i<nofSubProcesses; i++)
+        {
+            pid_t pid = m_process[i].m_pid;
+            if (pid != -1)
+            {
+                std::cout << "sending SIGTERM to " 
+                    << m_process[i].m_name << 
+                    " (" << pid << ")\n";
+                kill(pid, SIGTERM);
+            }
+        }
+    }
+    Admin(): m_terminate(false)
+    {
+        for (int i=0; i<nofSubProcesses; i++)
+            m_process[i].m_pid = -1;
 
-void sigChldHandler(int x)
+        struct sigaction act;
+        act.sa_sigaction = signalHandler;
+        sigemptyset(&act.sa_mask);
+        act.sa_flags = SA_SIGINFO;
+        if (sigaction(SIGCHLD, &act, 0) < 0)
+            perror("sigaction SIGCHLD");
+        if (sigaction(SIGTERM, &act, 0) < 0)
+            perror("sigaction SIGTERM");
+        if (sigaction(SIGINT, &act, 0) < 0)
+            perror("sigaction SIGINT");
+    }
+};
+
+Admin admin;
+
+void signalHandler(int sigNum, siginfo_t *sigInfo, void *unused)
 {
-    (void)x;
-    printf("sigChldHandler\n");
-    waitpid(-1, 0, WNOHANG);
-    global.m_nofChildren--;
+    (void)unused;
+    switch (sigNum)
+    {
+        case SIGCHLD:
+            admin.dropProcess(sigInfo->si_pid);
+            waitpid(-1, 0, WNOHANG);
+            break;
+        case SIGTERM:
+        case SIGINT:
+            admin.m_terminate = true;
+            break;
+        default:
+            ;
+    }
 }
 
-void sigTermHandler(int x)
-{
-    (void)x;
-    global.m_terminate = true;
-    printf("sigTermHandler\n");
-}
-
-void signalHandler(int sigNum, siginfo_t *sigInfo, void *data)
-{
-    (void)sigNum;
-    (void)sigInfo;
-    (void)data;
-    abort();
-}
+} // anonymous namespace
 
 int main(void)
 {
-    const char *coreProcess = "./patcher_core";
-    const char *screenProcess = "./curses_client";
     Queue q;
     q.create();
-    static struct sigaction act;
-    act.sa_sigaction = signalHandler;
-    act.sa_handler = sigChldHandler;
-    sigemptyset(&act.sa_mask);
-    act.sa_flags = SA_SIGINFO;
-    if (sigaction(SIGCHLD, &act, 0) < 0)
-        perror("sigaction");
-    act.sa_handler = sigTermHandler;
-    if (sigaction(SIGTERM, &act, 0) < 0)
-        perror("sigaction");
-    if (sigaction(SIGINT, &act, 0) < 0)
-        perror("sigaction");
-    global.m_corePid = fork();
-    global.m_nofChildren = 2;
-    if (global.m_corePid == 0)
-    {
-        std::cout << "launching " << coreProcess << "\n";
-        execl(coreProcess, coreProcess);
-        std::cout << "cannot launch " << coreProcess << "\n";
-        return -1;
-    }
-    if (global.m_corePid == -1)
-    {
-        global.m_nofChildren--;
-    }
-    global.m_queue_listenerPid = fork();
-    if (global.m_queue_listenerPid == 0)
-    {
-        std::cout << "launching " << screenProcess << "\n";
-        execl(screenProcess, screenProcess);
-        std::cout << "cannot launch " << screenProcess << "\n";
-        return -1;
-    }
-    if (global.m_corePid == -1)
-    {
-        global.m_nofChildren--;
-    }
+    admin.startProcess(0, "./patcher_core");
+    admin.startProcess(1, "./curses_client");
     std::cout << "waiting\n";
     for (;;)
     {
-        pause();
-        std::cout << "caught signal, " << global.m_nofChildren << " children left\n";
-        if (global.m_terminate || global.m_nofChildren < 2)
+        if (admin.nofProcesses() != nofSubProcesses)
             break;
+        if (admin.m_terminate)
+            break;
+        pause();
+        std::cout << "caught signal\n";
     }
-    kill(global.m_queue_listenerPid, SIGTERM);
-    kill(global.m_corePid, SIGTERM);
+    admin.killAll();
     q.unlink();
     std::cout << "exit admin\n";
     return 0;
