@@ -65,7 +65,8 @@ void CursesClient::updateScreen()
     {
         mvwprintw(m_screen->main(), 1, i*4, "%02d ", m_channelActivity.m_triggerCount[i]);
     }
-#else
+#endif
+#if 0
     mvwprintw(m_screen->main(), 1, 63, "%08d", m_nofScreenUpdates);
 #endif
     mvwprintw(m_screen->main(), 2, 0,
@@ -215,13 +216,15 @@ void CursesClient::eventLoop()
                 {
                     uint8_t channel = event.m_midi[0] & 0x0f;
                     m_channelActivity.trigger(channel, event.m_midi[1], m_eventRxTime);
-                    m_softPartActivity.trigger(event.m_part, event.m_midi[1], m_eventRxTime);
+                    if (event.m_part != 255)
+                        m_softPartActivity.trigger(event.m_part, event.m_midi[1], m_eventRxTime);
                 }
-                else if (Midi::isController(event.m_midi[0]))
+                else if (Midi::isController(event.m_midi[0]) || (event.m_midi[0] & 0xf0) == Midi::pitchBend)
                 {
                     uint8_t channel = event.m_midi[0] & 0x0f;
                     m_channelActivity.trigger(channel, 0, m_eventRxTime);
-                    m_softPartActivity.trigger(event.m_part, 0, m_eventRxTime);
+                    if (event.m_part != 255)
+                        m_softPartActivity.trigger(event.m_part, 0, m_eventRxTime);
                 }
                 if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
                 {
@@ -231,6 +234,7 @@ void CursesClient::eventLoop()
             }
             else
             {
+                wprintw(m_screen->log(), "ignored %s\n", event.toString().c_str());
                 updateScreen();
                 wrefresh(m_screen->main());
             }

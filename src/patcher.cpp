@@ -73,8 +73,8 @@ struct Admin
             pid_t pid = m_process[i].m_pid;
             if (pid != -1)
             {
-                std::cout << "sending SIGTERM to " 
-                    << m_process[i].m_name << 
+                std::cout << "sending SIGTERM to "
+                    << m_process[i].m_name <<
                     " (" << pid << ")\n";
                 kill(pid, SIGTERM);
             }
