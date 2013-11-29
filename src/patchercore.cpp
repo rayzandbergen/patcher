@@ -533,13 +533,15 @@ void Patcher::sendEventToFantom(uint8_t midiStatus,
                 if (isNoteOn && !swPart->m_monoFilter
                         .passNoteOn(data1, data2))
                 {
-                    wprintw(m_screen->log(), "note on dropped\n");
+                    if (m_screen->log())
+                        wprintw(m_screen->log(), "note on dropped\n");
                     continue;
                 }
                 if (isNoteOff && !swPart->m_monoFilter
                         .passNoteOff(data1, data2))
                 {
-                    wprintw(m_screen->log(), "note off dropped\n");
+                    if (m_screen->log())
+                        wprintw(m_screen->log(), "note off dropped\n");
                     continue;
                 }
             }
@@ -552,7 +554,8 @@ void Patcher::sendEventToFantom(uint8_t midiStatus,
             }
             if (!swPart->m_toggler.pass(midiStatus, data1Out, data2Out))
             {
-                wprintw(m_screen->log(), "note on dropped\n");
+                if (m_screen->log())
+                    wprintw(m_screen->log(), "note on dropped\n");
                 continue;
             }
         }
@@ -561,12 +564,14 @@ void Patcher::sendEventToFantom(uint8_t midiStatus,
             if (data1 == Midi::sustain && swPart->m_mono)
             {
                 swPart->m_monoFilter.sustain(data2 != 0);
-                wprintw(m_screen->log(), "mono sustain\n");
+                if (m_screen->log())
+                    wprintw(m_screen->log(), "mono sustain\n");
             }
             if (data1 == Midi::sustain && swPart->m_transposer)
             {
                 swPart->m_transposer->setSustain(data2 != 0);
-                wprintw(m_screen->log(), "transposer sustain\n");
+                if (m_screen->log())
+                    wprintw(m_screen->log(), "transposer sustain\n");
                 drop = true;
             }
             swPart->m_controllerRemap->value(data1, data2, &data1Out, &data2Out);
