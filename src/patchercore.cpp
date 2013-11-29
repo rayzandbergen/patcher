@@ -382,7 +382,6 @@ void Patcher::eventLoop()
                                 sendMidi(Midi::Device::BcfOut, 255, Midi::controller|0,
                                     Midi::BCFSwitchA, val ? 127 : 0);
                                 show(UpdateScreen);
-                                sendReadyEvent();
                             }
                             else if (deviceRx == Midi::Device::BcfIn && num == Midi::BCFSwitchA)
                             {
