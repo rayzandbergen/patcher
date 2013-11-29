@@ -579,7 +579,6 @@ void Patcher::sendEventToFantom(uint8_t midiStatus,
         }
         if (!drop)
         {
-            uint8_t messageType;
             sendMidi(Midi::Device::FantomOut, i, midiStatus|swPart->m_channel, data1Out, data2Out);
             if (isNoteData)
             {
