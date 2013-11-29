@@ -29,11 +29,13 @@ struct Admin
 {
     Process m_process[nofSubProcesses];
     bool m_terminate;
-    void startProcess(int i, const char *name)
+    void startProcess(int i, const char *name, int renice = 0)
     {
         pid_t pid = fork();
         if (pid == 0)
         {
+            if (renice != 0)
+                nice(renice);
             std::cout << "launching " << name << " " << getpid() << std::endl;
 #if 1
             execl(name, name, 0);
@@ -125,7 +127,7 @@ int main(void)
     Queue q;
     q.create();
     admin.startProcess(0, "./patcher_core");
-    admin.startProcess(1, "./curses_client");
+    admin.startProcess(1, "./curses_client", 10);
     std::cout << "waiting\n";
     for (;;)
     {
