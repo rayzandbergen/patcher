@@ -13,7 +13,7 @@
 
 //#define LOG_ENABLE
 
-//! \brief Screen logger object.
+//! \brief A curses client for the patcher-core.
 class CursesClient
 {
     ActivityList m_channelActivity;     //!< Per-channel \a Activity.
@@ -35,16 +35,22 @@ public:
         return m_trackList[m_trackIdx]; } //!< The current \a Track.
     Section *currentSection() const {
         return currentTrack()->m_sectionList[m_sectionIdx]; } //!< The current \a Section.
+    //! \brief The name of the next track in the setlist.
     const char *nextTrackName() {
         if (m_trackIdxWithinSet+1 < m_setList.size())
             return m_trackList[m_setList[m_trackIdxWithinSet+1]]->m_name;
         else
             return "<none>";
     }
+    //! \brief Load track definitions from a file.
     void loadTrackDefs();
+    //! \brief Merge performance data into track list.
     void mergePerformanceData();
+    //! \brief Write to the curses screen.
     void updateScreen();
+    //! \brief Event loop, never returns.
     void eventLoop();
+    //! \brief Constructs a curses client.
     CursesClient(Screen *s):
         m_channelActivity(Midi::NofChannels, Midi::Note::max),
         m_softPartActivity(64 /*see tracks.xsd*/, Midi::Note::max),
