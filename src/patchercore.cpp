@@ -33,10 +33,10 @@
 //#include "undupparts.h"
 
 //#define LOG_ENABLE          //!< Enable logging.
-#define LOG_NOTE            //!< Log note data in MIDI logger window if defined.
-#define LOG_CONTROLLER      //!< Log controller data in MIDI logger window if defined.
-#define LOG_PROGRAM_CHANGE  //!< Log program change data in MIDI logger window if defined.
-#define LOG_PITCHBEND       //!< Log pitch bend data in MIDI logger window if defined.
+#define LOG_NOTE            //!< Log note data if defined.
+#define LOG_CONTROLLER      //!< Log controller data if defined.
+#define LOG_PROGRAM_CHANGE  //!< Log program change data if defined.
+#define LOG_PITCHBEND       //!< Log pitch bend data if defined.
 
 namespace MetaNote
 {
@@ -55,8 +55,6 @@ class Patcher
 private:
     FILE *m_fpLog;                      //!< Log stream.
     const Real debounceTime;            //!< Debounce time in seconds, used to debounce track and section changes.
-    ActivityList m_channelActivity;     //!< Per-channel \a Activity.
-    ActivityList m_softPartActivity;    //!< Per-\a SwPart \a Activity.
     TrackList m_trackList;              //!< Global \a Track list.
     Midi::Driver *m_midi;               //!< Pointer to global MIDI \a Driver object.
     Fantom::Driver *m_fantom;           //!< Pointer to global Fantom \a Driver object.
@@ -101,8 +99,7 @@ public:
         UpdateNothing = 0,                 //!< Update nothing.
         UpdateFaders = 1,                  //!< Update BCF faders.
         UpdateFantomDisplay = 2,           //!< Update Fantom display.
-        UpdateScreen = 4,                  //!< Update the \a Screen.
-        UpdateAll = 7                      //!< Update all.
+        UpdateAll = 3                      //!< Update all.
     };
     size_t nofTracks() const { return m_trackList.size(); } //!< The number of \a Tracks.
     void dumpTrackList();
@@ -123,8 +120,6 @@ public:
     Patcher(Midi::Driver *m, Fantom::Driver *f):
         m_fpLog(0),
         debounceTime(Real(0.4)),
-        m_channelActivity(Midi::NofChannels, Midi::Note::max),
-        m_softPartActivity(64 /*see tracks.xsd*/, Midi::Note::max),
         m_midi(m), m_fantom(f),
         m_trackIdx(0), m_trackIdxWithinSet(0), m_sectionIdx(0),
         m_metaMode(false), m_fantomScroller(f), m_partOffsetBcf(0)
@@ -262,8 +257,6 @@ void Patcher::eventLoop()
                     // active sensing, single byte, dropped
                     // BUT we abuse the periodic nature of this message
                     // to do a screen update
-                    if (m_channelActivity.isDirty())
-                        show(UpdateScreen);
                     break;
                 case Midi::realtimeStart:
                     if (m_fpLog)
@@ -302,8 +295,6 @@ void Patcher::eventLoop()
                             if (!m_metaMode)
                             {
                                 sendEventToFantom(Midi::noteOff, note, velo);
-                                if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
-                                    show(UpdateScreen);
                             }
                             break;
                         }
@@ -330,8 +321,6 @@ void Patcher::eventLoop()
                             else
                             {
                                 sendEventToFantom(Midi::noteOn, note, velo);
-                                if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
-                                    show(UpdateScreen);
                             }
                             break;
                         }
@@ -344,8 +333,6 @@ void Patcher::eventLoop()
                                     "aftertouch %s ch %02x val %02x\n",
                                     Midi::noteName(note), channelRx, val);
                             sendEventToFantom(Midi::aftertouch, note, val);
-                            if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
-                                show(UpdateScreen);
                             break;
                         }
                         case Midi::controller:
@@ -366,20 +353,16 @@ void Patcher::eventLoop()
                                     num == Midi::sustain))
                             {
                                 sendEventToFantom(Midi::controller, num, val);
-                                if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
-                                    show(UpdateScreen);
                             }
                             else if (deviceRx == Midi::Device::A30 && num == Midi::effects1Depth)
                             {
                                 m_metaMode = !!val;
                                 sendMidi(Midi::Device::BcfOut, 255, Midi::controller|0,
                                     Midi::BCFSwitchA, val ? 127 : 0);
-                                show(UpdateScreen);
                             }
                             else if (deviceRx == Midi::Device::BcfIn && num == Midi::BCFSwitchA)
                             {
                                 m_metaMode = !!val;
-                                show(UpdateScreen);
                                 sendReadyEvent();
                             }
                             else if (deviceRx == Midi::Device::BcfIn && num == Midi::effects1Depth)
@@ -394,7 +377,6 @@ void Patcher::eventLoop()
                                 Fantom::Part *p = currentTrack()->m_performance->m_partList+partNum;
                                 p->m_vol = val;
                                 m_fantom->setVolume(partNum, val);
-                                show(UpdateScreen);
                             }
                             else
                             {
@@ -417,13 +399,11 @@ void Patcher::eventLoop()
                                 if (num == FCB1010::FootSwitch6)
                                 {
                                     m_metaMode = false;
-                                    show(UpdateScreen);
                                     sendReadyEvent();
                                 }
                                 else if (num == FCB1010::FootSwitch7)
                                 {
                                     m_metaMode = true;
-                                    show(UpdateScreen);
                                     sendReadyEvent();
                                 }
                                 else if (currentTrack()->m_chain)
@@ -446,8 +426,6 @@ void Patcher::eventLoop()
                                     "channelRx pressure channelRx %02x num %02x\n",
                                     channelRx, num);
                             sendEventToFantom(Midi::channelAftertouch, num);
-                            if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
-                                show(UpdateScreen);
                             break;
                         }
                         case Midi::pitchBend:
@@ -461,8 +439,6 @@ void Patcher::eventLoop()
                                     channelRx, (uint16_t)num2<<7|(uint16_t)num1);
 #endif
                             sendEventToFantom(Midi::pitchBend, num1, num2);
-                            if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
-                                show(UpdateScreen);
                             break;
                         }
                         default:
@@ -694,7 +670,7 @@ void Patcher::changeSection(uint8_t sectionIdx)
             allNotesOff();
         }
         m_sectionIdx = sectionIdx;
-        show(UpdateScreen|UpdateFantomDisplay);
+        show(UpdateFantomDisplay);
         m_persist.store(m_trackIdx, m_sectionIdx);
         sendReadyEvent();
     }
@@ -890,7 +866,7 @@ int main(int argc, char **argv)
         patcher.mergePerformanceData();
         //patcher.dumpTrackList();
         patcher.restoreState();
-        patcher.show(Patcher::UpdateScreen|Patcher::UpdateFaders);
+        patcher.show(Patcher::UpdateFaders);
         patcher.eventLoop();
     }
     catch (Error &e)
