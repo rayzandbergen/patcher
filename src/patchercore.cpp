@@ -223,11 +223,11 @@ void Patcher::eventLoop()
     sendReadyEvent();
     for (uint32_t j=0;;j++)
     {
+        g_timer.resetWatchdog(3);
         if (m_fpLog && j % 20 == 0)
             fprintf(m_fpLog, "eventloop %08d\n", j);
         int deviceRx = m_midi->wait();
         uint8_t byteRx = m_midi->getByte(deviceRx);
-        g_timer.setTimeout(false);
         getTime(m_eventRxTime);
         if (byteRx < 0x80)
         {
@@ -864,11 +864,12 @@ int main(int argc, char **argv)
         clear(trackList);
         return 0;
 #endif
-        g_timer.setTimeout((Real)2.5);
+        g_timer.setTimeout((Real)2.5, 2);
         Midi::Driver midi(0);
         Fantom::Driver fantom(0, &midi);
         Patcher patcher(&midi, &fantom);
         patcher.loadTrackDefs();
+        g_timer.setTimeout((Real)0.4, 3);
         patcher.mergePerformanceData();
         //patcher.dumpTrackList();
         patcher.restoreState();

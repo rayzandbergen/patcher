@@ -257,7 +257,7 @@ void PerformanceListLive::download(Fantom::Driver *fantom, WINDOW *win, size_t n
         fantom->selectPerformance(i);
         nanosleep(&fantomPerformanceSelectDelay, NULL);
         fantom->getPerfName(nameBuf);
-        g_timer.setTimeout(false);
+        g_timer.resetWatchdog(4);
         if (win)
         {
             mvwprintw(win, 4, 3, "Performance: '%s'", nameBuf);

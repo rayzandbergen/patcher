@@ -27,17 +27,16 @@ void alarmHandler(int dummy);
 class Timer
 {
 friend void alarmHandler(int);
-    bool m_doTimeout;       //!<    Indicate if a timeout should raise the watchdog timeout flag.
-    bool m_globalTimeout;   //!<    Watchdog timeout flag.
+    int m_watchdogCount;    //!<    Watchdog counter.
 public:
-    void setTimeout(Real seconds);
-    //! \brief Enable or disable timeouts.
-    void setTimeout(bool b) { m_doTimeout = b; }
+    void setTimeout(Real seconds, int watchdogCounter);
+    //! \brief Reset the watchdog counter.
+    void resetWatchdog(int count) { m_watchdogCount = count; }
     //! \brief Timeout check after interrupted system call.
-    bool timedout() { return m_globalTimeout; }
+    bool timedout() { return m_watchdogCount == 0; }
     void write(int fd, const void *buf, size_t count);
     void read(int fd, void *buf, size_t count);
-    Timer(): m_doTimeout(true), m_globalTimeout(false) { }
+    Timer(): m_watchdogCount(1) { }
 };
 
 extern Timer g_timer; //!< Global timer object.

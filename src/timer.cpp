@@ -12,17 +12,18 @@
 
 Timer g_timer;
 
-//! \brief Alarm handler function, to be attached to a signal.
+//! \brief Alarm handler function, decrements the watchdog counter on SIGALRM.
 void alarmHandler(int dummy)
 {
     (void)dummy;
-    if (g_timer.m_doTimeout)
-        g_timer.m_globalTimeout = 1;
+    if (g_timer.m_watchdogCount > 0)
+        g_timer.m_watchdogCount--;
 }
 
 //! \brief Set alarm handler, which will act as a watch dog timer.
-void Timer::setTimeout(Real seconds)
+void Timer::setTimeout(Real seconds, int watchdogCounter)
 {
+    resetWatchdog(watchdogCounter);
     struct sigaction action;
     action.sa_sigaction = 0;
     action.sa_handler = alarmHandler;
@@ -35,15 +36,15 @@ void Timer::setTimeout(Real seconds)
     }
     Real floorSec = floor(seconds);
     struct itimerval it;
-    it.it_interval.tv_sec = 0;
-    it.it_interval.tv_usec = 0;
 #ifdef NO_TIMEOUT
     // well, actually a very long timeout ...
     it.it_value.tv_sec = 3600;
 #else
     it.it_value.tv_sec = (time_t)floorSec;
 #endif
-    it.it_value.tv_usec = (time_t)(seconds-floorSec);
+    it.it_value.tv_usec = (time_t)(1e6*(seconds-floorSec));
+    it.it_interval.tv_sec = it.it_value.tv_sec;
+    it.it_interval.tv_usec = it.it_value.tv_usec;
     if (setitimer(ITIMER_REAL, &it, 0) < 0)
     {
         throw(Error("setitimer", errno));
