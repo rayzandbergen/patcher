@@ -203,11 +203,11 @@ void CursesClient::eventLoop()
             wprintw(m_screen->log(), "%s\n", event.toString().c_str());
 #endif
             m_metaMode = !!event.m_metaMode;
-            if (event.m_currentTrack != Event::Unknown)
+            if (event.m_currentTrack != Event::Unspecified)
                 m_trackIdx = event.m_currentTrack;
-            if (event.m_currentSection != Event::Unknown)
+            if (event.m_currentSection != Event::Unspecified)
                 m_sectionIdx = event.m_currentSection;
-            if (event.m_trackIdxWithinSet != Event::Unknown)
+            if (event.m_trackIdxWithinSet != Event::Unspecified)
                 m_trackIdxWithinSet = event.m_trackIdxWithinSet;
             if ((event.m_type == Event::MidiOut3Bytes ||
                  event.m_type == Event::MidiOut2Bytes ||
@@ -221,14 +221,14 @@ void CursesClient::eventLoop()
                 {
                     uint8_t channel = event.m_midi[0] & 0x0f;
                     m_channelActivity.trigger(channel, event.m_midi[1], m_eventRxTime);
-                    if (event.m_part != 255)
+                    if (event.m_part != Event::Unspecified)
                         m_softPartActivity.trigger(event.m_part, event.m_midi[1], m_eventRxTime);
                 }
                 else if (Midi::isController(event.m_midi[0]) || (event.m_midi[0] & 0xf0) == Midi::pitchBend)
                 {
                     uint8_t channel = event.m_midi[0] & 0x0f;
                     m_channelActivity.trigger(channel, 0, m_eventRxTime);
-                    if (event.m_part != 255)
+                    if (event.m_part != Event::Unspecified)
                         m_softPartActivity.trigger(event.m_part, 0, m_eventRxTime);
                 }
                 if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())

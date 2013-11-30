@@ -30,7 +30,7 @@ public:
         MidiIn3Bytes,
         SetVolume
     };
-    static const uint8_t Unknown = 255; //!<    Placeholder value.
+    static const uint8_t Unspecified = 255; //!<    Placeholder value.
     static uint32_t m_sequenceNumber;   //!<    Global sequence number.
     uint16_t m_packetCounter;           //!<    Sequential counter.
     uint8_t m_metaMode;                 //!<    Meta mode switch.

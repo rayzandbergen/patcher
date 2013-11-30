@@ -182,7 +182,8 @@ enum DataByte
     dataEntryInc = 0x60,
     dataEntryDec = 0x61,
     resetAllControllers = 121,
-    allNotesOff = 123
+    allNotesOff = 123,
+    noData = 255
 };
 
 const char *noteName(uint8_t num);

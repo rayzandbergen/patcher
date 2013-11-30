@@ -81,8 +81,8 @@ private:
             return "<none>";
     } //!< The name of the next \a Track.
     void sendEventToFantom(uint8_t midiStatus,
-                uint8_t data1, uint8_t data2 = 255);
-    void sendMidi(int deviceId, uint8_t part, uint8_t status, uint8_t data1, uint8_t data2 = 255);
+                uint8_t data1, uint8_t data2 = Midi::noData);
+    void sendMidi(int deviceId, uint8_t part, uint8_t status, uint8_t data1, uint8_t data2 = Midi::noData);
     void setVolume(uint8_t part, uint8_t value);
     void allNotesOff();
     void changeSection(uint8_t sectionIdx);
@@ -206,11 +206,11 @@ void Patcher::sendReadyEvent()
     event.m_currentSection = m_sectionIdx;
     event.m_trackIdxWithinSet = m_trackIdxWithinSet;
     event.m_type = Event::Ready;
-    event.m_deviceId = Event::Unknown;
-    event.m_part = Event::Unknown;
-    event.m_midi[0] = Event::Unknown;
-    event.m_midi[1] = Event::Unknown;
-    event.m_midi[2] = Event::Unknown;
+    event.m_deviceId = Event::Unspecified;
+    event.m_part = Event::Unspecified;
+    event.m_midi[0] = Event::Unspecified;
+    event.m_midi[1] = Event::Unspecified;
+    event.m_midi[2] = Event::Unspecified;
     m_eventTxQueue.send(event);
 }
 
@@ -253,9 +253,9 @@ void Patcher::eventLoop()
                         fprintf(m_fpLog, "panic on\n");
                     for (int channel=0; channel<Midi::NofChannels; channel++)
                     {
-                        sendMidi(Midi::Device::FantomOut, 255,
+                        sendMidi(Midi::Device::FantomOut, Midi::noData,
                             Midi::controller|channel, Midi::allNotesOff, 0);
-                        sendMidi(Midi::Device::FantomOut, 255,
+                        sendMidi(Midi::Device::FantomOut, Midi::noData,
                             Midi::controller|channel, Midi::resetAllControllers, 0);
                     }
                     break;
@@ -347,7 +347,7 @@ void Patcher::eventLoop()
                             else if (deviceRx == Midi::Device::A30 && num == Midi::effects1Depth)
                             {
                                 m_metaMode = !!val;
-                                sendMidi(Midi::Device::BcfOut, 255, Midi::controller|0,
+                                sendMidi(Midi::Device::BcfOut, Midi::noData, Midi::controller|0,
                                     Midi::BCFSwitchA, val ? 127 : 0);
                             }
                             else if (deviceRx == Midi::Device::BcfIn && num == Midi::BCFSwitchA)
@@ -453,7 +453,7 @@ void Patcher::eventLoop()
  *
  *  \param [in] midiStatus  MIDI status byte
  *  \param [in] data1       MIDI data byte 1
- *  \param [in] data2       MIDI data byte 2, not sent if left to 255
+ *  \param [in] data2       MIDI data byte 2, not sent if left to Midi::noData
  */
 void Patcher::sendEventToFantom(uint8_t midiStatus,
                 uint8_t data1, uint8_t data2)
@@ -553,8 +553,8 @@ void Patcher::setVolume(uint8_t part, uint8_t value)
     event.m_deviceId = Midi::Device::FantomIn;
     event.m_part = part;
     event.m_midi[0] = value;;
-    event.m_midi[1] = Event::Unknown;
-    event.m_midi[2] = Event::Unknown;
+    event.m_midi[1] = Event::Unspecified;
+    event.m_midi[2] = Event::Unspecified;
     m_eventTxQueue.send(event);
 }
 
@@ -568,7 +568,7 @@ void Patcher::setVolume(uint8_t part, uint8_t value)
  */
 void Patcher::sendMidi(int deviceId, uint8_t part, uint8_t status, uint8_t data1, uint8_t data2)
 {
-    if (data2 == 255)
+    if (data2 == Midi::noData)
         m_midi->putBytes(deviceId, status, data1);
     else
         m_midi->putBytes(deviceId, status, data1, data2);
@@ -577,7 +577,7 @@ void Patcher::sendMidi(int deviceId, uint8_t part, uint8_t status, uint8_t data1
     event.m_currentTrack = m_trackIdx;
     event.m_currentSection = m_sectionIdx;
     event.m_trackIdxWithinSet = m_trackIdxWithinSet;
-    if (data2 == 255)
+    if (data2 == Midi::noData)
         event.m_type = Event::MidiOut2Bytes;
     else
         event.m_type = Event::MidiOut3Bytes;
@@ -615,9 +615,9 @@ void Patcher::updateBcfFaders()
         if (i >= m_partOffsetBcf && i< m_partOffsetBcf + 8)
         {
             int showPart = i - m_partOffsetBcf;
-            sendMidi(Midi::Device::BcfOut, 255, Midi::controller|0,
+            sendMidi(Midi::Device::BcfOut, Midi::noData, Midi::controller|0,
                 Midi::BCFSpinner1+showPart, 0x80 + 4 * hwPart->m_oct);
-            sendMidi(Midi::Device::BcfOut, 255, Midi::controller|0,
+            sendMidi(Midi::Device::BcfOut, Midi::noData, Midi::controller|0,
                 Midi::BCFFader1+showPart, hwPart->m_vol);
         }
     }
@@ -639,9 +639,9 @@ void Patcher::allNotesOff()
         if (!channelsCleared[i])
         {
             channelsCleared[i] = true;
-            sendMidi(Midi::Device::FantomOut, 255,
+            sendMidi(Midi::Device::FantomOut, Midi::noData,
                 Midi::controller|channel, Midi::allNotesOff, 0);
-            sendMidi(Midi::Device::FantomOut, 255,
+            sendMidi(Midi::Device::FantomOut, Midi::noData,
                 Midi::controller|channel, Midi::sustain, 0);
             if (m_fpLog)
                 fprintf(m_fpLog, "all notes off ch %02x\n", channel+1);
