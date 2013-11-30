@@ -11,6 +11,8 @@
 #include "activity.h"
 #define VERSION "1.4.0"     //!< global version number
 
+//#define LOG_ENABLE
+
 //! \brief Screen logger object.
 class CursesClient
 {
@@ -189,7 +191,6 @@ void CursesClient::eventLoop()
         m_softPartActivity.update(m_eventRxTime);
         if (timedOut)
         {
-            wprintw(m_screen->log(), "timeout\n");
             if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
             {
                 updateScreen();
@@ -198,7 +199,9 @@ void CursesClient::eventLoop()
         }
         else
         {
+#ifdef LOG_ENABLE
             wprintw(m_screen->log(), "%s\n", event.toString().c_str());
+#endif
             m_metaMode = !!event.m_metaMode;
             if (event.m_currentTrack != Event::Unknown)
                 m_trackIdx = event.m_currentTrack;
@@ -211,7 +214,9 @@ void CursesClient::eventLoop()
                  event.m_type == Event::MidiOut1Byte) &&
                 event.m_deviceId == Midi::Device::FantomOut)
             {
+#ifdef LOG_ENABLE
                 wrefresh(m_screen->log());
+#endif
                 if (Midi::isNote(event.m_midi[0]))
                 {
                     uint8_t channel = event.m_midi[0] & 0x0f;
@@ -234,7 +239,9 @@ void CursesClient::eventLoop()
             }
             else
             {
+#ifdef LOG_ENABLE
                 wprintw(m_screen->log(), "ignored %s\n", event.toString().c_str());
+#endif
                 updateScreen();
                 wrefresh(m_screen->main());
             }
@@ -277,7 +284,11 @@ int main(void)
 {
     try
     {
+#ifdef LOG_ENABLE
         Screen screen(true, true);
+#else
+        Screen screen(true, false);
+#endif
         CursesClient cursesClient(&screen);
         cursesClient.loadTrackDefs();
         cursesClient.mergePerformanceData();
