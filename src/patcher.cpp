@@ -1,3 +1,9 @@
+/*! \file patcher.cpp
+ *  \brief Contains the administrative process.
+ *
+ *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
+ */
+
 #define _POSIX_SOURCE
 #include <string.h>
 #include <stdlib.h>
@@ -14,21 +20,28 @@
 namespace
 {
 
-const int maxSubProcesses = 2;
+const int maxSubProcesses = 2; //!< Max sub processes managed by this process.
 
+//! \brief A process name and a PID.
 class Process
 {
 public:
-    std::string m_name;
-    pid_t   m_pid;
+    std::string m_name; //!<    Process name.
+    pid_t   m_pid;      //!<    PID.
 };
 
+//! \brief Handler for all signals.
 void signalHandler(int sigNum, siginfo_t *sigInfo, void *unused);
 
+//! \brief Admin process for the core and the curses tasks.
 struct Admin
 {
-    Process m_process[maxSubProcesses];
-    bool m_terminate;
+    Process m_process[maxSubProcesses]; //!<    Process table.
+    bool m_terminate;                   //!<    Raised on SIGTERM and SIGINT.
+public:
+    //! \brief Check termination flag.
+    bool terminate() const { return m_terminate; }
+    //! \brief Start a process in slot i.
     void startProcess(int i, const char *name, int renice = 0)
     {
         pid_t pid = fork();
@@ -37,13 +50,7 @@ struct Admin
             if (renice != 0)
                 nice(renice);
             std::cout << "launching " << name << " " << getpid() << std::endl;
-#if 1
             execl(name, name, 0);
-#else
-            int s = 2 + (getpid() % 4);
-            std::cout << "sleep " << s << std::endl;
-            sleep(s);
-#endif
             std::cout << "execl " << name << ": "
                 << strerror(errno) << "\n";
             exit(1);
@@ -51,7 +58,8 @@ struct Admin
         m_process[i].m_name = std::string(name);
         m_process[i].m_pid = pid;
     }
-    size_t nofProcesses()
+    //! \brief The number of managed processes.
+    size_t nofProcesses() const
     {
         size_t n = 0;
         for (int i=0; i<maxSubProcesses; i++)
@@ -59,6 +67,7 @@ struct Admin
                 n++;
         return n;
     }
+    //! \brief Drop a process from the process table.
     void dropProcess(pid_t pid)
     {
         for (int i=0; i<maxSubProcesses; i++)
@@ -68,6 +77,7 @@ struct Admin
                 break;
             }
     }
+    //! \brief Kill every process in the table.
     void killAll()
     {
         for (int i=0; i<maxSubProcesses; i++)
@@ -82,6 +92,7 @@ struct Admin
             }
         }
     }
+    //! \brief Default constructor.
     Admin(): m_terminate(false)
     {
         for (int i=0; i<maxSubProcesses; i++)
@@ -100,8 +111,9 @@ struct Admin
     }
 };
 
-Admin admin;
+Admin admin;    //!<    Global Admin object.
 
+//! \brief Handler for all SIGCHLD, SIGTERM and SIGINT.
 void signalHandler(int sigNum, siginfo_t *sigInfo, void *unused)
 {
     (void)unused;
@@ -122,9 +134,10 @@ void signalHandler(int sigNum, siginfo_t *sigInfo, void *unused)
 
 } // anonymous namespace
 
+//! \brief Patcher task main entry.
 int main(int argc, char **argv)
 {
-    bool mainWindow = true;
+    bool startCursesClient = true;
     for (;;)
     {
         int opt = getopt(argc, argv, "ch:");
@@ -133,7 +146,7 @@ int main(int argc, char **argv)
         switch (opt)
         {
             case 'c':
-                mainWindow = false;
+                startCursesClient = false;
                 break;
             default:
                 std::cerr << "\npatcher [-h|?] [-d <dir>] [-c]\n\n"
@@ -151,7 +164,7 @@ int main(int argc, char **argv)
     q.create();
     int nofSubProcesses = 1;
     admin.startProcess(0, "./patcher_core");
-    if (mainWindow)
+    if (startCursesClient)
     {
         nofSubProcesses++;
         admin.startProcess(1, "./curses_client", 10);
@@ -161,7 +174,7 @@ int main(int argc, char **argv)
     {
         if (admin.nofProcesses() != (size_t)nofSubProcesses)
             break;
-        if (admin.m_terminate)
+        if (admin.terminate())
             break;
         pause();
         std::cout << "caught signal\n";
