@@ -27,7 +27,8 @@ public:
         MidiOut3Bytes,
         MidiIn1Byte,
         MidiIn2Bytes,
-        MidiIn3Bytes
+        MidiIn3Bytes,
+        SetVolume
     };
     static const uint8_t Unknown = 255; //!<    Placeholder value.
     static uint32_t m_sequenceNumber;   //!<    Global sequence number.

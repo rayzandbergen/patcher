@@ -83,6 +83,7 @@ private:
     void sendEventToFantom(uint8_t midiStatus,
                 uint8_t data1, uint8_t data2 = 255);
     void sendMidi(int deviceId, uint8_t part, uint8_t status, uint8_t data1, uint8_t data2 = 255);
+    void setVolume(uint8_t part, uint8_t value);
     void allNotesOff();
     void changeSection(uint8_t sectionIdx);
     void nextSection();
@@ -118,6 +119,7 @@ public:
 #ifdef LOG_ENABLE
         m_fpLog = fopen("eventlog.txt", "wb");
 #endif
+        //m_eventTxQueue.create();
         m_eventTxQueue.openWrite();
         m_trackIdx = m_setList[0];
         getTime(m_debouncePreviousTriggerTime);
@@ -363,9 +365,7 @@ void Patcher::eventLoop()
                                     && num >= Midi::BCFFader1 && num <= Midi::BCFFader8)
                             {
                                 uint8_t partNum = m_partOffsetBcf + (num - Midi::BCFFader1);
-                                Fantom::Part *p = currentTrack()->m_performance->m_partList+partNum;
-                                p->m_vol = val;
-                                m_fantom->setVolume(partNum, val);
+                                setVolume(partNum, val);
                             }
                             else
                             {
@@ -535,6 +535,28 @@ void Patcher::sendEventToFantom(uint8_t midiStatus,
             sendMidi(Midi::Device::FantomOut, i, midiStatus|swPart->m_channel, data1Out, data2Out);
         }
     } // FOREACH part in current section
+}
+
+/*! \brief Change the volume of a Fantom part and send an event.
+ *
+ *  \param[in]  part        Fantom part.
+ *  \param[in]  value       The volume.
+ */
+void Patcher::setVolume(uint8_t part, uint8_t value)
+{
+    m_fantom->setVolume(part, value);
+    Event event;
+    event.m_metaMode = m_metaMode ? 1 : 0;
+    event.m_currentTrack = m_trackIdx;
+    event.m_currentSection = m_sectionIdx;
+    event.m_trackIdxWithinSet = m_trackIdxWithinSet;
+    event.m_type = Event::SetVolume;
+    event.m_deviceId = Midi::Device::FantomIn;
+    event.m_part = part;
+    event.m_midi[0] = value;;
+    event.m_midi[1] = Event::Unknown;
+    event.m_midi[2] = Event::Unknown;
+    m_eventTxQueue.send(event);
 }
 
 /*! \brief Send a MIDI event to MIDI driver and duplicate it to event queue.
