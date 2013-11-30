@@ -119,7 +119,6 @@ public:
 #ifdef LOG_ENABLE
         m_fpLog = fopen("eventlog.txt", "wb");
 #endif
-        //m_eventTxQueue.create();
         m_eventTxQueue.openWrite();
         m_trackIdx = m_setList[0];
         getTime(m_debouncePreviousTriggerTime);
@@ -820,11 +819,17 @@ int main(int argc, char **argv)
     {
         for (;;)
         {
-            int opt = getopt(argc, argv, "hd:");
+            int opt = getopt(argc, argv, "shd:");
             if (opt == -1)
                 break;
             switch (opt)
             {
+                case 's':
+                {
+                    Queue q;
+                    q.create();
+                    break;
+                }
                 case 'd':
                 {
                     const char *dir = optarg;
@@ -837,8 +842,9 @@ int main(int argc, char **argv)
                     break;
                 }
                 default:
-                    std::cerr << "\npatcher [-h|?] [-d <dir>]\n\n"
+                    std::cerr << "\npatcher [-h|?] [-d <dir>] [-s]\n\n"
                         "  -h|?     This message\n"
+                        "  -s       Run standalone\n"
                         "  -d dir   Change dir\n\n";
                     return 0;
                     break;
