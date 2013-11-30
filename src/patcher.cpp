@@ -14,7 +14,7 @@
 namespace
 {
 
-const int nofSubProcesses = 2;
+const int maxSubProcesses = 2;
 
 class Process
 {
@@ -27,7 +27,7 @@ void signalHandler(int sigNum, siginfo_t *sigInfo, void *unused);
 
 struct Admin
 {
-    Process m_process[nofSubProcesses];
+    Process m_process[maxSubProcesses];
     bool m_terminate;
     void startProcess(int i, const char *name, int renice = 0)
     {
@@ -54,14 +54,14 @@ struct Admin
     size_t nofProcesses()
     {
         size_t n = 0;
-        for (int i=0; i<nofSubProcesses; i++)
+        for (int i=0; i<maxSubProcesses; i++)
             if (m_process[i].m_pid != -1)
                 n++;
         return n;
     }
     void dropProcess(pid_t pid)
     {
-        for (int i=0; i<nofSubProcesses; i++)
+        for (int i=0; i<maxSubProcesses; i++)
             if (m_process[i].m_pid == pid)
             {
                 m_process[i].m_pid = -1;
@@ -70,7 +70,7 @@ struct Admin
     }
     void killAll()
     {
-        for (int i=0; i<nofSubProcesses; i++)
+        for (int i=0; i<maxSubProcesses; i++)
         {
             pid_t pid = m_process[i].m_pid;
             if (pid != -1)
@@ -84,7 +84,7 @@ struct Admin
     }
     Admin(): m_terminate(false)
     {
-        for (int i=0; i<nofSubProcesses; i++)
+        for (int i=0; i<maxSubProcesses; i++)
             m_process[i].m_pid = -1;
 
         struct sigaction act;
@@ -122,16 +122,44 @@ void signalHandler(int sigNum, siginfo_t *sigInfo, void *unused)
 
 } // anonymous namespace
 
-int main(void)
+int main(int argc, char **argv)
 {
+    bool mainWindow = false;
+    for (;;)
+    {
+        int opt = getopt(argc, argv, "mh:");
+        if (opt == -1)
+            break;
+        switch (opt)
+        {
+            case 'm':
+                mainWindow = true;
+                break;
+            default:
+                std::cerr << "\npatcher [-h|?] [-d <dir>] [-m] [-l]\n\n"
+                    "  -h|?     This message\n"
+                    "  -m       Show main window\n";
+                return 1;
+                break;
+        }
+    }
+    if (argc > optind)
+    {
+        std::cerr << "unrecognised trailing arguments, try -h\n";
+    }
     Queue q;
     q.create();
+    int nofSubProcesses = 1;
     admin.startProcess(0, "./patcher_core");
-    admin.startProcess(1, "./curses_client", 10);
+    if (mainWindow)
+    {
+        nofSubProcesses++;
+        admin.startProcess(1, "./curses_client", 10);
+    }
     std::cout << "waiting\n";
     for (;;)
     {
-        if (admin.nofProcesses() != nofSubProcesses)
+        if (admin.nofProcesses() != (size_t)nofSubProcesses)
             break;
         if (admin.m_terminate)
             break;
