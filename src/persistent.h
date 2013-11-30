@@ -14,8 +14,8 @@ class Persist
     MemoryMap *m_memMap;    //!< The \a MemoryMap that should be made persistent.
 public:
     Persist();
-    void store(int track, int section);
-    void restore(int *track, int *section);
+    void store(int track, int section, int trackWithinSet);
+    void restore(int *track, int *section, int *trackWithinSet);
 };
 
 #endif // PERSISTENT_H

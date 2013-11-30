@@ -191,7 +191,7 @@ void Patcher::mergePerformanceData()
 void Patcher::restoreState()
 {
     int t,s;
-    m_persist.restore(&t, &s);
+    m_persist.restore(&t, &s, &m_trackIdxWithinSet);
     changeTrack(t);
     changeSection(s);
 }
@@ -669,7 +669,7 @@ void Patcher::changeSection(uint8_t sectionIdx)
         }
         m_sectionIdx = sectionIdx;
         updateFantomDisplay();
-        m_persist.store(m_trackIdx, m_sectionIdx);
+        m_persist.store(m_trackIdx, m_sectionIdx, m_trackIdxWithinSet);
         sendReadyEvent();
     }
 }
@@ -747,7 +747,7 @@ void Patcher::changeTrack(uint8_t track)
     m_fantom->selectPerformance(m_trackIdx);
     updateFantomDisplay();
     updateBcfFaders();
-    m_persist.store(m_trackIdx, m_sectionIdx);
+    m_persist.store(m_trackIdx, m_sectionIdx, m_trackIdxWithinSet);
 }
 
 /*! \brief Switch to \a Track indicated by note number.

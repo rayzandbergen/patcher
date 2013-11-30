@@ -18,11 +18,12 @@
 class MemoryMap
 {
 public:
-    static const int expectMagic = 0xafbe8219;  //!<    Magic number, must be changed if layout changes.
+    static const int expectMagic = 0xafbe821a;  //!<    Magic number, must be changed if layout changes.
     int m_magic;                                //!<    Magic number.
     bool m_valid;                               //!<    Validity flag.
     int m_track;                                //!<    Current \a Track number.
     int m_section;                              //!<    Current \a Section number.
+    int m_trackWithinSet;                       //!<    Track index within setlist.
 };
 
 /*! \brief Constructor.
@@ -61,26 +62,28 @@ Persist::Persist(): m_memMap(0)
         m_memMap->m_magic != MemoryMap::expectMagic ||
         !m_memMap->m_valid)
     {
-        store(0, 0); // clear
+        store(0, 0, 0); // clear
     }
 }
 
-/*! \brief  Store current \a Track and \a Section in shared memory.
+/*! \brief  Store current \a Track, \a Section and set index in shared memory.
  */
-void Persist::store(int track, int section)
+void Persist::store(int track, int section, int trackWithinSet)
 {
     m_memMap->m_valid = false;
     m_memMap->m_magic = MemoryMap::expectMagic;
     m_memMap->m_track = track;
     m_memMap->m_section = section;
+    m_memMap->m_trackWithinSet = trackWithinSet;
     m_memMap->m_valid = true;
 }
 
-/*! \brief  Restore current \a Track and \a Section from shared memory.
+/*! \brief  Restore current \a Track, \a Section and set index from shared memory.
  */
-void Persist::restore(int *track, int *section)
+void Persist::restore(int *track, int *section, int *trackWithinSet)
 {
     *track = m_memMap->m_track;
     *section = m_memMap->m_section;
+    *trackWithinSet = m_memMap->m_trackWithinSet;
 }
 
