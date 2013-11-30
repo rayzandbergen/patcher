@@ -136,7 +136,7 @@ int main(int argc, char **argv)
                 mainWindow = true;
                 break;
             default:
-                std::cerr << "\npatcher [-h|?] [-d <dir>] [-m] [-l]\n\n"
+                std::cerr << "\npatcher [-h|?] [-d <dir>] [-m]\n\n"
                     "  -h|?     This message\n"
                     "  -m       Show main window\n";
                 return 1;

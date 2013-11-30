@@ -842,21 +842,13 @@ int main(int argc, char **argv)
 {
     try
     {
-        bool mainWindow = false;
-        bool logWindow = false;
         for (;;)
         {
-            int opt = getopt(argc, argv, "lmhd:");
+            int opt = getopt(argc, argv, "hd:");
             if (opt == -1)
                 break;
             switch (opt)
             {
-                case 'l':
-                    logWindow = true;
-                    break;
-                case 'm':
-                    mainWindow = true;
-                    break;
                 case 'd':
                 {
                     const char *dir = optarg;
@@ -869,11 +861,9 @@ int main(int argc, char **argv)
                     break;
                 }
                 default:
-                    std::cerr << "\npatcher [-h|?] [-d <dir>] [-m] [-l]\n\n"
+                    std::cerr << "\npatcher [-h|?] [-d <dir>]\n\n"
                         "  -h|?     This message\n"
-                        "  -d dir   Change dir\n"
-                        "  -m       Show main window\n"
-                        "  -l       Show log window\n\n";
+                        "  -d dir   Change dir\n\n";
                     return 0;
                     break;
             }
