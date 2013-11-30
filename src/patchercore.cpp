@@ -105,10 +105,9 @@ public:
      *
      *  This will set up an empty Patcher object.
      *
-     *  \param [in] s   An initialised \a Screen object.
      *  \param [in] m   An initialised MIDI \a Driver object.
      *  \param [in] f   An initialised Fantom \a Driver object.
-    */
+     */
     Patcher(Midi::Driver *m, Fantom::Driver *f):
         m_fpLog(0),
         debounceTime(Real(0.4)),
@@ -247,8 +246,6 @@ void Patcher::eventLoop()
                     break;
                 case Midi::activeSensing:
                     // active sensing, single byte, dropped
-                    // BUT we abuse the periodic nature of this message
-                    // to do a screen update
                     break;
                 case Midi::realtimeStart:
                     if (m_fpLog)
@@ -540,7 +537,7 @@ void Patcher::sendEventToFantom(uint8_t midiStatus,
     } // FOREACH part in current section
 }
 
-/*  \brief Send a MIDI event to MIDI driver and duplicate it to event queue.
+/*! \brief Send a MIDI event to MIDI driver and duplicate it to event queue.
  *
  *  \param[in]  deviceId    Device ID to send to.
  *  \param[in]  part        Patcher part.
