@@ -87,24 +87,16 @@ private:
     void changeSection(uint8_t sectionIdx);
     void nextSection();
     void prevSection();
-    void changeTrack(uint8_t track, int updateFlags);
+    void changeTrack(uint8_t track);
     void changeTrackByNote(uint8_t note);
-    void updateBcfFaders();
-    void updateFantomDisplay();
     bool debounced(Real delaySeconds);
     void consumeSysEx(int device);
 public:
-    //! \brief Update bit flags.
-    enum UpdateFlags {
-        UpdateNothing = 0,                 //!< Update nothing.
-        UpdateFaders = 1,                  //!< Update BCF faders.
-        UpdateFantomDisplay = 2,           //!< Update Fantom display.
-        UpdateAll = 3                      //!< Update all.
-    };
+    void updateBcfFaders();
+    void updateFantomDisplay();
     size_t nofTracks() const { return m_trackList.size(); } //!< The number of \a Tracks.
     void dumpTrackList();
     void mergePerformanceData();
-    void show(int updateFlags);
     void eventLoop();
     void sendReadyEvent();
     void restoreState();
@@ -200,7 +192,7 @@ void Patcher::restoreState()
 {
     int t,s;
     m_persist.restore(&t, &s);
-    changeTrack(t, UpdateAll);
+    changeTrack(t);
     changeSection(s);
 }
 
@@ -368,7 +360,7 @@ void Patcher::eventLoop()
                             else if (deviceRx == Midi::Device::BcfIn && num == Midi::effects1Depth)
                             {
                                 m_partOffsetBcf ^= 8;
-                                show(UpdateFaders);
+                                updateBcfFaders();
                             }
                             else if (deviceRx == Midi::Device::BcfIn
                                     && num >= Midi::BCFFader1 && num <= Midi::BCFFader8)
@@ -579,18 +571,6 @@ void Patcher::sendMidi(int deviceId, uint8_t part, uint8_t status, uint8_t data1
     m_eventTxQueue.send(event);
 }
 
-/*! \brief Update the \a Screen, BCF faders, and the Fantom display.
- * \param [in] updateFlags  Bit field of things to be updated.
- */
-void Patcher::show(int updateFlags)
-{
-    if (updateFlags & UpdateFaders)
-        updateBcfFaders();
-
-    if (updateFlags & UpdateFantomDisplay)
-        updateFantomDisplay();
-}
-
 /*! \brief Abuse the Fantom screen to show the current section.
  */
 void Patcher::updateFantomDisplay()
@@ -670,7 +650,7 @@ void Patcher::changeSection(uint8_t sectionIdx)
             allNotesOff();
         }
         m_sectionIdx = sectionIdx;
-        show(UpdateFantomDisplay);
+        updateFantomDisplay();
         m_persist.store(m_trackIdx, m_sectionIdx);
         sendReadyEvent();
     }
@@ -709,7 +689,7 @@ void Patcher::nextSection()
     int newSection = currentSection()->m_nextSection;
     if (newTrack != m_trackIdx)
     {
-        changeTrack(newTrack, UpdateAll);
+        changeTrack(newTrack);
         changeSection(newSection);
     }
     else if (newSection != m_sectionIdx)
@@ -731,7 +711,7 @@ void Patcher::prevSection()
     int newSection = currentSection()->m_previousSection;
     if (newTrack != m_trackIdx)
     {
-        changeTrack(newTrack, UpdateAll);
+        changeTrack(newTrack);
         changeSection(newSection);
     }
     else if (newSection != m_sectionIdx)
@@ -742,12 +722,13 @@ void Patcher::prevSection()
 
 /*! \brief Switch to a new \a Track.
  */
-void Patcher::changeTrack(uint8_t track, int updateFlags)
+void Patcher::changeTrack(uint8_t track)
 {
     m_trackIdx = track;
     m_sectionIdx = currentTrack()->m_startSection; // cannot use changeSection!
     m_fantom->selectPerformance(m_trackIdx);
-    show(updateFlags);
+    updateFantomDisplay();
+    updateBcfFaders();
     m_persist.store(m_trackIdx, m_sectionIdx);
 }
 
@@ -780,7 +761,7 @@ void Patcher::changeTrackByNote(uint8_t note)
     }
     if (valid)
     {
-        changeTrack((uint8_t)m_trackIdx, UpdateAll);
+        changeTrack((uint8_t)m_trackIdx);
     }
     sendReadyEvent();
 }
@@ -866,7 +847,7 @@ int main(int argc, char **argv)
         patcher.mergePerformanceData();
         //patcher.dumpTrackList();
         patcher.restoreState();
-        patcher.show(Patcher::UpdateFaders);
+        patcher.updateBcfFaders();
         patcher.eventLoop();
     }
     catch (Error &e)
