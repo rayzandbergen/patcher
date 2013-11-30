@@ -124,21 +124,21 @@ void signalHandler(int sigNum, siginfo_t *sigInfo, void *unused)
 
 int main(int argc, char **argv)
 {
-    bool mainWindow = false;
+    bool mainWindow = true;
     for (;;)
     {
-        int opt = getopt(argc, argv, "mh:");
+        int opt = getopt(argc, argv, "ch:");
         if (opt == -1)
             break;
         switch (opt)
         {
-            case 'm':
-                mainWindow = true;
+            case 'c':
+                mainWindow = false;
                 break;
             default:
-                std::cerr << "\npatcher [-h|?] [-d <dir>] [-m]\n\n"
+                std::cerr << "\npatcher [-h|?] [-d <dir>] [-c]\n\n"
                     "  -h|?     This message\n"
-                    "  -m       Show main window\n";
+                    "  -c       Do no lauch curses client\n";
                 return 1;
                 break;
         }
