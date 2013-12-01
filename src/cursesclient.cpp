@@ -16,6 +16,7 @@
 //! \brief A curses client for the patcher-core.
 class CursesClient
 {
+    FILE *m_fpLog;                      //!< Log stream.
     ActivityList m_channelActivity;     //!< Per-channel \a Activity.
     ActivityList m_softPartActivity;    //!< Per-\a SwPart \a Activity.
     Screen *m_screen;                   //!< Screen object to log to.
@@ -51,13 +52,16 @@ public:
     //! \brief Event loop, never returns.
     void eventLoop();
     //! \brief Constructs a curses client.
-    CursesClient(Screen *s):
+    CursesClient(bool enableLogging, Screen *s):
+        m_fpLog(0),
         m_channelActivity(Midi::NofChannels, Midi::Note::max),
         m_softPartActivity(64 /*see tracks.xsd*/, Midi::Note::max),
         m_screen(s),
         m_trackIdx(0), m_trackIdxWithinSet(0), m_sectionIdx(0),
         m_metaMode(false), m_nofScreenUpdates(0)
     {
+        if (enableLogging)
+            m_fpLog = fopen("clientlog.txt", "wb");
         m_eventRxQueue.openRead();
     }
 };
@@ -68,15 +72,14 @@ void CursesClient::updateScreen()
     werase(m_screen->main());
     wprintw(m_screen->main(),
         "*** Ray's MIDI patcher " VERSION ", rev " SVN ", " NOW " ***\n\n");
-#if 0
-    for (int i=0; i<16; i++)
+    if (m_fpLog)
     {
-        mvwprintw(m_screen->main(), 1, i*4, "%02d ", m_channelActivity.m_triggerCount[i]);
+        fprintf(m_fpLog, "screen update %08d\n", m_nofScreenUpdates);
+        fprintf(m_fpLog, "activity ");
+        for (int i=0; i<16; i++)
+            fprintf(m_fpLog, "%02d ", m_channelActivity.m_triggerCount[i]);
+        fprintf(m_fpLog, "\n");
     }
-#endif
-#if 0
-    mvwprintw(m_screen->main(), 1, 63, "%08d", m_nofScreenUpdates);
-#endif
     mvwprintw(m_screen->main(), 2, 0,
         "track   %03d \"%s\"\nsection %03d/%03d \"%s\"\n",
         1+m_trackIdx, currentTrack()->m_name,
@@ -98,7 +101,6 @@ void CursesClient::updateScreen()
     if (m_metaMode)
         wattroff(m_screen->main(), COLOR_PAIR(1));
     int partsShown = 0;
-    //bool partActivity[Fantom::Performance::NofParts];
     bool channelActivity[Midi::NofChannels];
     m_channelActivity.get(channelActivity);
     for (int partIdx=0; partIdx<Fantom::Performance::NofParts;partIdx++)
@@ -185,7 +187,6 @@ void CursesClient::eventLoop()
         bool timedOut = false;
         if (m_channelActivity.nextExpiry(nextTime))
         {
-            //timeSum(nextTime, nextTime, TimeSpec((Real)100.0));
             timedOut = !m_eventRxQueue.receive(event, nextTime);
         }
         else
@@ -205,9 +206,10 @@ void CursesClient::eventLoop()
         }
         else
         {
-#ifdef LOG_ENABLE
-            wprintw(m_screen->log(), "%s\n", event.toString().c_str());
-#endif
+            if (m_fpLog)
+            {
+                fprintf(m_fpLog, "%s\n", event.toString().c_str());
+            }
             m_metaMode = !!event.m_metaMode;
             if (event.m_currentTrack != Event::Unspecified)
                 m_trackIdx = event.m_currentTrack;
@@ -220,9 +222,6 @@ void CursesClient::eventLoop()
                  event.m_type == Event::MidiOut1Byte) &&
                 event.m_deviceId == Midi::Device::FantomOut)
             {
-#ifdef LOG_ENABLE
-                wrefresh(m_screen->log());
-#endif
                 if (Midi::isNote(event.m_midi[0]))
                 {
                     uint8_t channel = event.m_midi[0] & 0x0f;
@@ -245,13 +244,14 @@ void CursesClient::eventLoop()
             }
             else
             {
-#ifdef LOG_ENABLE
-                wprintw(m_screen->log(), "ignored %s\n", event.toString().c_str());
-#endif
+                if (m_fpLog)
+                    fprintf(m_fpLog, "ignored %s\n", event.toString().c_str());
                 updateScreen();
                 wrefresh(m_screen->main());
             }
         }
+        if (m_fpLog)
+            fflush(m_fpLog);
     }
 }
 
@@ -291,11 +291,12 @@ int main(void)
     try
     {
 #ifdef LOG_ENABLE
-        Screen screen(true, true);
+        bool enableLogging = true;
 #else
-        Screen screen(true, false);
+        bool enableLogging = false;
 #endif
-        CursesClient cursesClient(&screen);
+        Screen screen(true, false);
+        CursesClient cursesClient(enableLogging, &screen);
         cursesClient.loadTrackDefs();
         cursesClient.mergePerformanceData();
         cursesClient.eventLoop();

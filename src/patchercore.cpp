@@ -117,7 +117,7 @@ public:
         m_metaMode(false), m_fantomScroller(f), m_partOffsetBcf(0)
     {
 #ifdef LOG_ENABLE
-        m_fpLog = fopen("eventlog.txt", "wb");
+        m_fpLog = fopen("corelog.txt", "wb");
 #endif
         m_eventTxQueue.openWrite();
         m_trackIdx = m_setList[0];
