@@ -7,6 +7,8 @@
  *
 \section intro Introduction
 
+\image html midi-setup.svg
+
 When playing a single track of the Noble Silence set list, a single Fantom Performance used. A Performance is a full mix of at most 16 sounds plus a chain of effects.
 During the track, different sounds need to be controlled or played at different times.
 In practice, this means switching between multiple keyboard layouts.
