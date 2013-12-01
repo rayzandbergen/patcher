@@ -26,7 +26,7 @@ public:
     WINDOW *log() const { return m_logWindow; }
     static void showProgressBar(WINDOW *win, int y, int x, Real f); //!< show a progress bar at screen coordinates (x,y).
     static void fprintfBinaryString(FILE *fp, const uint8_t *data, int n);
-	Screen(bool enableMain, bool enableLog);
+	Screen(bool enableMain = true, bool enableLog = false);
 	~Screen();
 };
 #endif

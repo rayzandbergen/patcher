@@ -295,7 +295,7 @@ int main(void)
 #else
         bool enableLogging = false;
 #endif
-        Screen screen(true, false);
+        Screen screen;
         CursesClient cursesClient(enableLogging, &screen);
         cursesClient.loadTrackDefs();
         cursesClient.mergePerformanceData();
