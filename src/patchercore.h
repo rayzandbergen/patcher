@@ -9,7 +9,7 @@
 
 This MIDI patcher is an application that is intended to run on a Raspberry Pi board.
 It was implemented because my off-the-shelf MIDI controllers are not powerful enough
-to manage all the different sound settings and keyboard layouts I use.
+to manage all the different sound settings and keyboard layouts that I use.
 
 \image html midi-setup.svg
 
@@ -25,7 +25,7 @@ The goal of this MIDI patcher implementation is to create and manage keyboard la
 
 A Fantom perfomance contains 16 'parts'.
 A part points to a 'patch', i.e. the actual sound, and a lot of parameters that determine how this sound is mixed, e.g. volume, pan and various effect chains.
-In addition, a part determines the MIDI channel for a sound, a key range within this channel, an optional transposition, and some high level parameters to modify the path.
+In addition, a part determines the MIDI channel for a sound, a key range within this channel, an optional transposition, and some high level parameters to modify the patch.
 By convention, there is a single part listening on each MIDI channel, so Fantom part 1 listens of MIDI channel 1, and so on.
 However, this application will handle multiple parts per channel correctly.
 The one-part-for-each-channel convention makes it easier for humans to keep an overview of a track definitions, at the expense of slightly more MIDI traffic in case of patch layering.
