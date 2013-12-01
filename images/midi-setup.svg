@@ -10,7 +10,7 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="526.88513"
-   height="271.5415"
+   height="291.33896"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.1 r9760"
@@ -54,8 +54,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="2.0709736"
-     inkscape:cx="182.51981"
-     inkscape:cy="124.92413"
+     inkscape:cx="152.86813"
+     inkscape:cy="164.03618"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -76,7 +76,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -240,86 +240,81 @@
            x="249.39957"
            sodipodi:role="line">FCB1010</tspan></text>
     </g>
-    <g
-       id="g3992"
-       transform="translate(31.386204,-29.93761)"
-       style="stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none">
-      <rect
-         y="602.90399"
-         x="183.28508"
-         height="30.036879"
-         width="125.88609"
-         id="rect2985-3-8-4-8-4"
-         style="fill:#e6e6e6;fill-rule:evenodd;stroke:#000000;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
-      <text
-         sodipodi:linespacing="125%"
-         id="text2987-0-8-9-9-9"
-         y="621.84882"
-         x="245.05377"
-         style="font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans"
-         xml:space="preserve"><tspan
-           id="tspan3896-6-0"
-           y="621.84882"
-           x="245.05377"
-           sodipodi:role="line">Raspberry Pi</tspan></text>
-    </g>
+    <rect
+       style="fill:#e6e6e6;fill-rule:evenodd;stroke:#000000;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect2985-3-8-4-8-4"
+       width="125.88609"
+       height="49.834335"
+       x="214.67128"
+       y="572.96637" />
+    <text
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans"
+       x="276.43997"
+       y="591.91119"
+       id="text2987-0-8-9-9-9"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         x="276.43997"
+         y="591.91119"
+         id="tspan3896-6-0">Raspberry Pi</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="176.72849"
-       y="427.53531"
+       x="171.41698"
+       y="430.91537"
        id="text6190"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan6192"
-         x="176.72849"
-         y="427.53531">MIDI</tspan></text>
+         x="171.41698"
+         y="430.91537">MIDI</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="162.43852"
-       y="487.43875"
+       x="160.0242"
+       y="485.02441"
        id="text6190-1"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan6192-7"
-         x="162.43852"
-         y="487.43875">MIDI</tspan></text>
+         x="160.0242"
+         y="485.02441">MIDI</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="376.34756"
-       y="419.3548"
+       x="381.17621"
+       y="422.73486"
        id="text6190-2"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan6192-72"
-         x="376.34756"
-         y="419.3548">MIDI</tspan></text>
+         x="381.17621"
+         y="422.73486">MIDI</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
        x="397.59363"
-       y="501.92465"
+       y="506.27045"
        id="text6190-26"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan6192-1"
          x="397.59363"
-         y="501.92465">MIDI</tspan></text>
+         y="506.27045">MIDI</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="282.47583"
-       y="535.21411"
+       x="288.75308"
+       y="537.14557"
        id="text6233"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan6235"
-         x="282.47583"
-         y="535.21411">USB</tspan></text>
+         x="288.75308"
+         y="537.14557">USB</tspan></text>
     <path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend-4)"
+       style="fill:#cccccc;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend-4)"
        d="m 155.77972,399.86676 72.71113,32.35043"
        id="path6237"
        inkscape:connector-type="polyline"
@@ -370,8 +365,17 @@
        inkscape:connector-curvature="0"
        inkscape:connection-start="#g3810"
        inkscape:connection-start-point="d4"
-       inkscape:connection-end="#g3992"
-       inkscape:connection-end-point="d4"
        sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#800000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="221.3965"
+       y="610.87115"
+       id="text3040"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3042"
+         x="221.3965"
+         y="610.87115">Ray's MIDI patcher</tspan></text>
   </g>
 </svg>
