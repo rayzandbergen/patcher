@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include "screen.h"
 #include "mididef.h"
-/*! \brief This class allows only one note to sound.
+/*! \brief This class prevents re-triggering of notes while they sound.
  */
 class MonoFilter
 {

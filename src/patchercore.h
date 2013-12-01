@@ -47,12 +47,24 @@ Finally, a section consists of parts. A part controls a single sound in the trac
 
 \section metaMode Meta mode
 
-In meta mode, keys on the keyboard behave like buttons that control the patcher's behaviour.
+In meta mode, keys on the A30 keyboard behave like buttons that control the patcher's behaviour.
+
+Meta mode is enabled by pressing the 'reverb' switch on the A30, or by pressing pedal 7 on the FCB1010.
+Is is disabled by pressing the 'reverb' button again, or by pressing pedal 6.
+- C4 Selects previous track in set list.
+- D4 Selects next track in set list.
+- E4 Toggles info mode, where the Fantom display is used to show the network interfaces of the Pi.
+- C5 and up select a track directly.
+
 
 \section sectionSwitching Switching between sections
 
 Section switches are triggered by the FCB foot controller.
-\todo Explain chaining and direct selection.
+
+- If chaining is enabled for the current track (in "tracks.xml"), then pressing
+pedal 1 or 2 selects the previous section, while pedals 3 to 5
+select the next section.
+- If chaining is disabled, then pedals 1 to 5 select a section directly.
 
 \section trackSwitching Switching between tracks
 
