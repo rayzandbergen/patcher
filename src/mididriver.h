@@ -37,7 +37,7 @@ struct Device
  * It uses ALSA drivers to obtain a file descriptor for each MIDI
  * device. After initialisation ALSA is no longer used, as the
  * standard POSIX interface for file descriptors is rich enough.
- * This object logs to a \a Screen object.
+ * This object logs to a curses WINDOW object.
  */
 class Driver {
     WINDOW *m_window;                               //!< a curses WINDOW object to log to.

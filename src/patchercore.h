@@ -7,9 +7,14 @@
  *
 \section intro Introduction
 
+This MIDI patcher is an application that is intended to run on a Raspberry Pi board.
+It was implemented because my off-the-shelf MIDI controllers are not powerful enough
+to manage all the different sound settings and keyboard layouts I use.
+
 \image html midi-setup.svg
 
-When playing a single track of the Noble Silence set list, a single Fantom Performance used. A Performance is a full mix of at most 16 sounds plus a chain of effects.
+When playing a single track of the Noble Silence set list, a single Fantom Performance used.
+A Performance is a full mix of at most 16 sounds plus a chain of effects.
 During the track, different sounds need to be controlled or played at different times.
 In practice, this means switching between multiple keyboard layouts.
 In my setup, switching is controlled by an FCB1010 MIDI foot controller.
@@ -18,13 +23,18 @@ The goal of this MIDI patcher implementation is to create and manage keyboard la
 
 \section rolandSpeak Roland-speak
 
-A Fantom perfomance contains 16 'parts'. A part points to a 'patch', i.e. the actual sound, and a lot of parameters that determine how this sound is mixed, e.g. volume, pan and various effect chains.
+A Fantom perfomance contains 16 'parts'.
+A part points to a 'patch', i.e. the actual sound, and a lot of parameters that determine how this sound is mixed, e.g. volume, pan and various effect chains.
 In addition, a part determines the MIDI channel for a sound, a key range within this channel, an optional transposition, and some high level parameters to modify the path.
-By convention, there is a single part listening on each MIDI channel, so Fantom part 1 listens of MIDI channel 1, and so on. However, this application will handle multiple parts per channel correctly.
+By convention, there is a single part listening on each MIDI channel, so Fantom part 1 listens of MIDI channel 1, and so on.
+However, this application will handle multiple parts per channel correctly.
 The one-part-for-each-channel convention makes it easier for humans to keep an overview of a track definitions, at the expense of slightly more MIDI traffic in case of patch layering.
 For layered patches, MIDI messages must be sent on each channel of the targeted parts, even though this could be solved by having multiple parts listen on the same channel.
 
-Note that the Fantom also has a 'patch' mode, in which it only plays a single sound. This mode is not used. The Fantom has a system setting which makes it boot into performance mode. Indeed, this application will not start up correctly with the Fantom in patch mode.
+Note that the Fantom also has a 'patch' mode, in which it only plays a single sound.
+This mode is not used.
+The Fantom has a system setting which makes it boot into performance mode.
+Indeed, this application will not start up correctly with the Fantom in patch mode.
 
 \section tracksectionpart Tracks, Sections, and Parts
 
