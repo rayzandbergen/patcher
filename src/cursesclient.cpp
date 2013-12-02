@@ -45,6 +45,10 @@ public:
     }
     //! \brief Load track definitions from a file.
     void loadTrackDefs();
+    //! \brief process All Notes Off event for a given channel.
+    void allNotesOff(uint8_t channel);
+    //! \brief process All Notes Off event.
+    void allNotesOff();
     //! \brief Merge performance data into track list.
     void mergePerformanceData();
     //! \brief Write to the curses screen.
@@ -76,7 +80,7 @@ void CursesClient::updateScreen()
     {
         fprintf(m_fpLog, "screen update %08d\n", m_nofScreenUpdates);
         fprintf(m_fpLog, "activity ");
-        for (int i=0; i<16; i++)
+        for (int i=0; i<Midi::NofChannels; i++)
             fprintf(m_fpLog, "%02d ", m_channelActivity.m_triggerCount[i]);
         fprintf(m_fpLog, "\n");
     }
@@ -175,6 +179,23 @@ void CursesClient::loadTrackDefs()
     importTracks(TRACK_DEF, m_trackList, m_setList);
 }
 
+void CursesClient::allNotesOff(uint8_t channel)
+{
+    m_channelActivity.clear(channel);
+    for (size_t pIdx = 0; pIdx < currentSection()->m_partList.size(); pIdx++)
+    {
+        const SwPart *swPart = currentSection()->m_partList[pIdx];
+        if (swPart->m_channel == channel)
+            m_softPartActivity.clear(pIdx);
+    }
+}
+
+void CursesClient::allNotesOff()
+{
+    m_channelActivity.clear();
+    m_softPartActivity.clear();
+}
+
 void CursesClient::eventLoop()
 {
     Event event;
@@ -211,10 +232,21 @@ void CursesClient::eventLoop()
                 fprintf(m_fpLog, "%s\n", event.toString().c_str());
             }
             m_metaMode = !!event.m_metaMode;
-            if (event.m_currentTrack != Event::Unspecified)
+            bool doAllNotesOff = false;
+            if (event.m_currentTrack != Event::Unspecified && m_trackIdx != event.m_currentTrack)
+            {
                 m_trackIdx = event.m_currentTrack;
-            if (event.m_currentSection != Event::Unspecified)
+                doAllNotesOff = true;
+            }
+            if (event.m_currentSection != Event::Unspecified && m_sectionIdx != event.m_currentSection)
+            {
                 m_sectionIdx = event.m_currentSection;
+                doAllNotesOff = true;
+            }
+            if (doAllNotesOff)
+            {
+                allNotesOff();
+            }
             if (event.m_trackIdxWithinSet != Event::Unspecified)
                 m_trackIdxWithinSet = event.m_trackIdxWithinSet;
             if ((event.m_type == Event::MidiOut3Bytes ||
@@ -222,19 +254,27 @@ void CursesClient::eventLoop()
                  event.m_type == Event::MidiOut1Byte) &&
                 event.m_deviceId == Midi::Device::FantomOut)
             {
+                // parse MIDI out event
+                uint8_t channel = Midi::channel(event.m_midi[0]);
                 if (Midi::isNote(event.m_midi[0]))
                 {
-                    uint8_t channel = event.m_midi[0] & 0x0f;
                     m_channelActivity.trigger(channel, event.m_midi[1], m_eventRxTime);
                     if (event.m_part != Event::Unspecified)
                         m_softPartActivity.trigger(event.m_part, event.m_midi[1], m_eventRxTime);
                 }
-                else if (Midi::isController(event.m_midi[0]) || (event.m_midi[0] & 0xf0) == Midi::pitchBend)
+                else if (Midi::isController(event.m_midi[0]) || (Midi::status(event.m_midi[0]) == Midi::pitchBend))
                 {
-                    uint8_t channel = event.m_midi[0] & 0x0f;
-                    m_channelActivity.trigger(channel, 0, m_eventRxTime);
-                    if (event.m_part != Event::Unspecified)
-                        m_softPartActivity.trigger(event.m_part, 0, m_eventRxTime);
+                    if (event.m_midi[1] == Midi::allNotesOff)
+                    {
+                        allNotesOff(channel);
+                    }
+                    else
+                    {
+                        // Abuse note C0 to store regular controller activity.
+                        m_channelActivity.trigger(channel, Midi::Note::C0, m_eventRxTime);
+                        if (event.m_part != Event::Unspecified)
+                            m_softPartActivity.trigger(event.m_part, Midi::Note::C0, m_eventRxTime);
+                    }
                 }
                 if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
                 {
