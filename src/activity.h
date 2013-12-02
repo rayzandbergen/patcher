@@ -63,6 +63,7 @@ public:
     bool nextExpiry(TimeSpec &ts) const;
     bool update(const TimeSpec &now);
     void get(bool *b);
+    void clear(int majorIndex);
 };
 
 #endif

@@ -95,3 +95,21 @@ void ActivityList::get(bool *b)
     m_dirty = false;
 }
 
+/*! \brief Clears all activity for majorIndex.
+ *
+ * \param[in]  majorIndex    Major index.
+ */
+void ActivityList::clear(int majorIndex)
+{
+    m_triggerCount[majorIndex] = 0;
+    // clean queue by copying nonmatching elements, then swapping
+    std::queue<ActivityTrigger> cleanedQueue;
+    while (!m_queue.empty())
+    {
+        if (m_queue.front().m_major != majorIndex)
+            cleanedQueue.push(m_queue.front());
+        m_queue.pop();
+    }
+    swap(m_queue, cleanedQueue);
+    m_dirty = true;
+}
