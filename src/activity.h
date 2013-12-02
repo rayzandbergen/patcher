@@ -64,6 +64,7 @@ public:
     bool update(const TimeSpec &now);
     void get(bool *b);
     void clear(int majorIndex);
+    void clear();
 };
 
 #endif

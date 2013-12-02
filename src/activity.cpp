@@ -113,3 +113,15 @@ void ActivityList::clear(int majorIndex)
     swap(m_queue, cleanedQueue);
     m_dirty = true;
 }
+
+/*! \brief Clears all activity.
+ *
+ */
+void ActivityList::clear()
+{
+    while (!m_queue.empty())
+        m_queue.pop();
+    for (int i=0; i<m_majorSize; i++)
+        m_triggerCount[i] = 0;
+    m_dirty = true;
+}
