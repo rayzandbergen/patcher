@@ -269,8 +269,8 @@ void Patcher::eventLoop()
                 default:
                 {
                     // per-channel status switch
-                    uint8_t channelRx = byteRx & 0x0f;
-                    switch (byteRx & 0xf0)
+                    uint8_t channelRx = Midi::channel(byteRx);
+                    switch (Midi::status(byteRx))
                     {
                         case Midi::noteOff:
                         {
@@ -451,17 +451,17 @@ void Patcher::eventLoop()
  *  This function does all the processing required by the current \a Section
  *  before sending the event off to the Fantom.
  *
- *  \param [in] midiStatus  MIDI status byte
+ *  \param [in] midiStatusByte  MIDI status byte
  *  \param [in] data1       MIDI data byte 1
  *  \param [in] data2       MIDI data byte 2, not sent if left to Midi::noData
  */
-void Patcher::sendEventToFantom(uint8_t midiStatus,
+void Patcher::sendEventToFantom(uint8_t midiStatusByte,
                 uint8_t data1, uint8_t data2)
 {
     bool drop = false;
     uint8_t data1Out = data1;
     uint8_t data2Out = data2;
-    midiStatus &= 0xf0; // just to be sure
+    uint8_t midiStatus = Midi::status(midiStatusByte);
     bool isNoteData = Midi::isNote(midiStatus);
     bool isNoteOn = Midi::isNoteOn(midiStatus, data1, data2);
     bool isNoteOff = Midi::isNoteOff(midiStatus, data1, data2);

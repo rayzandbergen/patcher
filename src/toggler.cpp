@@ -6,12 +6,12 @@
 #include <stdint.h>
 #include "transposer.h"
 #include "toggler.h"
-bool Toggler::pass(uint8_t midiStatus, uint8_t data1, uint8_t data2)
+bool Toggler::pass(uint8_t midiStatusByte, uint8_t data1, uint8_t data2)
 {
     if (!m_enabled)
         return true;
 
-    midiStatus &= 0xf0;
+    uint8_t midiStatus = Midi::status(midiStatusByte);
     data1 &= 127;
 
     if (!Midi::isNote(midiStatus))
