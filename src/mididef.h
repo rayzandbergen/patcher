@@ -188,10 +188,12 @@ enum DataByte
 
 const char *noteName(uint8_t num);
 void noteName(uint8_t num, char *s);
-bool isNote(uint8_t status);
-bool isNoteOn(uint8_t status, uint8_t data1, uint8_t data2);
-bool isNoteOff(uint8_t status, uint8_t data1, uint8_t data2);
-bool isController(uint8_t status);
+bool isNote(uint8_t statusByte);
+bool isNoteOn(uint8_t statusByte, uint8_t data1, uint8_t data2);
+bool isNoteOff(uint8_t statusByte, uint8_t data1, uint8_t data2);
+bool isController(uint8_t statusByte);
+uint8_t channel(uint8_t statusByte);
+uint8_t status(uint8_t statusByte);
 
 } // namespace Midi
 #endif // MIDI_DEF_H
