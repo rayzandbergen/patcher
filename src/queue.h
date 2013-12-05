@@ -50,7 +50,10 @@ public:
     }
 };
 
-//! \brief A POSIX message queue to hold Events.
+/*! \brief A POSIX message queue to hold Events.
+ *
+ * It just drops events if it is full, so the sender never blocks.
+ */
 class Queue
 {
 #ifdef DOXYGEN // fake this connection, so Doxygen cann see we're queueing Events.
