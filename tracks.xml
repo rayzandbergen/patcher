@@ -586,7 +586,7 @@
           <range lower="G6" upper="G10"/>
           <transpose offset="0"/>
         </part>
-        <part channel="10" name="Countdown">
+        <part channel="10" name="Countdown" toggle="true">
           <range lower="F2" upper="F2"/>
           <transpose offset="0"/>
         </part>
@@ -1008,7 +1008,7 @@
           <range lower="F2" upper="G4"/>
           <transpose offset="0"/>
         </part>
-        <part channel="14" name="TTTime Intro">
+        <part channel="14" name="TTTime Intro" toggle="true">
           <range lower="C0" upper="E2"/>
           <transpose offset="0"/>
         </part>
