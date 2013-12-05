@@ -9,6 +9,7 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
    width="526.88513"
    height="291.33896"
    id="svg2"
@@ -92,6 +93,7 @@
       <g
          id="g3910"
          style="stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none">
+        <a xlink:href="http://www.roland.com/products/en/Fantom-XR/">
         <rect
            style="fill:#e6e6e6;fill-rule:evenodd;stroke:#000000;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
            id="rect2985"
@@ -99,6 +101,7 @@
            height="52.030674"
            x="119.08549"
            y="383.41254" />
+        </a>
         <text
            xml:space="preserve"
            style="font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans"
@@ -120,6 +123,7 @@
        id="g3810"
        transform="translate(126.99341,-42.009227)"
        style="stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none">
+      <a xlink:href="http://m-audio.com/products/en_us/MIDISPORT4x4AnniversaryEdition.html">
       <rect
          y="471.57181"
          x="101.49744"
@@ -127,6 +131,7 @@
          width="120.04163"
          id="rect2985-3"
          style="fill:#e6e6e6;fill-rule:evenodd;stroke:#000000;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      </a>
       <text
          sodipodi:linespacing="125%"
          id="text2987-0"
@@ -149,6 +154,7 @@
        style="stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none">
       <g
          id="g8147">
+        <a xlink:href="http://en.audiofanzine.com/midi-keyboard-controller/roland/A-30/user_reviews/">
         <rect
            style="fill:#e6e6e6;fill-rule:evenodd;stroke:#000000;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
            id="rect2985-3-8"
@@ -156,6 +162,7 @@
            height="59.988602"
            x="103.71965"
            y="497.29205" />
+        </a>
         <text
            xml:space="preserve"
            style="font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans"
@@ -190,6 +197,7 @@
        id="g3898"
        transform="translate(301.79043,22.211776)"
        style="stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none">
+      <a xlink:href="http://www.behringer.com/EN/Products/BCF2000.aspx">
       <rect
          y="510.43539"
          x="124.86979"
@@ -197,6 +205,7 @@
          width="108.06316"
          id="rect2985-3-8-4"
          style="fill:#e6e6e6;fill-rule:evenodd;stroke:#000000;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      </a>
       <text
          sodipodi:linespacing="125%"
          id="text2987-0-8-9"
@@ -217,6 +226,7 @@
        id="g3950"
        transform="translate(-169.96837,17.383126)"
        style="stroke-width:1.25;stroke-miterlimit:4;stroke-dasharray:none">
+      <a xlink:href="http://www.behringer.com/EN/Products/FCB1010.aspx">
       <rect
          y="475.4277"
          x="194.16087"
@@ -224,6 +234,7 @@
          width="108.06316"
          id="rect2985-3-8-4-8"
          style="fill:#e6e6e6;fill-rule:evenodd;stroke:#000000;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      </a>
       <text
          sodipodi:linespacing="125%"
          id="text2987-0-8-9-9"
@@ -240,6 +251,7 @@
            x="249.39957"
            sodipodi:role="line">FCB1010</tspan></text>
     </g>
+    <a xlink:href="http://www.conrad.nl/ce/nl/product/874675/Raspberry-Pi-Model-B-Processor-ARM1176JZFS-1x-700-MHz?ref=list">
     <rect
        style="fill:#e6e6e6;fill-rule:evenodd;stroke:#000000;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="rect2985-3-8-4-8-4"
@@ -247,6 +259,7 @@
        height="49.834335"
        x="214.67128"
        y="572.96637" />
+    </a>
     <text
        xml:space="preserve"
        style="font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans"
