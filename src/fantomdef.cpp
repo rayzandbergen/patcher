@@ -26,14 +26,14 @@ void Part::constructPreset(bool &patchReadAllowed)
         {
             case 0:
             case 1:
-                sprintf(m_preset, "USR %03d", m_bankSelectLsb*128+m_pCh+1);
+                sprintf(m_preset, "USR %03d", m_bankSelectLsb*128+m_programChange+1);
                 break;
             case 32:
             case 33:
-                sprintf(m_preset, "CRD %03d", (m_bankSelectLsb-32)*128+m_pCh+1);
+                sprintf(m_preset, "CRD %03d", (m_bankSelectLsb-32)*128+m_programChange+1);
                 break;
             default:
-                sprintf(m_preset, "PR%c %03d", (m_bankSelectLsb-64+'A'), m_pCh+1);
+                sprintf(m_preset, "PR%c %03d", (m_bankSelectLsb-64+'A'), m_programChange+1);
                 break;
         }
     }
@@ -42,27 +42,27 @@ void Part::constructPreset(bool &patchReadAllowed)
         switch (m_bankSelectLsb)
         {
             case 0:
-                sprintf(m_preset, "USRr%03d", m_bankSelectLsb*128+m_pCh+1);
+                sprintf(m_preset, "USRr%03d", m_bankSelectLsb*128+m_programChange+1);
                 break;
             case 32:
-                sprintf(m_preset, "CRDr%03d", (m_bankSelectLsb-32)*128+m_pCh+1);
+                sprintf(m_preset, "CRDr%03d", (m_bankSelectLsb-32)*128+m_programChange+1);
                 break;
             default:
-                sprintf(m_preset, "PRr%c%03d", (m_bankSelectLsb-64+'A'), m_pCh+1);
+                sprintf(m_preset, "PRr%c%03d", (m_bankSelectLsb-64+'A'), m_programChange+1);
                 break;
         }
     }
     else if (m_bankSelectMsb == 120)
     {
-        sprintf(m_preset, " GMr%03d", m_bankSelectLsb*128+m_pCh+1);
+        sprintf(m_preset, " GMr%03d", m_bankSelectLsb*128+m_programChange+1);
     }
     else if (m_bankSelectMsb == 121)
     {
-        sprintf(m_preset, " GM %03d", m_bankSelectLsb*128+m_pCh+1);
+        sprintf(m_preset, " GM %03d", m_bankSelectLsb*128+m_programChange+1);
     }
     else
     {
-        sprintf(m_preset, "?%d-%d-%d?", m_bankSelectMsb, m_bankSelectLsb, m_pCh);
+        sprintf(m_preset, "?%d-%d-%d?", m_bankSelectMsb, m_bankSelectLsb, m_programChange);
     }
 }
 
@@ -76,10 +76,10 @@ void Part::save(const Dump *d)
     d->saveInt(m_channel);
     d->saveInt(m_bankSelectMsb);
     d->saveInt(m_bankSelectLsb);
-    d->saveInt(m_pCh);
-    d->saveInt(m_vol);
+    d->saveInt(m_programChange);
+    d->saveInt(m_volume);
     d->saveInt(m_transpose);
-    d->saveInt(m_oct);
+    d->saveInt(m_octave);
     d->save((const char*)m_preset);
     d->saveInt(m_keyRangeLower);
     d->saveInt(m_keyRangeUpper);
@@ -98,10 +98,10 @@ void Part::restore(const Dump *d)
     d->restoreInt(m_channel);
     d->restoreInt(m_bankSelectMsb);
     d->restoreInt(m_bankSelectLsb);
-    d->restoreInt(m_pCh);
-    d->restoreInt(m_vol);
+    d->restoreInt(m_programChange);
+    d->restoreInt(m_volume);
     d->restoreInt(m_transpose);
-    d->restoreInt(m_oct);
+    d->restoreInt(m_octave);
     d->restore((char*)m_preset);
     d->restoreInt(m_keyRangeLower);
     d->restoreInt(m_keyRangeUpper);
@@ -120,9 +120,9 @@ void Part::toTextFile(FILE *fp, const char *prefix) const
     fprintf(fp, "%s.preset:%s\n", prefix, m_preset);
     fprintf(fp, "%s.name:%s\n", prefix, m_patch.m_name);
     fprintf(fp, "%s.channel:%d\n", prefix, 1+m_channel);
-    fprintf(fp, "%s.vol:%d\n", prefix, m_vol);
+    fprintf(fp, "%s.volume:%d\n", prefix, m_volume);
     fprintf(fp, "%s.transpose:%d\n", prefix, m_transpose);
-    fprintf(fp, "%s.oct:%d\n", prefix, m_oct);
+    fprintf(fp, "%s.octave:%d\n", prefix, m_octave);
     fprintf(fp, "%s.keyRangeLower:%s\n", prefix, Midi::noteName(m_keyRangeLower));
     fprintf(fp, "%s.keyRangeUpper:%s\n", prefix, Midi::noteName(m_keyRangeUpper));
     fprintf(fp, "%s.fadeWidthLower:%d\n", prefix, m_fadeWidthLower);

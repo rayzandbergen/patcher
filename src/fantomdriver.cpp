@@ -139,11 +139,11 @@ void Driver::getPartParams(Part *p, int idx)
     p->m_channel = buf[0];
     p->m_bankSelectMsb = buf[4];
     p->m_bankSelectLsb = buf[5];
-    p->m_pCh = buf[6];
-    p->m_vol = buf[0x07];
+    p->m_programChange = buf[6];
+    p->m_volume = buf[0x07];
     p->m_transpose = buf[0x09] - 64;
 //    wprintw(m_window, "transpose = %d\n", p->m_transpose);
-    p->m_oct = buf[0x15] - 64;
+    p->m_octave = buf[0x15] - 64;
     p->m_keyRangeLower = buf[0x17];
     p->m_keyRangeUpper = buf[0x18];
     p->m_fadeWidthLower = buf[0x19];

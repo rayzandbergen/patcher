@@ -42,11 +42,11 @@ public:
     uint8_t m_channel;          //!<    MIDI channel this part listens on.
     uint8_t m_bankSelectMsb;    //!<    Bank select, upper 7 bits.
     uint8_t m_bankSelectLsb;    //!<    Bank select, lower 7 bits.
-    uint8_t m_pCh;              //!<    Program change number.
+    uint8_t m_programChange;    //!<    Program change number.
     char m_preset[PresetLength];//!<    Textual representation of bank select and program change, according to Roland.
-    uint8_t m_vol;              //!<    MIDI volume.
+    uint8_t m_volume;           //!<    MIDI volume.
     int8_t m_transpose;         //!<    Transpose value, semitones.
-    int8_t m_oct;               //!<    Octave transpose.
+    int8_t m_octave;            //!<    Octave transpose.
     uint8_t m_keyRangeLower;    //!<    Lower key range.
     uint8_t m_keyRangeUpper;    //!<    Upper key range.
     uint8_t m_fadeWidthLower;   //!<    Lower fade width.

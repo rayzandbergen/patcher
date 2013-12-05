@@ -616,9 +616,9 @@ void Patcher::updateBcfFaders()
         {
             int showPart = i - m_partOffsetBcf;
             sendMidi(Midi::Device::BcfOut, Midi::noData, Midi::controller|0,
-                Midi::BCFSpinner1+showPart, 0x80 + 4 * hwPart->m_oct);
+                Midi::BCFSpinner1+showPart, 0x80 + 4 * hwPart->m_octave);
             sendMidi(Midi::Device::BcfOut, Midi::noData, Midi::controller|0,
-                Midi::BCFFader1+showPart, hwPart->m_vol);
+                Midi::BCFFader1+showPart, hwPart->m_volume);
         }
     }
 }

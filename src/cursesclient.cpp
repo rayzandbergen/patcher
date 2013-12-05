@@ -156,14 +156,14 @@ void CursesClient::updateScreen()
                     swPart->m_rangeUpper), keyU);
                 int transpose = swPart->m_transpose +
                         (int)hwPart->m_transpose +
-                        (int)hwPart->m_oct*12;
+                        (int)hwPart->m_octave*12;
                 bool active = softPartActivity[i];
                 if (active)
                     wattron(m_screen->main(), COLOR_PAIR(1));
                 ASSERT(hwPart->m_patch.m_name[1] != '[');
                 mvwprintw(m_screen->main(), y, x,
                     "%3d [%3s - %4s]  %12s %3d %3d", j+1, keyL, keyU,
-                    hwPart->m_patch.m_name, hwPart->m_vol,transpose);
+                    hwPart->m_patch.m_name, hwPart->m_volume,transpose);
                 if (active)
                     wattroff(m_screen->main(), COLOR_PAIR(1));
                 partsShown++;
