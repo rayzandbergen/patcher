@@ -12,6 +12,13 @@
 namespace Fantom
 {
 
+//! \brief Default constructor.
+Patch::Patch()
+{
+    memset(m_name, ' ', sizeof(m_name));
+    m_name[sizeof(m_name)-1] = 0;
+}
+
 /*! \brief Construct the preset name for \a this.
  *
  *  \param[in] patchReadAllowed  True if the patch may be read. Fantom disallows download of some GM sounds.
@@ -72,7 +79,6 @@ void Part::constructPreset(bool &patchReadAllowed)
  */
 void Part::save(const Dump *d)
 {
-    d->saveInt(m_number);
     d->saveInt(m_channel);
     d->saveInt(m_bankSelectMsb);
     d->saveInt(m_bankSelectLsb);
@@ -94,7 +100,6 @@ void Part::save(const Dump *d)
  */
 void Part::restore(const Dump *d)
 {
-    d->restoreInt(m_number);
     d->restoreInt(m_channel);
     d->restoreInt(m_bankSelectMsb);
     d->restoreInt(m_bankSelectLsb);
@@ -149,6 +154,13 @@ void Performance::restore(const Dump *d)
     d->restore((char*)m_name);
     for (int i=0; i<NofParts; i++)
         m_partList[i].restore(d);
+}
+
+//! \brief Default constructor.
+Performance::Performance()
+{
+    memset(m_name, ' ', sizeof(m_name));
+    m_name[sizeof(m_name)-1] = 0;
 }
 
 void PerformanceList::clear()

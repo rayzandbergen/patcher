@@ -54,6 +54,7 @@ class Patcher
 {
 private:
     FILE *m_fpLog;                      //!< Log stream.
+    XML *m_xml;                         //!< XML parser.
     const Real debounceTime;            //!< Debounce time in seconds, used to debounce track and section changes.
     TrackList m_trackList;              //!< Global \a Track list.
     Midi::Driver *m_midi;               //!< Pointer to global MIDI \a Driver object.
@@ -111,6 +112,7 @@ public:
      */
     Patcher(Midi::Driver *m, Fantom::Driver *f):
         m_fpLog(0),
+        m_xml(0),
         debounceTime(Real(0.4)),
         m_midi(m), m_fantom(f),
         m_trackIdx(0), m_trackIdxWithinSet(0), m_sectionIdx(0),
@@ -119,6 +121,7 @@ public:
 #ifdef LOG_ENABLE
         m_fpLog = fopen("corelog.txt", "wb");
 #endif
+        m_xml = new XML;
         m_eventTxQueue.openWrite();
         m_trackIdx = m_setList[0];
         getTime(m_debouncePreviousTriggerTime);
@@ -130,7 +133,7 @@ public:
  */
 void Patcher::loadTrackDefs()
 {
-    importTracks(TRACK_DEF, m_trackList, m_setList);
+    m_xml->importTracks(TRACK_DEF, m_trackList, m_setList);
 }
 
 /*! \brief Dump the track list to a log file, debug only.
@@ -815,6 +818,21 @@ void Patcher::consumeSysEx(int device)
 
 int main(int argc, char **argv)
 {
+#if 0
+    XML xml;
+    const char *cacheFileName = "fantom_cache.bin";
+    Fantom::PerformanceListLive performanceList;
+    performanceList.readFromCache(cacheFileName);
+    performanceList.writeToCache(cacheFileName, &xml);
+    std::vector<Fantom::Performance*> perfList;
+    xml.importPerformances("performances.xml", perfList);
+    performanceList.clear();
+    for (std::vector<Fantom::Performance*>::iterator i = perfList.begin(); i != perfList.end(); i++)
+    {
+        delete *i;
+    }
+    return 0;
+#endif
     try
     {
         for (;;)

@@ -11,6 +11,8 @@
 #include "mididriver.h"
 #include "dump.h"
 
+class XML;
+
 //! \brief Namespace for Fantom driver objects.
 namespace Fantom
 {
@@ -29,6 +31,7 @@ public:
     char m_name[NameLength+1];                            //!< The patch name
     void save(const Dump *d) { d->save((const char*)m_name); }  //!< Save the patch to a \a Dump object.
     void restore(const Dump *d) { d->restore((char*)m_name); }  //!< Restore the patch from a \a Dump object.
+    Patch();
 };
 
 /*! \brief A Fantom 'part', i.e. a patch with some additional mix parameters.
@@ -38,7 +41,6 @@ public:
 class Part
 {
 public:
-    uint8_t m_number;           //!<    Part number within \a Performance, 0-15.
     uint8_t m_channel;          //!<    MIDI channel this part listens on.
     uint8_t m_bankSelectMsb;    //!<    Bank select, upper 7 bits.
     uint8_t m_bankSelectLsb;    //!<    Bank select, lower 7 bits.
@@ -57,7 +59,7 @@ public:
     void restore(const Dump *d);
     void toTextFile(FILE *fp, const char *prefix) const;
     /*! \brief Constructor */
-    Part(): m_number(255), m_channel(255) { }
+    Part(): m_channel(255) { }
 };
 
 /*! \brief A Fantom performance.
@@ -75,12 +77,13 @@ public:
     Part m_partList[NofParts];    //!< Parts within this \a FantomPerformance.
     void save(const Dump *d);
     void restore(const Dump *d);
+    Performance();
 };
 
 //! \brief List of Performances that can cache itself.
 class PerformanceList
 {
-    static const uint32_t magic = 0x46a28f12;   //!<    Magic constant to mark the beginning of a cache dump.
+    static const uint32_t magic = 0x46a28f13;   //!<    Magic constant to mark the beginning of a cache dump.
     uint32_t m_magic;                           //!<    Magic constant read back from cache.
 protected:
     Fantom::Performance *m_performanceList;     //!<    List of \a Performance objects, stays even when \a this is destroyed.

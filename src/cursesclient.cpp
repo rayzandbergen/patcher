@@ -176,7 +176,8 @@ void CursesClient::loadTrackDefs()
 {
     Event event;
     m_eventRxQueue.receive(event);
-    importTracks(TRACK_DEF, m_trackList, m_setList);
+    XML xml;
+    xml.importTracks(TRACK_DEF, m_trackList, m_setList);
 }
 
 void CursesClient::allNotesOff(uint8_t channel)

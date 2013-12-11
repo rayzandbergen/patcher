@@ -270,7 +270,6 @@ void PerformanceListLive::download(Fantom::Driver *fantom, WINDOW *win, size_t n
             Fantom::Part *hwPart = m_performanceList[i].m_partList+j;
             fantom->getPartParams(hwPart, j);
             bool readPatchParams;
-            hwPart->m_number = j;
             hwPart->constructPreset(readPatchParams);
             if (readPatchParams)
             {

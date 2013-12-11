@@ -177,7 +177,7 @@ void SwPart::toTextFile(FILE *fp, const char *prefix) const
     char nestedPrefix[100];
     for (size_t i=0; i<m_hwPartList.size(); i++)
     {
-        sprintf(nestedPrefix, "%s.hwPart%02d", prefix, 1+(int)m_hwPartList[i]->m_number);
+        sprintf(nestedPrefix, "%s.hwPart%02d", prefix, (int)(1+i));
         m_hwPartList[i]->toTextFile(fp, nestedPrefix);
     }
 }
