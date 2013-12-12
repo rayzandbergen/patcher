@@ -12,7 +12,6 @@
 namespace Midi
 {
 
-#ifndef NO_MIDI_DRIVER
 //! \brief Direction of MIDI data, as seen from Pi.
 enum InOut { none, in = 100, out };
 
@@ -57,7 +56,6 @@ public:
 	void putBytes(int device, uint8_t b1, uint8_t b2);
 	void putBytes(int device, uint8_t b1, uint8_t b2, uint8_t b3);
 };
-#endif // NO_MIDI_DRIVER
 
 } // namespace Midi
 

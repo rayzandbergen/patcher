@@ -20,8 +20,6 @@
 
 namespace Midi {
 
-#ifndef NO_MIDI_DRIVER
-
 /*! \brief My setup.
  */
 Device deviceList[] =
@@ -331,7 +329,5 @@ void Driver::putBytes(int device, uint8_t b1, uint8_t b2, uint8_t b3)
         g_timer.write(fDescr, buf, 3);
     }
 }
-
-#endif // NO_MIDI_DRIVER
 
 } // namespace Midi
