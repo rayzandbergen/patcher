@@ -40,12 +40,7 @@ struct Driver
     void selectPerformanceFromMemCard() const;
 };
 
-//! \brief List of Performances that can cache itself and download itself from the Fantom.
-class PerformanceListLive: public PerformanceList
-{
-public:
-    void download(Fantom::Driver *fantom, WINDOW *win, size_t nofPerformances);
-};
+void download(Fantom::Driver *fantom, WINDOW *win, Fantom::PerformanceList &performanceList, size_t nofPerformances);
 
 } // Fantom namespace
 #endif // FANTOM_DRIVER_H

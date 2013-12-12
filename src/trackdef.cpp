@@ -66,6 +66,7 @@ void SwPart::clear()
 }
 
 //! \brief Convert a string to a MIDI note number.
+//! \todo move to mididef
 uint8_t SwPart::stringToNoteNum(const char *s)
 {
     const struct NoteOffset {

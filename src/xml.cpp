@@ -76,23 +76,30 @@ public:
     }
 };
 
-/*! \brief This class caches DOMXPathExpression instances to avoid repeated constructions from the same staring constants.
+/*! \brief This class caches DOMXPathExpression instances to avoid repeated constructions from the same expressions.
  */
 class XPathCache: public XMLCache<DOMXPathExpression>
 {
-    XMLStringCache *m_xmlStr;
+    XMLStringCache *m_xmlStr;   //!< Pointer to some string cache.
 public:
+    /*! \brief Constructor
+     *
+     * \param[in] sc    A string cache.
+     */
     XPathCache(XMLStringCache *sc): m_xmlStr(sc) { }
+    /*! \brief DOMXPathExpression creation implementation */
     virtual DOMXPathExpression *create(const char *stringConstant, DOMDocument *doc = 0)
     {
         return doc->createExpression((*m_xmlStr)(stringConstant), 0);
     }
+    //! \brief DOMXPathExpression cleanup implementation.
     virtual void release(DOMXPathExpression *x)
     {
         delete x;
     }
 };
 
+//! \brief XML parser.
 class XMLParser
 {
     std::stringstream m_stringStream;  //!< Temporary stringstream.
@@ -105,17 +112,22 @@ class XMLParser
     uint8_t toByte(const XMLCh *c);
     void serialise(DOMDocument *doc, const char *outFile);
     uint8_t getByteAttribute(DOMElement *node, const char *attr, int defaultByte = -1);
+    uint8_t getNoteAttribute(DOMElement *node, const char *attr, uint8_t defaultNote);
     void parseTracks(DOMDocument *doc, TrackList &trackList, SetList &setList);
-    void parsePerformances(DOMDocument *doc, std::vector<Fantom::Performance*> &performanceList);
+    void parsePerformances(DOMDocument *doc, Fantom::PerformanceList &performanceList);
 public:
     int importTracks (const char *inFile, TrackList &tracks, SetList &setList);
-    int exportPerformances(const char *outFile, const Fantom::Performance *performanceList,
-            uint32_t nofPerformances);
-    int importPerformances(const char *inFile, std::vector<Fantom::Performance*> &performanceList);
+    int exportPerformances(const char *outFile, const Fantom::PerformanceList &performanceList);
+    int importPerformances(const char *inFile, Fantom::PerformanceList &performanceList);
     XMLParser();
     ~XMLParser();
 };
 
+/*! \brief XML Parser constructor.
+ *
+ * There should be only one instance per process. It could be made static,
+ * but destroying it when no longer needed frees up a little memory.
+ */
 XMLParser::XMLParser(): m_xPath(&m_xmlStr)
 {
     try {
@@ -130,6 +142,7 @@ XMLParser::XMLParser(): m_xPath(&m_xmlStr)
     }
 }
 
+/*! \brief Destructor */
 XMLParser::~XMLParser()
 {
     m_xmlStr.clear();
@@ -282,6 +295,7 @@ void XMLParser::parseTracks(DOMDocument *doc, TrackList &trackList, SetList &set
                 int channel;
                 xmlStream(((DOMElement*)partNode)->getAttribute(m_xmlStr("channel")))
                     >> channel;
+                //std::cerr << "channel = " << channel << "\n";
                 part->m_channel = channel-1;
                 if (xmlStdString(((DOMElement*)partNode)->getAttribute(m_xmlStr("toggle"))) == "true")
                 {
@@ -315,16 +329,22 @@ void XMLParser::parseTracks(DOMDocument *doc, TrackList &trackList, SetList &set
                 DOMNode *rangeNode = findNode(doc, (DOMElement*)partNode, "./range");
                 if (rangeNode)
                 {
+                    part->m_rangeLower = getNoteAttribute((DOMElement*)rangeNode, "lower", part->m_rangeLower);
+                    part->m_rangeUpper = getNoteAttribute((DOMElement*)rangeNode, "upper", part->m_rangeUpper);
+#if 0
+                    //  \todo use getNoteAttribute
                     if (((DOMElement*)rangeNode)->hasAttribute(m_xmlStr("lower")))
                     {
                         std::string note = xmlStdString(((DOMElement*)rangeNode)->getAttribute(m_xmlStr("lower")));
                         part->m_rangeLower = SwPart::stringToNoteNum(note.c_str());
                     }
+                    //  \todo use getNoteAttribute
                     if (((DOMElement*)rangeNode)->hasAttribute(m_xmlStr("upper")))
                     {
                         std::string note = xmlStdString(((DOMElement*)rangeNode)->getAttribute(m_xmlStr("upper")));
                         part->m_rangeUpper = SwPart::stringToNoteNum(note.c_str());
                     }
+#endif
                 }
                 DOMNode *transposeNode = findNode(doc, (DOMElement*)partNode, "./transpose");
                 if (transposeNode)
@@ -421,6 +441,11 @@ int XMLParser::importTracks (const char *inFile, TrackList &tracks, SetList &set
 class WhiteSpaceFilter: public DOMLSSerializerFilter
 {
 public:
+    /*! \brief Evaluate acceptance criteria
+     *
+     * \param[in] node   Target node.
+     * \return FILTER_REJECT if node is a text node with only whitespace, FILTER_ACCEPT otherwise.
+     */
     virtual FilterAction acceptNode(const DOMNode *node) const
     {
         if (node->getNodeType() != DOMNode::TEXT_NODE)
@@ -436,6 +461,8 @@ public:
             return DOMNodeFilter::FILTER_REJECT;
         return DOMNodeFilter::FILTER_ACCEPT;
     }
+    /*! \brief Returns SHOW_ALL.
+     */
     virtual ShowType getWhatToShow() const
     {
         return DOMNodeFilter::SHOW_ALL;
@@ -458,24 +485,58 @@ void XMLParser::serialise(DOMDocument *doc, const char *outFile)
     delete serializer;
 }
 
+//! \brief Retrieve a note-value attribute.
+uint8_t XMLParser::getNoteAttribute(DOMElement *node, const char *attr, uint8_t defaultNote)
+{
+    const XMLCh *c = node->getAttribute(m_xmlStr(attr));
+    if (c)
+    {
+        char *s = XMLString::transcode(c);
+        uint8_t rv;
+        if (s[0])
+        {
+            rv = SwPart::stringToNoteNum(s);
+        }
+        else
+        {
+            rv = defaultNote;
+        }
+        XMLString::release(&s);
+        return rv;
+    }
+    return defaultNote;
+}
+
+//! \brief Retrieve a byte-value attribute.
 uint8_t XMLParser::getByteAttribute(DOMElement *node, const char *attr, int defaultByte)
 {
     const XMLCh *c = node->getAttribute(m_xmlStr(attr));
-    if (c == 0 || c[0] == 0)
+    if (c)
     {
-        if (defaultByte == -1)
+        char *s = XMLString::transcode(c);
+        if (s[0])
         {
-            Error e;
-            e.stream() << "missing attribute: " << attr;
-            throw(e);
+            m_stringStream.clear();
+            m_stringStream << s;
+            int tmp;
+            m_stringStream >> tmp;
+            XMLString::release(&s);
+            return (uint8_t)tmp;
         }
-        else
-            return (uint8_t)defaultByte;
+        XMLString::release(&s);
     }
-    return toByte(c);
+    if (defaultByte == -1)
+    {
+        Error e;
+        e.stream() << "missing attribute: " << attr;
+        throw(e);
+    }
+    else
+        return (uint8_t)defaultByte;
 }
 
-void XMLParser::parsePerformances(DOMDocument *doc, std::vector<Fantom::Performance*> &performanceList)
+//! \brief Parse a DOM document into a \a PerformanceList.
+void XMLParser::parsePerformances(DOMDocument *doc, Fantom::PerformanceList &performanceList)
 {
     //std::cerr << "parse performances " << std::endl;
     performanceList.clear();
@@ -496,17 +557,18 @@ void XMLParser::parsePerformances(DOMDocument *doc, std::vector<Fantom::Performa
         {
             DOMNode *partNode = partNodes->getNodeValue();
             Fantom::Part *part = performance->m_partList + partIdx;
-            part->m_channel = 1 + getByteAttribute((DOMElement*)partNode, "channel");
+            part->m_channel = getByteAttribute((DOMElement*)partNode, "channel")-1;
             part->m_bankSelectMsb = getByteAttribute((DOMElement*)partNode, "bankSelectMsb");
             part->m_bankSelectLsb = getByteAttribute((DOMElement*)partNode, "bankSelectLsb");
             part->m_programChange = getByteAttribute((DOMElement*)partNode, "programChange");
             bool b;
             part->constructPreset(b);
+            //std::cerr << (int)part->m_bankSelectMsb << " " << (int)part->m_bankSelectLsb << " " << (int)part->m_programChange << " " << part->m_preset << "\n";
             part->m_volume = getByteAttribute((DOMElement*)partNode, "volume");
             part->m_transpose = getByteAttribute((DOMElement*)partNode, "transpose", 0);
             part->m_octave = getByteAttribute((DOMElement*)partNode, "octave", 0);
-            part->m_keyRangeLower = getByteAttribute((DOMElement*)partNode, "keyRangeLower", 0);
-            part->m_keyRangeUpper = getByteAttribute((DOMElement*)partNode, "keyRangeUpper", 127);
+            part->m_keyRangeLower = getNoteAttribute((DOMElement*)partNode, "keyRangeLower", Midi::Note::C0);
+            part->m_keyRangeUpper = getNoteAttribute((DOMElement*)partNode, "keyRangeUpper", Midi::Note::G10);
             part->m_fadeWidthLower = getByteAttribute((DOMElement*)partNode, "fadeWidthLower", 0);
             part->m_fadeWidthUpper = getByteAttribute((DOMElement*)partNode, "fadeWidthUpper", 0);
             DOMNode *patchNode = findNode(doc, (DOMElement*)partNode, "./patch");
@@ -522,7 +584,8 @@ void XMLParser::parsePerformances(DOMDocument *doc, std::vector<Fantom::Performa
     performanceNodes->release();
 }
 
-int XMLParser::importPerformances(const char *inFile, std::vector<Fantom::Performance*> &performanceList)
+//! \brief Parse an XML file into a \a PerformanceList.
+int XMLParser::importPerformances(const char *inFile, Fantom::PerformanceList &performanceList)
 {
     XercesDOMParser* parser = new XercesDOMParser();
     parser->setValidationScheme(XercesDOMParser::Val_Always);
@@ -561,28 +624,21 @@ int XMLParser::importPerformances(const char *inFile, std::vector<Fantom::Perfor
 
 
 //! \brief Serialises Fantom Performances to an XML file.
-int XMLParser::exportPerformances(const char *outFile, const Fantom::Performance *performanceList,
-            uint32_t nofPerformances)
+int XMLParser::exportPerformances(const char *outFile, const Fantom::PerformanceList &performanceList)
 {
     XMLCh stringBuf[100];
     DOMImplementation *impl = DOMImplementationRegistry::getDOMImplementation(m_xmlStr("core"));
     DOMDocument *doc = impl->createDocument(0, m_xmlStr("performances"), 0);
     DOMElement *root = doc->getDocumentElement();
     root->setAttribute(m_xmlStr("version"), m_xmlStr("1"));
-    for (int performanceIdx = 0; performanceIdx < (int)nofPerformances; performanceIdx++)
+    for (Fantom::PerformanceList::const_iterator p = performanceList.begin(); p != performanceList.end(); p++)
     {
-        const Fantom::Performance *performance = performanceList + performanceIdx;
+        const Fantom::Performance *performance = *p;
         DOMElement *performanceNode = doc->createElement(m_xmlStr("performance"));
         root->appendChild(performanceNode);
-        std::cerr << "performance " << performanceIdx << ": " << performance->m_name << std::endl;
         performanceNode->setAttribute(m_xmlStr("name"), m_xmlStr(performance->m_name));
         for (int partIdx = 0; partIdx < Fantom::Performance::NofParts; partIdx++)
         {
-            if (performanceIdx ==1 && partIdx == 14)
-            {
-                static int qqq;
-                qqq++;
-            }
             //std::cerr << "part " << partIdx << std::endl;
             const Fantom::Part *part = performance->m_partList+partIdx;
             DOMElement *partNode = doc->createElement(m_xmlStr("part"));
@@ -638,7 +694,7 @@ int XMLParser::exportPerformances(const char *outFile, const Fantom::Performance
     } // foreach Performance
     serialise(doc, outFile);
     doc->release();
-    std::cerr << "done" << std::endl;
+    //std::cerr << "done" << std::endl;
     return 0;
 }
 
@@ -757,28 +813,32 @@ void exportTracks(const std::vector<Track*> &tracks, const char *filename)
 }
 #endif // EXPORT_TRACKS
 
+//! \brief Default constructor.
 XML::XML()
 {
     m_xmlParser = new XMLParser;
 }
 
+//! \brief Destructor.
 XML::~XML()
 {
     delete m_xmlParser;
 }
 
+//! \brief Parse an XML file into a track list and a \a SetList.
 int XML::importTracks (const char *inFile, TrackList &tracks, SetList &setList)
 {
     return m_xmlParser->importTracks(inFile, tracks, setList);
 }
 
-int XML::exportPerformances(const char *outFile, const Fantom::Performance *performanceList,
-            uint32_t nofPerformances)
+//! \brief Export a \a PerformanceList to XML.
+int XML::exportPerformances(const char *outFile, const Fantom::PerformanceList &performanceList)
 {
-    return m_xmlParser->exportPerformances(outFile, performanceList, nofPerformances);
+    return m_xmlParser->exportPerformances(outFile, performanceList);
 }
 
-int XML::importPerformances(const char *inFile, std::vector<Fantom::Performance*> &performanceList)
+//! \brief Parse an XML file into a \a PerformanceList.
+int XML::importPerformances(const char *inFile, Fantom::PerformanceList &performanceList)
 {
     return m_xmlParser->importPerformances(inFile, performanceList);
 }

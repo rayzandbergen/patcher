@@ -57,6 +57,7 @@ private:
     XML *m_xml;                         //!< XML parser.
     const Real debounceTime;            //!< Debounce time in seconds, used to debounce track and section changes.
     TrackList m_trackList;              //!< Global \a Track list.
+    Fantom::PerformanceList m_performanceList; //!< Global \a Performance list.
     Midi::Driver *m_midi;               //!< Pointer to global MIDI \a Driver object.
     Fantom::Driver *m_fantom;           //!< Pointer to global Fantom \a Driver object.
     int m_trackIdx;                     //!< Current track index
@@ -98,11 +99,10 @@ public:
     void updateFantomDisplay();
     size_t nofTracks() const { return m_trackList.size(); } //!< The number of \a Tracks.
     void dumpTrackList();
-    void mergePerformanceData();
+    void loadConfig();
     void eventLoop();
     void sendReadyEvent();
     void restoreState();
-    void loadTrackDefs();
     /*! \brief constructor for Patcher
      *
      *  This will set up an empty Patcher object.
@@ -129,13 +129,6 @@ public:
     };
 };
 
-/*! \brief Load track definitions from file into the track list and the set list.
- */
-void Patcher::loadTrackDefs()
-{
-    m_xml->importTracks(TRACK_DEF, m_trackList, m_setList);
-}
-
 /*! \brief Dump the track list to a log file, debug only.
  */
 void Patcher::dumpTrackList()
@@ -155,19 +148,44 @@ void Patcher::dumpTrackList()
 
 /*! \brief Add links from software parts to hardware parts, based on matching channels.
  */
-void Patcher::mergePerformanceData()
+void Patcher::loadConfig()
 {
-    Fantom::PerformanceListLive performanceList;
-    const char *cacheFileName = "fantom_cache.bin";
-    if (performanceList.readFromCache(cacheFileName) != nofTracks())
+    // increase timeout, parsing XML takes a lot of time on the Pi.
+    g_timer.setTimeout((Real)2.5, 3);
+    const char *cacheFilename = "fantom_cache.xml";
+    // try to read cache to avoid download
+    try
     {
-        performanceList.download(m_fantom, 0, nofTracks());
-        performanceList.writeToCache(cacheFileName);
+        m_xml->importPerformances(cacheFilename, m_performanceList);
     }
+    catch(...)
+    {
+    }
+    if (m_performanceList.empty())
+    {
+        // no cache, import tracks and download the right number of performances
+        m_xml->importTracks(TRACK_DEF, m_trackList, m_setList);
+        Fantom::download(m_fantom, 0, m_performanceList, m_trackList.size());
+        // create cache
+        m_xml->exportPerformances(cacheFilename, m_performanceList);
+    }
+    else
+    {
+        m_xml->importTracks(TRACK_DEF, m_trackList, m_setList);
+        if (m_trackList.size() != m_performanceList.size())
+        {
+            // cache was outdated
+            Fantom::download(m_fantom, 0, m_performanceList, m_trackList.size());
+            // refresh cache
+            m_xml->exportPerformances(cacheFilename, m_performanceList);
+        }
+    }
+    // merge performance data into track data
+    g_timer.setTimeout((Real)0.4, 3);
     for (size_t t = 0; t < nofTracks(); t++)
     {
         Track *track = m_trackList[t];
-        track->m_performance = performanceList[t];
+        track->m_performance = m_performanceList[t];
         for (size_t s = 0; s < track->m_sectionList.size(); s++)
         {
             const Section *section = track->m_sectionList[s];
@@ -819,18 +837,19 @@ void Patcher::consumeSysEx(int device)
 int main(int argc, char **argv)
 {
 #if 0
+    // debug: check memory leaks, and see
+    // if importing, then exporting alters any performance data.
     XML xml;
-    const char *cacheFileName = "fantom_cache.bin";
-    Fantom::PerformanceListLive performanceList;
-    performanceList.readFromCache(cacheFileName);
-    performanceList.writeToCache(cacheFileName, &xml);
-    std::vector<Fantom::Performance*> perfList;
-    xml.importPerformances("performances.xml", perfList);
-    performanceList.clear();
+    Fantom::PerformanceList perfList;
+    xml.importPerformances("fantom_cache.xml", perfList);
+    xml.exportPerformances("fantom_cache2.xml", perfList);
     for (std::vector<Fantom::Performance*>::iterator i = perfList.begin(); i != perfList.end(); i++)
-    {
         delete *i;
-    }
+    // read tracklist and setlist, then delete.
+    TrackList trackList;
+    SetList setList;
+    xml.importTracks(TRACK_DEF, trackList, setList);
+    clear(trackList);
     return 0;
 #endif
     try
@@ -872,23 +891,11 @@ int main(int argc, char **argv)
         {
             throw(Error("unrecognised trailing arguments, try -h"));
         }
-#if 0
-        // debug: see if we have memory leaks if we read
-        // the config file and then clean up again.
-
-        TrackList trackList;
-        SetList setList;
-        importTracks(TRACK_DEF, trackList, setList);
-        clear(trackList);
-        return 0;
-#endif
-        g_timer.setTimeout((Real)2.5, 2);
+        g_timer.setTimeout((Real)1.0, 2);
         Midi::Driver midi(0);
         Fantom::Driver fantom(0, &midi);
         Patcher patcher(&midi, &fantom);
-        patcher.loadTrackDefs();
-        g_timer.setTimeout((Real)0.4, 3);
-        patcher.mergePerformanceData();
+        patcher.loadConfig();
         //patcher.dumpTrackList();
         patcher.restoreState();
         patcher.updateBcfFaders();

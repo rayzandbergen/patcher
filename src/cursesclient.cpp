@@ -17,6 +17,7 @@
 class CursesClient
 {
     FILE *m_fpLog;                      //!< Log stream.
+    XML *m_xml;                         //!< XML parser.
     ActivityList m_channelActivity;     //!< Per-channel \a Activity.
     ActivityList m_softPartActivity;    //!< Per-\a SwPart \a Activity.
     Screen *m_screen;                   //!< Screen object to log to.
@@ -43,14 +44,12 @@ public:
         else
             return "<none>";
     }
-    //! \brief Load track definitions from a file.
-    void loadTrackDefs();
     //! \brief process All Notes Off event for a given channel.
     void allNotesOff(uint8_t channel);
     //! \brief process All Notes Off event.
     void allNotesOff();
-    //! \brief Merge performance data into track list.
-    void mergePerformanceData();
+    //! \brief Load track list and performance list and merge performance data.
+    void loadConfig();
     //! \brief Write to the curses screen.
     void updateScreen();
     //! \brief Event loop, never returns.
@@ -58,6 +57,7 @@ public:
     //! \brief Constructs a curses client.
     CursesClient(bool enableLogging, Screen *s):
         m_fpLog(0),
+        m_xml(0),
         m_channelActivity(Midi::NofChannels, Midi::Note::max),
         m_softPartActivity(64 /*see tracks.xsd*/, Midi::Note::max),
         m_screen(s),
@@ -66,6 +66,7 @@ public:
     {
         if (enableLogging)
             m_fpLog = fopen("clientlog.txt", "wb");
+        m_xml = new XML;
         m_eventRxQueue.openRead();
     }
 };
@@ -170,14 +171,6 @@ void CursesClient::updateScreen()
             }
         }
     }
-}
-
-void CursesClient::loadTrackDefs()
-{
-    Event event;
-    m_eventRxQueue.receive(event);
-    XML xml;
-    xml.importTracks(TRACK_DEF, m_trackList, m_setList);
 }
 
 void CursesClient::allNotesOff(uint8_t channel)
@@ -296,18 +289,20 @@ void CursesClient::eventLoop()
     }
 }
 
-void CursesClient::mergePerformanceData()
+void CursesClient::loadConfig()
 {
-    Fantom::PerformanceList performanceList;
-    const char *cacheFileName = "fantom_cache.bin";
-    if (performanceList.readFromCache(cacheFileName) != nofTracks())
-    {
-        throw(Error("cannot read fantom cache"));
-    }
+    m_xml->importTracks(TRACK_DEF, m_trackList, m_setList);
+    // Wait for core process to start its event loop.
+    Event event;
+    m_eventRxQueue.receive(event);
+    // By now the cache file should be available.
+    m_xml->importPerformances("fantom_cache.xml", m_performanceList);
     for (size_t t = 0; t < nofTracks(); t++)
     {
         Track *track = m_trackList[t];
-        track->m_performance = performanceList[t];
+        track->m_performance = m_performanceList[t];
+        if (m_fpLog)
+            fprintf(m_fpLog, "merging performance %s\n", track->m_performance->m_name);
         for (size_t s = 0; s < track->m_sectionList.size(); s++)
         {
             const Section *section = track->m_sectionList[s];
@@ -320,6 +315,8 @@ void CursesClient::mergePerformanceData()
                     if (swPart->m_channel == hwPart->m_channel)
                     {
                         swPart->m_hwPartList.push_back(hwPart);
+                        if (m_fpLog)
+                            fprintf(m_fpLog, "merging part %s\n", hwPart->m_preset);
                     }
                 }
             }
@@ -331,6 +328,7 @@ int main(void)
 {
     try
     {
+// \todo LOG_ENABLE should be a command line option.
 #ifdef LOG_ENABLE
         bool enableLogging = true;
 #else
@@ -338,8 +336,7 @@ int main(void)
 #endif
         Screen screen;
         CursesClient cursesClient(enableLogging, &screen);
-        cursesClient.loadTrackDefs();
-        cursesClient.mergePerformanceData();
+        cursesClient.loadConfig();
         cursesClient.eventLoop();
     }
     catch (Error &e)

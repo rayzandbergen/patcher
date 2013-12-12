@@ -241,19 +241,21 @@ void Driver::selectPerformanceFromMemCard() const
  *
  * \param[in]   fantom      Fantom driver.
  * \param[in]   win         Curses screen object to log to.
+ * \param[out]  performanceList   List of downloaded performances.
  * \param[in]   nofPerformances   The number of Performances to download.
  */
-void PerformanceListLive::download(Fantom::Driver *fantom, WINDOW *win, size_t nofPerformances)
+void download(Fantom::Driver *fantom, WINDOW *win, Fantom::PerformanceList &performanceList, size_t nofPerformances)
 {
-    clear();
-    m_size = nofPerformances;
-    m_performanceList = new Fantom::Performance[m_size];
+    performanceList.clear();
+    performanceList.reserve(nofPerformances);
     char nameBuf[Fantom::NameLength+1];
     TimeSpec fantomPerformanceSelectDelay((Real)0.10);
     if (win)
         mvwprintw(win, 2, 3, "Downloading Fantom Performance data:");
-    for (size_t i=0; i<m_size; i++)
+    for (size_t i=0; i<nofPerformances; i++)
     {
+        Fantom::Performance *performance = new Fantom::Performance;
+        performanceList.push_back(performance);
         fantom->selectPerformance(i);
         nanosleep(&fantomPerformanceSelectDelay, NULL);
         fantom->getPerfName(nameBuf);
@@ -261,13 +263,13 @@ void PerformanceListLive::download(Fantom::Driver *fantom, WINDOW *win, size_t n
         if (win)
         {
             mvwprintw(win, 4, 3, "Performance: '%s'", nameBuf);
-            Screen::showProgressBar(win, 4, 32, ((Real)i)/m_size);
+            Screen::showProgressBar(win, 4, 32, ((Real)i)/nofPerformances);
             wrefresh(win);
         }
-        strcpy(m_performanceList[i].m_name, nameBuf);
+        strcpy(performance->m_name, nameBuf);
         for (int j=0; j<Fantom::Performance::NofParts; j++)
         {
-            Fantom::Part *hwPart = m_performanceList[i].m_partList+j;
+            Fantom::Part *hwPart = performance->m_partList+j;
             fantom->getPartParams(hwPart, j);
             bool readPatchParams;
             hwPart->constructPreset(readPatchParams);

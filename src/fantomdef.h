@@ -6,6 +6,7 @@
 #ifndef FANTOM_DEF_H
 #define FANTOM_DEF_H
 #include <stdint.h>
+#include <vector>
 #include "screen.h"
 #include "mididef.h"
 #include "mididriver.h"
@@ -80,28 +81,8 @@ public:
     Performance();
 };
 
-//! \brief List of Performances that can cache itself.
-class PerformanceList
-{
-    static const uint32_t magic = 0x46a28f13;   //!<    Magic constant to mark the beginning of a cache dump.
-    uint32_t m_magic;                           //!<    Magic constant read back from cache.
-protected:
-    Fantom::Performance *m_performanceList;     //!<    List of \a Performance objects, stays even when \a this is destroyed.
-    uint32_t m_size;                            //!<    Number of \a Perfomance objects.
-public:
-    //! \brief Number of \a Performance objects in this list.
-    size_t size() const { return (size_t)m_size; }
-    void clear();   //!<    Clear this object.
-    //! \brief Default constructor.
-    PerformanceList(): m_performanceList(0) { }
-    //! \brief index operator, returns i'th \a Performance.
-    Fantom::Performance *operator[](size_t i) const
-    {
-        return &m_performanceList[i];
-    }
-    size_t readFromCache(const char *fantomPatchFile);
-    void writeToCache(const char *fantomPatchFile);
-};
+//! \brief List of Performance pointers.
+typedef std::vector<Performance*> PerformanceList;
 
 } // Fantom namespace
 #endif // FANTOM_DEF_H
