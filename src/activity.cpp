@@ -56,7 +56,7 @@ bool ActivityList::nextExpiry(TimeSpec &expireTime) const
 {
     if (m_queue.empty())
         return false;
-    expireTime = m_queue.front().m_expireTime;
+    expireTime = m_queue.front().expireTime();
     return true;
 }
 
@@ -73,7 +73,7 @@ bool ActivityList::update(const TimeSpec &now)
     {
         if (m_queue.front().expired(now))
         {
-            int major = m_queue.front().m_major;
+            int major = m_queue.front().major();
             m_triggerCount[major] -= 1;
             m_dirty = m_dirty || (m_triggerCount[major] == 0);
             m_queue.pop();
@@ -106,7 +106,7 @@ void ActivityList::clear(int majorIndex)
     std::queue<ActivityTrigger> cleanedQueue;
     while (!m_queue.empty())
     {
-        if (m_queue.front().m_major != majorIndex)
+        if (m_queue.front().major() != majorIndex)
             cleanedQueue.push(m_queue.front());
         m_queue.pop();
     }

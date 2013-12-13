@@ -13,16 +13,20 @@ namespace std { /*! \brief STL queue */ template <class T> class queue {
         public T entry[2]; /*!< Entry. */ }; }
 #endif
 
-/*! \brief Keeps track of a trigger until it expires.
+/*! \brief This object knows wether or not is has expired.
  *
- * A trigger expires 0.3 seconds after its creation.
+ * Expiration time is set to 0.3 seconds after its creation.
  */
 class ActivityTrigger
 {
-public:
     TimeSpec m_expireTime;      //!<    Absolute expiration time.
     int m_major;                //!<    Major index of the trigger.
     int m_minor;                //!<    Minor index of the tigger, not used.
+public:
+    //! \brief Absolute expiration time.
+    const TimeSpec &expireTime() const { return m_expireTime; }
+    //! \brief Major index of the trigger.
+    int major() const { return m_major; }
     /*! \brief Construct a new trigger.
      *
      * \param[in] major     Major index of the trigger.
@@ -48,13 +52,14 @@ public:
 //! \brief  Manage a list of ActivityTriggers.
 class ActivityList
 {
-public:
     std::queue<ActivityTrigger> m_queue;    //!<    Queue of triggers.
     int *m_triggerCount;                    //!<    List of trigger counters.
     int m_majorSize;                        //!<    Major size of the list.
     int m_minorSize;                        //!<    Minor size of the list, not used.
     bool m_dirty;                           //!<    True if any change since last \a get().
 public:
+    //! \brief Query trigger count for a given major index.
+    int triggerCount(int major) const { return m_triggerCount[major]; }
     ActivityList(int majorSize, int minorSize);
     ~ActivityList();
     //! \brief Returns true if any change since last \a get().

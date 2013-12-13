@@ -80,7 +80,7 @@ void CursesClient::updateScreen()
         fprintf(m_fpLog, "screen update %08d\n", m_nofScreenUpdates);
         fprintf(m_fpLog, "activity ");
         for (int i=0; i<Midi::NofChannels; i++)
-            fprintf(m_fpLog, "%02d ", m_channelActivity.m_triggerCount[i]);
+            fprintf(m_fpLog, "%02d ", m_channelActivity.triggerCount(i));
         fprintf(m_fpLog, "\n");
     }
     mvwprintw(m_screen->main(), 2, 0,
