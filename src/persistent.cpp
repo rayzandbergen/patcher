@@ -80,7 +80,7 @@ void Persist::store(int track, int section, int trackWithinSet)
 
 /*! \brief  Restore current \a Track, \a Section and set index from shared memory.
  */
-void Persist::restore(int *track, int *section, int *trackWithinSet)
+void Persist::restore(int *track, int *section, int *trackWithinSet) const
 {
     *track = m_memMap->m_track;
     *section = m_memMap->m_section;

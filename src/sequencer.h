@@ -18,6 +18,6 @@ public:
     void enable();                  //!< Enable the \a Sequencer.
     void disable();                 //!< Disable the \a Sequencer.
     bool toggle();                  //!< Toggle the on/off switch of the \a Sequencer.
-    Sequencer(): m_enabled(false) { } //!< Query enable switch.
+    Sequencer(): m_fp(0), m_enabled(false) { } //!< Query enable switch.
 };
 #endif //SEQUENCER_H

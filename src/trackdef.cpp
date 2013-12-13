@@ -4,7 +4,6 @@
  *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
  */
 #include <string.h>
-#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "trackdef.h"
@@ -30,7 +29,7 @@ Section::~Section()
 //! \brief Clean up memory used by this \a Section.
 void Section::clear()
 {
-    for (SwPartList::iterator i = m_partList.begin(); i != m_partList.end(); i++)
+    for (SwPartList::iterator i = m_partList.begin(); i != m_partList.end(); ++i)
         delete *i;
     m_partList.clear();
     free((void*)m_name);
@@ -46,6 +45,7 @@ SwPart::SwPart(const char *name):
         m_mono(false),
         m_transposer(0)
 {
+    memset(&m_customTranspose, 0, sizeof m_customTranspose);
 }
 
 //! \brief Destructor.
@@ -65,52 +65,6 @@ void SwPart::clear()
     m_name = 0;
 }
 
-//! \brief Convert a string to a MIDI note number.
-//! \todo move to mididef
-uint8_t SwPart::stringToNoteNum(const char *s)
-{
-    const struct NoteOffset {
-        char m_char;
-        uint8_t m_offset;
-    } noteOffset[] = {
-        {'C', 0 },
-        {'D', 2 },
-        {'E', 4 },
-        {'F', 5 },
-        {'G', 7 },
-        {'A', 9 },
-        {'B', 11 }
-    };
-
-    uint8_t num = 255;
-    int c = toupper(s[0]);
-    for (uint8_t i=0; i<7; i++)
-        if (c == noteOffset[i].m_char)
-        {
-            num = noteOffset[i].m_offset;
-            break;
-        }
-    ASSERT(num != 255);
-    uint8_t i = 1;
-    if (s[i] == '#')
-    {
-        num++;
-        i++;
-    }
-    else if (s[i] == 'b')
-    {
-        num--;
-        i++;
-    }
-    uint8_t oct = s[i++] - '0';
-    if (s[i])
-    {
-        oct = 10*oct + (s[i] - '0');
-    }
-    num += (uint8_t)12 * oct;
-    return num;
-}
-
 //! \brief Construct a default Track with a given name.
 Track::Track(const char *name): m_name(name), m_chain(false), m_startSection(0), m_performance(0)
 {
@@ -125,62 +79,11 @@ Track::~Track()
 //! \brief Clean up memory used by this \a Track.
 void Track::clear()
 {
-    for (SectionList::iterator i = m_sectionList.begin(); i != m_sectionList.end(); i++)
+    for (SectionList::iterator i = m_sectionList.begin(); i != m_sectionList.end(); ++i)
         delete *i;
     m_sectionList.clear();
     free((void*)m_name);
     m_name = 0;
-}
-
-//! \brief Dump to a log file.
-void Track::toTextFile(FILE *fp, const char *prefix) const
-{
-    fprintf(fp, "%s.name:%s\n", prefix, m_name);
-    fprintf(fp, "%s.chain:%d\n", prefix, m_chain);
-    fprintf(fp, "%s.startSection:%d\n", prefix, m_startSection);
-    fprintf(fp, "%s.nofSections:%d\n", prefix, nofSections());
-    char nestedPrefix[100];
-    for (int i=0; i<nofSections(); i++)
-    {
-        sprintf(nestedPrefix, "%s.section%02d", prefix, 1+i);
-        m_sectionList[i]->toTextFile(fp, nestedPrefix);
-    }
-}
-
-//! \brief Dump to a log file.
-void Section::toTextFile(FILE *fp, const char *prefix) const
-{
-    fprintf(fp, "%s.name:%s\n", prefix, m_name);
-    fprintf(fp, "%s.noteOffEnter:%d\n", prefix, m_noteOffEnter);
-    fprintf(fp, "%s.noteOffLeave:%d\n", prefix, m_noteOffLeave);
-    fprintf(fp, "%s.nextTrack:%d\n", prefix, m_nextTrack);
-    fprintf(fp, "%s.nextSection:%d\n", prefix, m_nextSection);
-    fprintf(fp, "%s.previousTrack:%d\n", prefix, m_previousTrack);
-    fprintf(fp, "%s.previousSection:%d\n", prefix, m_previousSection);
-    fprintf(fp, "%s.nofSwParts:%d\n", prefix, nofParts());
-    char nestedPrefix[100];
-    for (int i=0; i<nofParts(); i++)
-    {
-        sprintf(nestedPrefix, "%s.swPart%02d", prefix, 1+i);
-        m_partList[i]->toTextFile(fp, nestedPrefix);
-    }
-}
-
-//! \brief Dump to a log file.
-void SwPart::toTextFile(FILE *fp, const char *prefix) const
-{
-    fprintf(fp, "%s.name:%s\n", prefix, m_name ? m_name : "noName");
-    fprintf(fp, "%s.channel:%d\n", prefix, m_channel);
-    fprintf(fp, "%s.transpose:%d\n", prefix, m_transpose);
-    fprintf(fp, "%s.rangeLower:%s\n", prefix, Midi::noteName(m_rangeLower));
-    fprintf(fp, "%s.rangeUpper:%s\n", prefix, Midi::noteName(m_rangeUpper));
-    fprintf(fp, "%s.nofHwParts:%d\n", prefix, (int)m_hwPartList.size());
-    char nestedPrefix[100];
-    for (size_t i=0; i<m_hwPartList.size(); i++)
-    {
-        sprintf(nestedPrefix, "%s.hwPart%02d", prefix, (int)(1+i));
-        m_hwPartList[i]->toTextFile(fp, nestedPrefix);
-    }
 }
 
 void SetList::add(TrackList &trackList, const char *trackName)
@@ -300,6 +203,6 @@ void fixChain(TrackList &trackList)
  */
 void clear(TrackList &trackList)
 {
-    for (TrackList::iterator i = trackList.begin(); i != trackList.end(); i++)
+    for (TrackList::iterator i = trackList.begin(); i != trackList.end(); ++i)
         delete *i;
 }

@@ -11,8 +11,6 @@
 #include "activity.h"
 #define VERSION "1.4.0"     //!< global version number
 
-//#define LOG_ENABLE
-
 //! \brief A curses client for the patcher-core.
 class CursesClient
 {
@@ -130,7 +128,7 @@ void CursesClient::updateScreen()
     const int colLength = 3;
     bool softPartActivity[64];
     m_softPartActivity.get(softPartActivity);
-    for (int i=0; i<currentSection()->nofParts(); i++)
+    for (size_t i=0; i<currentSection()->m_partList.size(); i++)
     {
         const SwPart *swPart = currentSection()->m_partList[i];
         for (int j=0; j<Fantom::Performance::NofParts;j++)
@@ -324,16 +322,33 @@ void CursesClient::loadConfig()
     }
 }
 
-int main(void)
+int main(int argc, char**argv)
 {
+    bool enableLogging = false;
+    for (;;)
+    {
+        int opt = getopt(argc, argv, "lh");
+        if (opt == -1)
+            break;
+        switch (opt)
+        {
+            case 'l':
+                enableLogging = true;
+                break;
+            default:
+                std::cerr << "\ncursesclient [-h|?] [-l]\n\n"
+                    "  -h|?     This message\n"
+                    "  -l       Enable logging\n\n";
+                return 1;
+                break;
+        }
+    }
+    if (argc > optind)
+    {
+        std::cerr << "unrecognised trailing arguments, try -h\n";
+    }
     try
     {
-// \todo LOG_ENABLE should be a command line option.
-#ifdef LOG_ENABLE
-        bool enableLogging = true;
-#else
-        bool enableLogging = false;
-#endif
         Screen screen;
         CursesClient cursesClient(enableLogging, &screen);
         cursesClient.loadConfig();

@@ -58,11 +58,9 @@ public:
     //! \brief Return true if a note number is in range of this \a SwPart.
     bool inRange(uint8_t noteNum) const
         { return noteNum >= m_rangeLower && noteNum <= m_rangeUpper; }
-    static uint8_t stringToNoteNum(const char *s);
     SwPart(const char *name);
     ~SwPart();
     void clear();
-    void toTextFile(FILE *fp, const char *prefix) const;
 };
 
 //! \brief A list of \a Section object pointers.
@@ -86,12 +84,6 @@ public:
     Section(const char *name);
     ~Section();
     void clear();
-    //! \brief Append \a Swpart to this \a Section.
-    void addPart(SwPart *s) { m_partList.push_back(s); }
-    //! \brief Return the number of parts in this \a Section.
-    int nofParts() const { return (int)m_partList.size(); }
-    //! \brief Dump this \a section to a log file.
-    void toTextFile(FILE *fp, const char *prefix) const;
 };
 
 //! \brief A list of \a Section object pointers.
@@ -113,7 +105,6 @@ public:
     void addSection(Section *s) { m_sectionList.push_back(s); }
     //! \brief The number of sections in this Track.
     int nofSections() const { return (int)m_sectionList.size(); }
-    void toTextFile(FILE *fp, const char *prefix) const;
 };
 
 typedef std::vector<Track*> TrackList;  //!< A list of \a Track object pointers.

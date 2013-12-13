@@ -6,6 +6,12 @@
 #include <stdint.h>
 #include "transposer.h"
 #include "patchercore.h"
+Transposer::Transposer(uint8_t offset): m_sustain(false), m_transpose(offset)
+{
+    for (int i=0; i<Midi::Note::max; i++)
+        m_noteState[i] = false;
+}
+
 //! \brief Apply possible transpose to MIDI message.
 void Transposer::transpose(uint8_t midiStatus, uint8_t &data1, uint8_t &data2)
 {

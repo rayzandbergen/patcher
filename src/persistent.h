@@ -15,7 +15,7 @@ class Persist
 public:
     Persist();
     void store(int track, int section, int trackWithinSet);
-    void restore(int *track, int *section, int *trackWithinSet);
+    void restore(int *track, int *section, int *trackWithinSet) const;
 };
 
 #endif // PERSISTENT_H

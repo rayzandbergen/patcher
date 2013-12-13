@@ -14,7 +14,6 @@
 #include "trackdef.h"
 #include "mididef.h"
 #include "mididriver.h"
-#include "dump.h"
 #include "fantomdriver.h"
 #include "transposer.h"
 #include "now.h"
@@ -30,7 +29,6 @@
 #include "fantomscroller.h"
 #include "fcb1010.h"
 #include "queue.h"
-//#include "undupparts.h"
 
 //#define LOG_ENABLE          //!< Enable logging.
 #define LOG_NOTE            //!< Log note data if defined.
@@ -57,7 +55,6 @@ private:
     XML *m_xml;                         //!< XML parser.
     const Real debounceTime;            //!< Debounce time in seconds, used to debounce track and section changes.
     TrackList m_trackList;              //!< Global \a Track list.
-    Fantom::PerformanceList m_performanceList; //!< Global \a Performance list.
     Midi::Driver *m_midi;               //!< Pointer to global MIDI \a Driver object.
     Fantom::Driver *m_fantom;           //!< Pointer to global Fantom \a Driver object.
     int m_trackIdx;                     //!< Current track index
@@ -98,7 +95,6 @@ public:
     void updateBcfFaders();
     void updateFantomDisplay();
     size_t nofTracks() const { return m_trackList.size(); } //!< The number of \a Tracks.
-    void dumpTrackList();
     void loadConfig();
     void eventLoop();
     void sendReadyEvent();
@@ -129,23 +125,6 @@ public:
     };
 };
 
-/*! \brief Dump the track list to a log file, debug only.
- */
-void Patcher::dumpTrackList()
-{
-    FILE *fp = fopen("log.txt", "w");
-    if (!fp)
-        throw(Error("fopen", errno));
-    char prefix[100];
-    int i=1;
-    for (TrackList::const_iterator t = m_trackList.begin(); t != m_trackList.end(); t++, i++)
-    {
-        sprintf(prefix, "track%02d", i);
-        (*t)->toTextFile(fp, prefix);
-    }
-    //undupParts(m_performanceList, m_trackList);
-}
-
 /*! \brief Add links from software parts to hardware parts, based on matching channels.
  */
 void Patcher::loadConfig()
@@ -154,30 +133,31 @@ void Patcher::loadConfig()
     g_timer.setTimeout((Real)2.5, 3);
     const char *cacheFilename = "fantom_cache.xml";
     // try to read cache to avoid download
+    Fantom::PerformanceList performanceList;
     try
     {
-        m_xml->importPerformances(cacheFilename, m_performanceList);
+        m_xml->importPerformances(cacheFilename, performanceList);
     }
     catch(...)
     {
     }
-    if (m_performanceList.empty())
+    if (performanceList.empty())
     {
-        // no cache, import tracks and download the right number of performances
+        // no (valid) cache, import tracks and download the right number of performances
         m_xml->importTracks(TRACK_DEF, m_trackList, m_setList);
-        Fantom::download(m_fantom, 0, m_performanceList, m_trackList.size());
+        m_fantom->download(0, performanceList, m_trackList.size());
         // create cache
-        m_xml->exportPerformances(cacheFilename, m_performanceList);
+        m_xml->exportPerformances(cacheFilename, performanceList);
     }
     else
     {
         m_xml->importTracks(TRACK_DEF, m_trackList, m_setList);
-        if (m_trackList.size() != m_performanceList.size())
+        if (m_trackList.size() != performanceList.size())
         {
             // cache was outdated
-            Fantom::download(m_fantom, 0, m_performanceList, m_trackList.size());
+            m_fantom->download(0, performanceList, m_trackList.size());
             // refresh cache
-            m_xml->exportPerformances(cacheFilename, m_performanceList);
+            m_xml->exportPerformances(cacheFilename, performanceList);
         }
     }
     // merge performance data into track data
@@ -185,7 +165,7 @@ void Patcher::loadConfig()
     for (size_t t = 0; t < nofTracks(); t++)
     {
         Track *track = m_trackList[t];
-        track->m_performance = m_performanceList[t];
+        track->m_performance = performanceList[t];
         for (size_t s = 0; s < track->m_sectionList.size(); s++)
         {
             const Section *section = track->m_sectionList[s];
@@ -487,7 +467,7 @@ void Patcher::sendEventToFantom(uint8_t midiStatusByte,
     bool isNoteOn = Midi::isNoteOn(midiStatus, data1, data2);
     bool isNoteOff = Midi::isNoteOff(midiStatus, data1, data2);
     bool isController = Midi::isController(midiStatus);
-    for (int i=0; i<currentSection()->nofParts(); i++)
+    for (size_t i=0; i<currentSection()->m_partList.size(); i++)
     {
         SwPart *swPart = currentSection()->m_partList[i];
         if (isNoteData)
@@ -653,7 +633,7 @@ void Patcher::allNotesOff()
     bool channelsCleared[Midi::NofChannels];
     for (int i=0; i<Midi::NofChannels; i++)
         channelsCleared[i] = false;
-    for (int i=0; i<currentSection()->nofParts(); i++)
+    for (size_t i=0; i<currentSection()->m_partList.size(); i++)
     {
         SwPart *part = currentSection()->m_partList[i];
         int channel = part->m_channel;
@@ -883,7 +863,7 @@ int main(int argc, char **argv)
                         "  -h|?     This message\n"
                         "  -s       Run standalone\n"
                         "  -d dir   Change dir\n\n";
-                    return 0;
+                    return 1;
                     break;
             }
         }
@@ -893,10 +873,9 @@ int main(int argc, char **argv)
         }
         g_timer.setTimeout((Real)1.0, 2);
         Midi::Driver midi(0);
-        Fantom::Driver fantom(0, &midi);
+        Fantom::Driver fantom(&midi);
         Patcher patcher(&midi, &fantom);
         patcher.loadConfig();
-        //patcher.dumpTrackList();
         patcher.restoreState();
         patcher.updateBcfFaders();
         patcher.eventLoop();

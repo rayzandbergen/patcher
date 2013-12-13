@@ -10,7 +10,6 @@
 #include "screen.h"
 #include "mididef.h"
 #include "mididriver.h"
-#include "dump.h"
 
 class XML;
 
@@ -30,8 +29,6 @@ class Patch
 {
 public:
     char m_name[NameLength+1];                            //!< The patch name
-    void save(const Dump *d) { d->save((const char*)m_name); }  //!< Save the patch to a \a Dump object.
-    void restore(const Dump *d) { d->restore((char*)m_name); }  //!< Restore the patch from a \a Dump object.
     Patch();
 };
 
@@ -56,11 +53,8 @@ public:
     uint8_t m_fadeWidthUpper;   //!<    Upper fade width.
     Patch m_patch;              //!<    \a Patch object.
     void constructPreset(bool &patchReadAllowed);
-    void save(const Dump *d);
-    void restore(const Dump *d);
-    void toTextFile(FILE *fp, const char *prefix) const;
     /*! \brief Constructor */
-    Part(): m_channel(255) { }
+    Part();
 };
 
 /*! \brief A Fantom performance.
@@ -76,8 +70,6 @@ public:
     static const int NofParts = 16; //!< Number of Parts in a Fantom performance.
     char m_name[NameLength+1];    //!< Performance name.
     Part m_partList[NofParts];    //!< Parts within this \a FantomPerformance.
-    void save(const Dump *d);
-    void restore(const Dump *d);
     Performance();
 };
 

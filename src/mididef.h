@@ -188,6 +188,7 @@ enum DataByte
 
 const char *noteName(uint8_t num);
 void noteName(uint8_t num, char *s);
+uint8_t noteValue(const char *s);
 bool isNote(uint8_t statusByte);
 bool isNoteOn(uint8_t statusByte, uint8_t data1, uint8_t data2);
 bool isNoteOff(uint8_t statusByte, uint8_t data1, uint8_t data2);

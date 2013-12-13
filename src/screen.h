@@ -6,11 +6,13 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 #define GCC_PRINTF
-#ifdef RASPBIAN
+#ifdef CURSES
 #include <cstddef> // for NULL
 #include <cursesw.h>
-#else
+#elif NCURSES
 #include <ncursesw/ncurses.h>
+#else
+#error neither CURSES nor NCURSES defined
 #endif
 #include <stdint.h>
 #include "patchercore.h"
@@ -26,7 +28,7 @@ public:
     WINDOW *log() const { return m_logWindow; }
     static void showProgressBar(WINDOW *win, int y, int x, Real f); //!< show a progress bar at screen coordinates (x,y).
     static void fprintfBinaryString(FILE *fp, const uint8_t *data, int n);
-	Screen(bool enableMain = true, bool enableLog = false);
-	~Screen();
+    Screen(bool enableMain = true, bool enableLog = false);
+    ~Screen();
 };
 #endif

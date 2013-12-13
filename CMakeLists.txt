@@ -4,22 +4,31 @@ cmake_minimum_required(VERSION 2.8.4)
 set(CMAKE_BUILD_TYPE RELEASE)
 
 project(patcher)
+
 set(RASPBIAN 1)
 #set(mudflap 1)
 
-set(GCC_WARNINGS "-std=c++98 -pedantic -Wall -Wextra -Wshadow -Wstrict-aliasing=1")
-set(CMAKE_CXX_FLAGS_DEBUG "${GCC_WARNINGS} -g")
-set(CMAKE_CXX_FLAGS_RELEASE "${GCC_WARNINGS} -O3")
-if (mudflap)
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fmudflap -DNO_TIMEOUT")
+if (RASPBIAN)
+    set(FEATURE_FLAGS "-DCURSES -DSINGLE_PRECISION")
+    set(FEATURE_LIBS "-lcurses")
+else()
+    set(FEATURE_FLAGS "-DNCURSES -DDOUBLE_PRECISION")
+    set(FEATURE_LIBS "-lncurses")
 endif()
+if (mudflap)
+    set(FEATURE_FLAGS "${FEATURE_FLAGS} -fmudflap -DNO_TIMEOUT")
+    set(FEATURE_LIBS "${FEATURE_LIBS} -lmudflap")
+endif()
+
+set(GCC_WARNINGS "-std=c++98 -pedantic -Wall -Wextra -Wshadow -Wstrict-aliasing=1")
+set(CMAKE_CXX_FLAGS_DEBUG "${FEATURE_FLAGS} ${GCC_WARNINGS} -g")
+set(CMAKE_CXX_FLAGS_RELEASE "${FEATURE_FLAGS} ${GCC_WARNINGS} -O3")
 
 include_directories(src ${CMAKE_CURRENT_BINARY_DIR})
 
 set(patcher_coreSources
     src/activity.cpp
     src/controller.cpp
-    src/dump.cpp
     src/fantomdef.cpp
     src/fantomdriver.cpp
     src/fantomscroller.cpp
@@ -37,7 +46,6 @@ set(patcher_coreSources
     src/toggler.cpp
     src/trackdef.cpp
     src/transposer.cpp
-#    src/undupparts.cpp
     src/xml.cpp
     now.h
 )
@@ -46,7 +54,6 @@ set(curses_clientSources
     src/activity.cpp
     src/controller.cpp
     src/cursesclient.cpp
-    src/dump.cpp
     src/fantomdef.cpp
     src/mididef.cpp
     src/monofilter.cpp
@@ -56,6 +63,7 @@ set(curses_clientSources
     src/timestamp.cpp
     src/toggler.cpp
     src/trackdef.cpp
+    src/transposer.cpp
     src/xml.cpp
     now.h
 )
@@ -79,22 +87,9 @@ add_custom_target(tags DEPENDS ${patcher_coreSources} COMMAND ctags -R)
 
 add_dependencies(patcher_core tags)
 
-set(patcher_corelibs "-lrt -lxerces-c -lasound")
-set(curses_clientlibs "-lrt -lxerces-c")
+set(patcher_corelibs "-lrt -lxerces-c -lasound ${FEATURE_LIBS}")
+set(curses_clientlibs "-lrt -lxerces-c ${FEATURE_LIBS}")
 set(patcherlibs "-lrt")
-
-if(RASPBIAN)
-    set(patcher_corelibs "${patcher_corelibs} -lncurses")
-    set(curses_clientlibs "${curses_clientlibs} -lncurses")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DRASPBIAN")
-else()
-    set(patcher_corelibs "${patcher_corelibs} -lcurses")
-    set(curses_clientlibs "${curses_clientlibs} -lcurses")
-endif()
-
-if (mudflap)
-    set(patcher_corelibs "${patcher_corelibs} -lmudflap")
-endif()
 
 set_target_properties(patcher_core PROPERTIES LINK_FLAGS ${patcher_corelibs})
 set_target_properties(curses_client PROPERTIES LINK_FLAGS ${curses_clientlibs})

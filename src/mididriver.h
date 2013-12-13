@@ -40,21 +40,21 @@ struct Device
  */
 class Driver {
     WINDOW *m_window;                               //!< a curses WINDOW object to log to.
-	struct Device *m_deviceList;                    //!< List of all MIDI devices.
+    struct Device *m_deviceList;                    //!< List of all MIDI devices.
     int m_deviceIdToDeviceTabIdx[Device::max];      //!< Map from DeviceId to m_deviceList index.
     int m_suicideFd;                                //!< Activity on this file descriptor kills the process.
     int fd(int deviceId) const;
     int cardNameToNum(const char *target) const;
-	int openRaw(const char *portName, int mode) const;
+    int openRaw(const char *portName, int mode) const;
     void openDevices();
 public:
-	Driver(WINDOW *window);
+    Driver(WINDOW *window);
     int wait(int usecTimeout = 0, int device = Device::all) const;
-	uint8_t getByte(int device);
-	void putByte(int device, uint8_t b1);
-    void putBytes(int device, const uint8_t *b, int n);
-	void putBytes(int device, uint8_t b1, uint8_t b2);
-	void putBytes(int device, uint8_t b1, uint8_t b2, uint8_t b3);
+    uint8_t getByte(int device) const;
+    void putByte(int device, uint8_t b1) const;
+    void putBytes(int device, const uint8_t *b, int n) const;
+    void putBytes(int device, uint8_t b1, uint8_t b2) const;
+    void putBytes(int device, uint8_t b1, uint8_t b2, uint8_t b3) const;
 };
 
 } // namespace Midi

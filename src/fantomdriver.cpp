@@ -8,6 +8,7 @@
 #include "timestamp.h"
 #include "screen.h"
 #include "mididef.h"
+#include "timer.h"
 
 namespace Fantom
 {
@@ -18,7 +19,7 @@ namespace Fantom
  * \param[in] length    Number of bytes to be written.
  * \param[in] data      Byte string.
  */
-void Driver::setParam(const uint32_t addr, const uint32_t length, uint8_t *data)
+void Driver::setParam(const uint32_t addr, const uint32_t length, const uint8_t *data)
 {
     //wprintw(m_window, "Driver::setParam %08x %08x\n", addr, length);
     uint8_t txBuf[128];
@@ -172,7 +173,7 @@ void Driver::getPatchName(char *s, int idx)
  *
  * \param[in] s         Pointer to char buffer of at least NameLength+1 chars.
  */
-void Driver::getPerfName(char *s)
+void Driver::getPerformanceName(char *s)
 {
     uint8_t buf[NameLength+1];
     memset(buf, '*', sizeof(buf));
@@ -185,11 +186,11 @@ void Driver::getPerfName(char *s)
  *
  * \param[in] s         Pointer to char buffer, optionally zero-terminated.
  */
-void Driver::setPerfName(const char *s)
+void Driver::setPerformanceName(const char *s)
 {
     uint8_t buf[NameLength+1];
     memset(buf, ' ', sizeof(buf));
-    for (int i=0; s[i] && i<NameLength; i++)
+    for (int i=0; i<NameLength && s[i]; i++)
     {
         buf[i] = s[i];
     }
@@ -205,7 +206,7 @@ void Driver::setPartName(int part, const char *s)
 {
     uint8_t buf[NameLength];
     memset(buf, ' ', sizeof(buf));
-    for (int i=0; s[i] && i<NameLength; i++)
+    for (int i=0; i<NameLength && s[i]; i++)
     {
         buf[i] = s[i];
     }
@@ -235,7 +236,7 @@ void Driver::selectPerformanceFromMemCard() const
         Midi::controller|Fantom::programChangeChannel, 0x20, 32);
 }
 
-/*! \brief Download contents from Fantom.
+/*! \brief Download performance contents from Fantom.
  *
  * This is time consuming, so avoid this by trying the cache first.
  *
@@ -244,7 +245,7 @@ void Driver::selectPerformanceFromMemCard() const
  * \param[out]  performanceList   List of downloaded performances.
  * \param[in]   nofPerformances   The number of Performances to download.
  */
-void download(Fantom::Driver *fantom, WINDOW *win, Fantom::PerformanceList &performanceList, size_t nofPerformances)
+void Driver::download(WINDOW *win, Fantom::PerformanceList &performanceList, size_t nofPerformances)
 {
     performanceList.clear();
     performanceList.reserve(nofPerformances);
@@ -256,9 +257,9 @@ void download(Fantom::Driver *fantom, WINDOW *win, Fantom::PerformanceList &perf
     {
         Fantom::Performance *performance = new Fantom::Performance;
         performanceList.push_back(performance);
-        fantom->selectPerformance(i);
+        selectPerformance(i);
         nanosleep(&fantomPerformanceSelectDelay, NULL);
-        fantom->getPerfName(nameBuf);
+        getPerformanceName(nameBuf);
         g_timer.resetWatchdog(4);
         if (win)
         {
@@ -270,12 +271,12 @@ void download(Fantom::Driver *fantom, WINDOW *win, Fantom::PerformanceList &perf
         for (int j=0; j<Fantom::Performance::NofParts; j++)
         {
             Fantom::Part *hwPart = performance->m_partList+j;
-            fantom->getPartParams(hwPart, j);
+            getPartParams(hwPart, j);
             bool readPatchParams;
             hwPart->constructPreset(readPatchParams);
             if (readPatchParams)
             {
-                fantom->getPatchName(hwPart->m_patch.m_name, j);
+                getPatchName(hwPart->m_patch.m_name, j);
             }
             else
             {

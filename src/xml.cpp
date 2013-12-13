@@ -331,20 +331,6 @@ void XMLParser::parseTracks(DOMDocument *doc, TrackList &trackList, SetList &set
                 {
                     part->m_rangeLower = getNoteAttribute((DOMElement*)rangeNode, "lower", part->m_rangeLower);
                     part->m_rangeUpper = getNoteAttribute((DOMElement*)rangeNode, "upper", part->m_rangeUpper);
-#if 0
-                    //  \todo use getNoteAttribute
-                    if (((DOMElement*)rangeNode)->hasAttribute(m_xmlStr("lower")))
-                    {
-                        std::string note = xmlStdString(((DOMElement*)rangeNode)->getAttribute(m_xmlStr("lower")));
-                        part->m_rangeLower = SwPart::stringToNoteNum(note.c_str());
-                    }
-                    //  \todo use getNoteAttribute
-                    if (((DOMElement*)rangeNode)->hasAttribute(m_xmlStr("upper")))
-                    {
-                        std::string note = xmlStdString(((DOMElement*)rangeNode)->getAttribute(m_xmlStr("upper")));
-                        part->m_rangeUpper = SwPart::stringToNoteNum(note.c_str());
-                    }
-#endif
                 }
                 DOMNode *transposeNode = findNode(doc, (DOMElement*)partNode, "./transpose");
                 if (transposeNode)
@@ -495,7 +481,7 @@ uint8_t XMLParser::getNoteAttribute(DOMElement *node, const char *attr, uint8_t 
         uint8_t rv;
         if (s[0])
         {
-            rv = SwPart::stringToNoteNum(s);
+            rv = Midi::noteValue(s);
         }
         else
         {
@@ -549,7 +535,7 @@ void XMLParser::parsePerformances(DOMDocument *doc, Fantom::PerformanceList &per
         DOMNode *performanceNode = performanceNodes->getNodeValue();
         Fantom::Performance *performance = new Fantom::Performance;
         char *name = XMLString::transcode(((DOMElement*)performanceNode)->getAttribute(m_xmlStr("name")));
-        for (size_t i=0; name[i] && i<(size_t)Fantom::NameLength; i++)
+        for (size_t i=0; i<(size_t)Fantom::NameLength && name[i]; i++)
             performance->m_name[i] = name[i];
         XMLString::release(&name);
         DOMXPathResult *partNodes = findNodes(doc, (DOMElement*)performanceNode, "./part");
@@ -573,7 +559,7 @@ void XMLParser::parsePerformances(DOMDocument *doc, Fantom::PerformanceList &per
             part->m_fadeWidthUpper = getByteAttribute((DOMElement*)partNode, "fadeWidthUpper", 0);
             DOMNode *patchNode = findNode(doc, (DOMElement*)partNode, "./patch");
             name = XMLString::transcode(((DOMElement*)patchNode)->getAttribute(m_xmlStr("name")));
-            for (size_t i=0; name[i] && i<(size_t)Fantom::NameLength; i++)
+            for (size_t i=0; i<(size_t)Fantom::NameLength && name[i]; i++)
                 part->m_patch.m_name[i] = name[i];
             XMLString::release(&name);
         }

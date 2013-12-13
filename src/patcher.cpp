@@ -140,7 +140,7 @@ int main(int argc, char **argv)
     bool startCursesClient = true;
     for (;;)
     {
-        int opt = getopt(argc, argv, "ch:");
+        int opt = getopt(argc, argv, "ch");
         if (opt == -1)
             break;
         switch (opt)
@@ -151,7 +151,7 @@ int main(int argc, char **argv)
             default:
                 std::cerr << "\npatcher [-h|?] [-d <dir>] [-c]\n\n"
                     "  -h|?     This message\n"
-                    "  -c       Do no lauch curses client\n";
+                    "  -c       Do not lauch curses client\n\n";
                 return 1;
                 break;
         }

@@ -17,7 +17,7 @@ class Transposer
 public:
     uint8_t m_transpose;                //!<    Transpose value in semitones.
     //! \brief Construct a transposer that by default transposes one octave.
-    Transposer(uint8_t offset = 12): m_transpose(offset) { };
+    Transposer(uint8_t offset = 12);
     //! \brief Set the sustain pedal status.
     void setSustain(bool b) { m_sustain = b; };
     void transpose(uint8_t midiStatus, uint8_t &data1, uint8_t &data2);

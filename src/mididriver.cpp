@@ -258,7 +258,7 @@ Driver::Driver(WINDOW *win): m_window(win)
  * \param[in] device    Device ID.
  * \return              MIDI byte.
  */
-uint8_t Driver::getByte(int device)
+uint8_t Driver::getByte(int device) const
 {
     if (device < 0)
         return 0;
@@ -272,7 +272,7 @@ uint8_t Driver::getByte(int device)
  * \param[in]   device  MIDI device.
  * \param[in]   b1      byte to be written.
  */
-void Driver::putByte(int device, uint8_t b1)
+void Driver::putByte(int device, uint8_t b1) const
 {
     int fDescr = fd(device);
     if (fDescr >= 0)
@@ -285,7 +285,7 @@ void Driver::putByte(int device, uint8_t b1)
  * \param[in]   b       byte buffer.
  * \param[in]   n       byte buffer size.
  */
-void Driver::putBytes(int device, const uint8_t *b, int n)
+void Driver::putBytes(int device, const uint8_t *b, int n) const
 {
     int fDescr = fd(device);
     if (fDescr >= 0)
@@ -298,7 +298,7 @@ void Driver::putBytes(int device, const uint8_t *b, int n)
  * \param[in]   b1      first byte.
  * \param[in]   b2      second byte.
  */
-void Driver::putBytes(int device, uint8_t b1, uint8_t b2)
+void Driver::putBytes(int device, uint8_t b1, uint8_t b2) const
 {
     int fDescr = fd(device);
     if (fDescr >= 0)
@@ -317,7 +317,7 @@ void Driver::putBytes(int device, uint8_t b1, uint8_t b2)
  * \param[in]   b2      second byte.
  * \param[in]   b3      third byte.
  */
-void Driver::putBytes(int device, uint8_t b1, uint8_t b2, uint8_t b3)
+void Driver::putBytes(int device, uint8_t b1, uint8_t b2, uint8_t b3) const
 {
     int fDescr = fd(device);
     if (fDescr >= 0)

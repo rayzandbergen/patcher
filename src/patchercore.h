@@ -110,10 +110,12 @@ Since screen updates are less important than the responsiveness of the core, it 
  */
 #ifndef PATCHER_H
 #define PATCHER_H
-#ifdef RASPBIAN
+#ifdef SINGLE_PRECISION
 typedef float Real;     //!< Double precision for PC, single precision for Pi.
-#else
+#elif DOUBLE_PRECISION
 typedef double Real;    //!< Double precision for PC, single precision for Pi.
+#else
+#error either SINGLE_PRECISION or DOUBLE_PRECISION must be defined
 #endif
 #define TRACK_DEF "tracks.xml"  //!< Config file name.
 const unsigned char masterProgramChangeChannel = 0x0f; //!< MIDI channel to listen on for program changes that will be interpreted by this application.
