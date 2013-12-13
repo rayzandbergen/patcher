@@ -240,7 +240,6 @@ void Driver::selectPerformanceFromMemCard() const
  *
  * This is time consuming, so avoid this by trying the cache first.
  *
- * \param[in]   fantom      Fantom driver.
  * \param[in]   win         Curses screen object to log to.
  * \param[out]  performanceList   List of downloaded performances.
  * \param[in]   nofPerformances   The number of Performances to download.
