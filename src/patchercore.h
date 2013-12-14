@@ -94,8 +94,8 @@ Configuration is read from an XML file. A schema XSD is provided.
 
 \section processes Processes
 The application consists of 3 processes.
-- The patcher core, which reads and writes MIDI data, and generates events.
-- The curses client, which produces terminal screen output.
+- The patcher core, which reads and writes MIDI data, and generates patcher events.
+- The curses client, which produces terminal screen output from patcher events.
 - The patcher administrator, which creates and cleans up the two processes above, as well as the event queue.
 
 \htmlonly

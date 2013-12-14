@@ -15,7 +15,7 @@ namespace std { /*! \brief STL queue */ template <class T> class queue {
 
 /*! \brief This object knows wether or not is has expired.
  *
- * Expiration time is set to 0.3 seconds after its creation.
+ * Expiration time is set to 0.3 seconds after its construction.
  */
 class ActivityTrigger
 {
