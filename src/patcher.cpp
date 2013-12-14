@@ -34,8 +34,10 @@ public:
 void signalHandler(int sigNum, siginfo_t *sigInfo, void *unused);
 
 //! \brief Admin process for the core and the curses tasks.
-struct Admin
+class Admin
 {
+friend
+    void signalHandler(int sigNum, siginfo_t *sigInfo, void *unused);
     Process m_process[maxSubProcesses]; //!<    Process table.
     bool m_terminate;                   //!<    Raised on SIGTERM and SIGINT.
 public:
@@ -159,6 +161,7 @@ int main(int argc, char **argv)
     if (argc > optind)
     {
         std::cerr << "unrecognised trailing arguments, try -h\n";
+        return 1;
     }
     Queue q;
     q.create();
