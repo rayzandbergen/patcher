@@ -15,7 +15,7 @@ namespace std { /*! \brief STL queue */ template <class T> class queue {
 
 /*! \brief This object knows wether or not is has expired.
  *
- * Expiration time is set to 0.3 seconds after its construction.
+ * Expiration time is set to 0.15 seconds after its construction.
  */
 class ActivityTrigger
 {
@@ -36,7 +36,7 @@ public:
     ActivityTrigger(int major, int minor, const TimeSpec &now):
         m_major(major), m_minor(minor)
     {
-        timeSum(m_expireTime, now, TimeSpec((Real)0.3));
+        timeSum(m_expireTime, now, TimeSpec((Real)0.15));
     }
     /*! \brief Expiration query
      *
@@ -56,15 +56,19 @@ class ActivityList
     int *m_triggerCount;                    //!<    List of trigger counters.
     int m_majorSize;                        //!<    Major size of the list.
     int m_minorSize;                        //!<    Minor size of the list, not used.
+    int *m_noteOnCount;                     //!<    List of note on counters.
     bool m_dirty;                           //!<    True if any change since last \a get().
 public:
+    //! \brief Activity state.
+    enum State { off, event, on };
     //! \brief Query trigger count for a given major index.
     int triggerCount(int major) const { return m_triggerCount[major]; }
     ActivityList(int majorSize, int minorSize);
     ~ActivityList();
+    State get(int majorIndex);
     //! \brief Returns true if any change since last \a get().
     bool isDirty() const { return m_dirty; }
-    void trigger(int majorIndex, int minorIndex, const TimeSpec &now);
+    void trigger(int majorIndex, int minorIndex, bool noteOn, const TimeSpec &now);
     bool nextExpiry(TimeSpec &ts) const;
     bool update(const TimeSpec &now);
     void get(bool *b);

@@ -48,6 +48,8 @@ public:
     void allNotesOff();
     //! \brief Load track list and performance list and merge performance data.
     void loadConfig();
+    //! \brief Set or unset screen attributes according to activity state.
+    void updateActivityAttributes(ActivityList::State s, bool enable);
     //! \brief Write to the curses screen.
     void updateScreen();
     //! \brief Event loop, never returns.
@@ -68,6 +70,40 @@ public:
         m_eventRxQueue.openRead();
     }
 };
+
+void CursesClient::updateActivityAttributes(ActivityList::State s, bool enable)
+{
+    if (enable)
+    {
+        switch(s)
+        {
+            case ActivityList::event:
+                wattron(m_screen->main(), A_UNDERLINE);
+                wattron(m_screen->main(), COLOR_PAIR(1));
+                break;
+            case ActivityList::on:
+                wattron(m_screen->main(), COLOR_PAIR(1));
+                break;
+            default:
+                ;
+        }
+    }
+    else
+    {
+        switch(s)
+        {
+            case ActivityList::event:
+                wattroff(m_screen->main(), A_UNDERLINE);
+                wattroff(m_screen->main(), COLOR_PAIR(1));
+                break;
+            case ActivityList::on:
+                wattroff(m_screen->main(), COLOR_PAIR(1));
+                break;
+            default:
+                ;
+        }
+    }
+}
 
 void CursesClient::updateScreen()
 {
@@ -104,8 +140,6 @@ void CursesClient::updateScreen()
     if (m_metaMode)
         wattroff(m_screen->main(), COLOR_PAIR(1));
     int partsShown = 0;
-    bool channelActivity[Midi::NofChannels];
-    m_channelActivity.get(channelActivity);
     for (int partIdx=0; partIdx<Fantom::Performance::NofParts;partIdx++)
     {
         int x = (partsShown / 4) * 19;
@@ -114,20 +148,16 @@ void CursesClient::updateScreen()
         ASSERT(part->m_channel != 255);
         if (1 || part->m_channel == m_sectionIdx)
         {
-            bool active = channelActivity[part->m_channel];
-            if (active)
-                wattron(m_screen->main(), COLOR_PAIR(1));
+            ActivityList::State s = m_channelActivity.get(part->m_channel);
+            updateActivityAttributes(s, true);
             mvwprintw(m_screen->main(), y, x,
                 "%2d %2d %s ", partIdx+1, 1+part->m_channel, part->m_preset);
-            if (active)
-                wattroff(m_screen->main(), COLOR_PAIR(1));
+            updateActivityAttributes(s, false);
             partsShown++;
         }
     }
     partsShown = 0;
     const int colLength = 3;
-    bool softPartActivity[64];
-    m_softPartActivity.get(softPartActivity);
     for (size_t i=0; i<currentSection()->m_partList.size(); i++)
     {
         const SwPart *swPart = currentSection()->m_partList[i];
@@ -156,15 +186,13 @@ void CursesClient::updateScreen()
                 int transpose = swPart->m_transpose +
                         (int)hwPart->m_transpose +
                         (int)hwPart->m_octave*12;
-                bool active = softPartActivity[i];
-                if (active)
-                    wattron(m_screen->main(), COLOR_PAIR(1));
+                ActivityList::State s = m_softPartActivity.get(i);
+                updateActivityAttributes(s, true);
                 ASSERT(hwPart->m_patch.m_name[1] != '[');
                 mvwprintw(m_screen->main(), y, x,
                     "%3d [%3s - %4s]  %12s %3d %3d", j+1, keyL, keyU,
                     hwPart->m_patch.m_name, hwPart->m_volume,transpose);
-                if (active)
-                    wattroff(m_screen->main(), COLOR_PAIR(1));
+                updateActivityAttributes(s, false);
                 partsShown++;
             }
         }
@@ -250,9 +278,10 @@ void CursesClient::eventLoop()
                 uint8_t channel = Midi::channel(event.m_midi[0]);
                 if (Midi::isNote(event.m_midi[0]))
                 {
-                    m_channelActivity.trigger(channel, event.m_midi[1], m_eventRxTime);
+                    bool on = Midi::isNoteOn(event.m_midi[0], event.m_midi[1], event.m_midi[2]);
+                    m_channelActivity.trigger(channel, event.m_midi[1], on, m_eventRxTime);
                     if (event.m_part != Event::Unspecified)
-                        m_softPartActivity.trigger(event.m_part, event.m_midi[1], m_eventRxTime);
+                        m_softPartActivity.trigger(event.m_part, event.m_midi[1], on, m_eventRxTime);
                 }
                 else if (Midi::isController(event.m_midi[0]) || (Midi::status(event.m_midi[0]) == Midi::pitchBend))
                 {
@@ -263,9 +292,9 @@ void CursesClient::eventLoop()
                     else
                     {
                         // Abuse note C0 to store regular controller activity.
-                        m_channelActivity.trigger(channel, Midi::Note::C0, m_eventRxTime);
+                        m_channelActivity.trigger(channel, Midi::Note::C0, false, m_eventRxTime);
                         if (event.m_part != Event::Unspecified)
-                            m_softPartActivity.trigger(event.m_part, Midi::Note::C0, m_eventRxTime);
+                            m_softPartActivity.trigger(event.m_part, Midi::Note::C0, false, m_eventRxTime);
                     }
                 }
                 if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
