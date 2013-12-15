@@ -136,6 +136,7 @@ ActivityList::State ActivityList::get(int majorIndex)
 void ActivityList::clear(int majorIndex)
 {
     m_triggerCount[majorIndex] = 0;
+    m_noteOnCount[majorIndex] = 0;
     // clean queue by copying nonmatching elements, then swapping
     std::queue<ActivityTrigger> cleanedQueue;
     while (!m_queue.empty())
