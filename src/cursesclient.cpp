@@ -274,41 +274,55 @@ void CursesClient::eventLoop()
                  event.m_type == Event::MidiOut1Byte) &&
                 event.m_deviceId == Midi::Device::FantomOut)
             {
-                // parse MIDI out event
-                uint8_t channel = Midi::channel(event.m_midi[0]);
-                if (Midi::isNote(event.m_midi[0]))
+                if(event.m_part == Event::Unspecified ||
+                        event.m_part < currentSection()->m_partList.size())
                 {
-                    bool on = Midi::isNoteOn(event.m_midi[0], event.m_midi[1], event.m_midi[2]);
-                    m_channelActivity.trigger(channel, event.m_midi[1], on, m_eventRxTime);
-                    if (event.m_part != Event::Unspecified)
-                        m_softPartActivity.trigger(event.m_part, event.m_midi[1], on, m_eventRxTime);
-                }
-                else if (Midi::isController(event.m_midi[0]) || (Midi::status(event.m_midi[0]) == Midi::pitchBend))
-                {
-                    if (event.m_midi[1] == Midi::allNotesOff)
+                    // parse MIDI out event
+                    uint8_t channel = Midi::channel(event.m_midi[0]);
+                    if (Midi::isNote(event.m_midi[0]))
                     {
-                        allNotesOff(channel);
-                    }
-                    else
-                    {
-                        // Abuse note C0 to store regular controller activity.
-                        m_channelActivity.trigger(channel, Midi::Note::C0, false, m_eventRxTime);
+                        bool on = Midi::isNoteOn(event.m_midi[0], event.m_midi[1], event.m_midi[2]);
+                        m_channelActivity.trigger(channel, event.m_midi[1], on, m_eventRxTime);
                         if (event.m_part != Event::Unspecified)
-                            m_softPartActivity.trigger(event.m_part, Midi::Note::C0, false, m_eventRxTime);
-                        if ((event.m_midi[0] & 0xf0) == Midi::controller &&
-                             event.m_midi[1] == Midi::mainVolume)
+                            m_softPartActivity.trigger(event.m_part, event.m_midi[1], on, m_eventRxTime);
+                    }
+                    else if (Midi::isController(event.m_midi[0]) || (Midi::status(event.m_midi[0]) == Midi::pitchBend))
+                    {
+                        if (event.m_midi[1] == Midi::allNotesOff)
                         {
-                            currentTrack()->m_performance->m_partList[event.m_part].m_volume = event.m_midi[2];
-                            // \todo These volume changes are lost in the Fantom when 
-                            // switching to another performance, but we keep them.
-                            // This leads to inconsistencies when switching back to this performance.
+                            allNotesOff(channel);
+                        }
+                        else
+                        {
+                            // Abuse note C0 to store regular controller activity.
+                            m_channelActivity.trigger(channel, Midi::Note::C0, false, m_eventRxTime);
+                            if (event.m_part != Event::Unspecified)
+                                m_softPartActivity.trigger(event.m_part, Midi::Note::C0, false, m_eventRxTime);
+                            if ((event.m_midi[0] & 0xf0) == Midi::controller &&
+                                 event.m_midi[1] == Midi::mainVolume)
+                            {
+                                SwPart *swPart = currentSection()->m_partList[event.m_part];
+                                for (size_t hwPart = 0; hwPart < swPart->m_hwPartList.size(); hwPart++)
+                                {
+                                    Fantom::Part *hp = swPart->m_hwPartList[hwPart];
+                                    hp->m_volume = event.m_midi[2];
+                                }
+                                // \todo These volume changes are lost in the Fantom when
+                                // switching to another performance, but we keep them.
+                                // This leads to inconsistencies when switching back to this performance.
+                            }
                         }
                     }
+                    if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
+                    {
+                        updateScreen();
+                        wrefresh(m_screen->main());
+                    }
                 }
-                if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
+                else
                 {
-                    updateScreen();
-                    wrefresh(m_screen->main());
+                    if (m_fpLog)
+                        fprintf(m_fpLog, "ignored invalid part in %s\n", event.toString().c_str());
                 }
             }
             else
@@ -346,10 +360,11 @@ void CursesClient::loadConfig()
                 SwPart *swPart = section->m_partList[sp];
                 for (int hp = 0; hp < Fantom::Performance::NofParts; hp++)
                 {
-                    const Fantom::Part *hwPart = track->m_performance->m_partList + hp;
+                    Fantom::Part *hwPart = track->m_performance->m_partList + hp;
                     if (swPart->m_channel == hwPart->m_channel)
                     {
                         swPart->m_hwPartList.push_back(hwPart);
+                        hwPart->m_swPartList.push_back(swPart);
                         if (m_fpLog)
                             fprintf(m_fpLog, "merging part %s\n", hwPart->m_preset);
                     }
@@ -395,6 +410,7 @@ int main(int argc, char**argv)
     {
         endwin();
         std::cerr << "** " << e.what() << std::endl;
+        sleep(10);
         return e.exitCode();
     }
     catch (...)

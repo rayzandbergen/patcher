@@ -288,7 +288,7 @@ void XMLParser::parseTracks(DOMDocument *doc, TrackList &trackList, SetList &set
                 SwPart *part;
                 {
                     name = XMLString::transcode(((DOMElement*)partNode)->getAttribute(m_xmlStr("name")));
-                    part = new SwPart(strdup(name));
+                    part = new SwPart((int)partIdx, strdup(name));
                     XMLString::release(&name);
                 }
                 section->m_partList.push_back(part);

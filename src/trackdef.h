@@ -41,6 +41,7 @@ namespace TrackDef {
  */
 class SwPart {
 public:
+    int m_number;                       //!< Sequence number within Section.
     const char *m_name;                 //!< The name of the part. Ownership of the string is assumed.
     uint8_t m_channel;                  //!< MIDI channel to listen and send on.
     int m_transpose;                    //!< Tranposition in semitones.
@@ -49,7 +50,7 @@ public:
     int m_customTransposeOffset;        //!< Additional transposition for custom transposes.
     uint8_t m_rangeLower;               //!< Lower range.
     uint8_t m_rangeUpper;               //!< Upper range.
-    std::vector <const Fantom::Part *> m_hwPartList;  //!< List of \a Fantom::Part pointers this will trigger.
+    std::vector <Fantom::Part *> m_hwPartList;   //!< List of \a Fantom::Part pointers this will trigger.
     ControllerRemap::Default *m_controllerRemap; //!< Remap object. \todo allow more than one.
     MonoFilter m_monoFilter;            //!< Mono filter object.
     Toggler m_toggler;                  //!< Toggler object.
@@ -58,7 +59,7 @@ public:
     //! \brief Return true if a note number is in range of this \a SwPart.
     bool inRange(uint8_t noteNum) const
         { return noteNum >= m_rangeLower && noteNum <= m_rangeUpper; }
-    SwPart(const char *name);
+    SwPart(int number, const char *name);
     ~SwPart();
     void clear();
 };

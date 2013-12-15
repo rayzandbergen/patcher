@@ -37,7 +37,8 @@ void Section::clear()
 }
 
 //! \brief Contruct a default SwPart with a given name.
-SwPart::SwPart(const char *name):
+SwPart::SwPart(int number, const char *name):
+        m_number(number),
         m_name(name), m_channel(255), m_transpose(0),
         m_customTransposeEnabled(false),
         m_rangeLower(0), m_rangeUpper(127),

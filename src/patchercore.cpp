@@ -174,10 +174,11 @@ void Patcher::loadConfig()
                 SwPart *swPart = section->m_partList[sp];
                 for (int hp = 0; hp < Fantom::Performance::NofParts; hp++)
                 {
-                    const Fantom::Part *hwPart = track->m_performance->m_partList + hp;
+                    Fantom::Part *hwPart = track->m_performance->m_partList + hp;
                     if (swPart->m_channel == hwPart->m_channel)
                     {
                         swPart->m_hwPartList.push_back(hwPart);
+                        hwPart->m_swPartList.push_back(swPart);
                     }
                 }
             }
@@ -549,20 +550,24 @@ void Patcher::setVolume(uint8_t hwPart, uint8_t value)
     // a controller message, we need to fake the controller message
     // to inform clients about the volume change.
     Fantom::Part *part = currentTrack()->m_performance->m_partList+hwPart;
-    Event event;
-    event.m_metaMode = m_metaMode ? 1 : 0;
-    event.m_currentTrack = m_trackIdx;
-    event.m_currentSection = m_sectionIdx;
-    event.m_trackIdxWithinSet = m_trackIdxWithinSet;
-    event.m_type = Event::MidiOut3Bytes;
-    event.m_deviceId = Midi::Device::FantomOut;
-    event.m_part = hwPart;
-    event.m_midi[0] = Midi::controller | part->m_channel;
-    event.m_midi[1] = Midi::mainVolume;
-    event.m_midi[2] = value;
-    m_eventTxQueue.send(event);
-    // Make sure our own data mirrors the Fantom.
-    part->m_volume = value;
+    for (size_t swPart = 0; swPart<part->m_swPartList.size(); swPart++)
+    {
+        Event event;
+        event.m_metaMode = m_metaMode ? 1 : 0;
+        event.m_currentTrack = m_trackIdx;
+        event.m_currentSection = m_sectionIdx;
+        event.m_trackIdxWithinSet = m_trackIdxWithinSet;
+        event.m_type = Event::MidiOut3Bytes;
+        event.m_deviceId = Midi::Device::FantomOut;
+        event.m_part = part->m_swPartList[swPart]->m_number;
+        event.m_midi[0] = Midi::controller | part->m_channel;
+        event.m_midi[1] = Midi::mainVolume;
+        event.m_midi[2] = value;
+        m_eventTxQueue.send(event);
+    }
+    // We do not mirror this change in our data, because the Fantom
+    // will not remember it when switching to another performance.
+    //   part->m_volume = value;
 }
 
 /*! \brief Send a MIDI event to MIDI driver and duplicate it to event queue.

@@ -12,6 +12,7 @@
 #include "mididriver.h"
 
 class XML;
+class SwPart;
 
 //! \brief Namespace for Fantom driver objects.
 namespace Fantom
@@ -52,6 +53,7 @@ public:
     uint8_t m_fadeWidthLower;   //!<    Lower fade width.
     uint8_t m_fadeWidthUpper;   //!<    Upper fade width.
     Patch m_patch;              //!<    \a Patch object.
+    std::vector <const SwPart *> m_swPartList;  //!< List of \a SwPart pointerx which point here.
     void constructPreset(bool &patchReadAllowed);
     /*! \brief Constructor */
     Part();
