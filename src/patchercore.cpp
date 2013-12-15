@@ -539,24 +539,30 @@ void Patcher::sendEventToFantom(uint8_t midiStatusByte,
 
 /*! \brief Change the volume of a Fantom part and send an event.
  *
- *  \param[in]  part        Fantom part.
+ *  \param[in]  hwPart      Fantom part.
  *  \param[in]  value       The volume.
  */
-void Patcher::setVolume(uint8_t part, uint8_t value)
+void Patcher::setVolume(uint8_t hwPart, uint8_t value)
 {
-    m_fantom->setVolume(part, value);
+    m_fantom->setVolume(hwPart, value);
+    // Since the volume is set as a part parameter rather than through 
+    // a controller message, we need to fake the controller message
+    // to inform clients about the volume change.
+    Fantom::Part *part = currentTrack()->m_performance->m_partList+hwPart;
     Event event;
     event.m_metaMode = m_metaMode ? 1 : 0;
     event.m_currentTrack = m_trackIdx;
     event.m_currentSection = m_sectionIdx;
     event.m_trackIdxWithinSet = m_trackIdxWithinSet;
-    event.m_type = Event::SetVolume;
-    event.m_deviceId = Midi::Device::FantomIn;
-    event.m_part = part;
-    event.m_midi[0] = value;;
-    event.m_midi[1] = Event::Unspecified;
-    event.m_midi[2] = Event::Unspecified;
+    event.m_type = Event::MidiOut3Bytes;
+    event.m_deviceId = Midi::Device::FantomOut;
+    event.m_part = hwPart;
+    event.m_midi[0] = Midi::controller | part->m_channel;
+    event.m_midi[1] = Midi::mainVolume;
+    event.m_midi[2] = value;
     m_eventTxQueue.send(event);
+    // Make sure our own data mirrors the Fantom.
+    part->m_volume = value;
 }
 
 /*! \brief Send a MIDI event to MIDI driver and duplicate it to event queue.
