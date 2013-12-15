@@ -48,8 +48,6 @@ public:
     void allNotesOff();
     //! \brief Load track list and performance list and merge performance data.
     void loadConfig();
-    //! \brief Set or unset screen attributes according to activity state.
-    void updateActivityAttributes(ActivityList::State s, bool enable);
     //! \brief Write to the curses screen.
     void updateScreen();
     //! \brief Event loop, never returns.
@@ -70,40 +68,6 @@ public:
         m_eventRxQueue.openRead();
     }
 };
-
-void CursesClient::updateActivityAttributes(ActivityList::State s, bool enable)
-{
-    if (enable)
-    {
-        switch(s)
-        {
-            case ActivityList::event:
-                wattron(m_screen->main(), A_UNDERLINE);
-                wattron(m_screen->main(), COLOR_PAIR(1));
-                break;
-            case ActivityList::on:
-                wattron(m_screen->main(), COLOR_PAIR(1));
-                break;
-            default:
-                ;
-        }
-    }
-    else
-    {
-        switch(s)
-        {
-            case ActivityList::event:
-                wattroff(m_screen->main(), A_UNDERLINE);
-                wattroff(m_screen->main(), COLOR_PAIR(1));
-                break;
-            case ActivityList::on:
-                wattroff(m_screen->main(), COLOR_PAIR(1));
-                break;
-            default:
-                ;
-        }
-    }
-}
 
 void CursesClient::updateScreen()
 {
@@ -149,10 +113,16 @@ void CursesClient::updateScreen()
         if (1 || part->m_channel == m_sectionIdx)
         {
             ActivityList::State s = m_channelActivity.get(part->m_channel);
-            updateActivityAttributes(s, true);
-            mvwprintw(m_screen->main(), y, x,
-                "%2d %2d %s ", partIdx+1, 1+part->m_channel, part->m_preset);
-            updateActivityAttributes(s, false);
+            if (s == ActivityList::event || s == ActivityList::on)
+                wattron(m_screen->main(), COLOR_PAIR(1));
+            if (s == ActivityList::event)
+                wattron(m_screen->main(), A_UNDERLINE);
+            mvwprintw(m_screen->main(), y, x, "%2d", partIdx+1);
+            if (s == ActivityList::event)
+                wattroff(m_screen->main(), A_UNDERLINE);
+            wprintw(m_screen->main(), " %2d %s ", 1+part->m_channel, part->m_preset);
+            if (s == ActivityList::event || s == ActivityList::on)
+                wattroff(m_screen->main(), COLOR_PAIR(1));
             partsShown++;
         }
     }
@@ -187,12 +157,18 @@ void CursesClient::updateScreen()
                         (int)hwPart->m_transpose +
                         (int)hwPart->m_octave*12;
                 ActivityList::State s = m_softPartActivity.get(i);
-                updateActivityAttributes(s, true);
                 ASSERT(hwPart->m_patch.m_name[1] != '[');
-                mvwprintw(m_screen->main(), y, x,
-                    "%3d [%3s - %4s]  %12s %3d %3d", j+1, keyL, keyU,
-                    hwPart->m_patch.m_name, hwPart->m_volume,transpose);
-                updateActivityAttributes(s, false);
+                if (s == ActivityList::event || s == ActivityList::on)
+                    wattron(m_screen->main(), COLOR_PAIR(1));
+                if (s == ActivityList::event)
+                    wattron(m_screen->main(), A_UNDERLINE);
+                mvwprintw(m_screen->main(), y, x, "%3d", j+1);
+                if (s == ActivityList::event)
+                    wattroff(m_screen->main(), A_UNDERLINE);
+                wprintw(m_screen->main(), " [%3s - %4s]  %12s %3d %3d",
+                    keyL, keyU, hwPart->m_patch.m_name, hwPart->m_volume,transpose);
+                if (s == ActivityList::event || s == ActivityList::on)
+                    wattroff(m_screen->main(), COLOR_PAIR(1));
                 partsShown++;
             }
         }
