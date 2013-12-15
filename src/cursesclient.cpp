@@ -295,6 +295,14 @@ void CursesClient::eventLoop()
                         m_channelActivity.trigger(channel, Midi::Note::C0, false, m_eventRxTime);
                         if (event.m_part != Event::Unspecified)
                             m_softPartActivity.trigger(event.m_part, Midi::Note::C0, false, m_eventRxTime);
+                        if ((event.m_midi[0] & 0xf0) == Midi::controller &&
+                             event.m_midi[1] == Midi::mainVolume)
+                        {
+                            currentTrack()->m_performance->m_partList[event.m_part].m_volume = event.m_midi[2];
+                            // \todo These volume changes are lost in the Fantom when 
+                            // switching to another performance, but we keep them.
+                            // This leads to inconsistencies when switching back to this performance.
+                        }
                     }
                 }
                 if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
