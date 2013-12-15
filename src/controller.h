@@ -5,7 +5,7 @@
  */
 #ifndef CONTROLLER_REMAP_H
 #define CONTROLLER_REMAP_H
-#include "stdint.h"
+#include <stdint.h>
 #include "patchercore.h"
 #include "mididef.h"
 
