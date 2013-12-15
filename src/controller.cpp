@@ -7,6 +7,17 @@
 
 namespace ControllerRemap {
 
+bool Drop16::value(uint8_t controller, uint8_t val,
+        uint8_t *controllerOut, uint8_t *valOut) const
+{
+    if (controller != m_from)
+    {
+        *controllerOut = controller;
+        *valOut = val;
+        return true;
+    }
+    return false;
+}
 //! \brief Interpolate controller value.
 Real Default::interpolate(Real x, Real x0, Real y0, Real x1, Real y1) const
 {
@@ -19,16 +30,17 @@ Real Default::interpolate(Real x, Real x0, Real y0, Real x1, Real y1) const
 }
 
 //! \brief Do the actual controller remapping.
-void Default::value(uint8_t controller, uint8_t val, uint8_t *controllerOut, uint8_t *valOut) const
+bool Default::value(uint8_t controller, uint8_t val, uint8_t *controllerOut, uint8_t *valOut) const
 {
     if (controller != m_from)
     {
         *controllerOut = controller;
         *valOut = val;
-        return;
+        return true;
     }
     *controllerOut = m_to;
     *valOut = (uint8_t)interpolate((Real)val, m_x0, m_y0, m_x1, m_y1);
+    return true;
 }
 
 Real VolQuadratic::interpolate(Real x,

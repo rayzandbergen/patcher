@@ -1356,6 +1356,7 @@
           <transpose offset="0"/>
         </part>
         <part channel="3" name="upper">
+          <controllerRemap id="drop16"/>
           <range lower="C6" upper="B9"/>
           <transpose offset="0"/>
         </part>

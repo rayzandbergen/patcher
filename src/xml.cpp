@@ -320,6 +320,8 @@ void XMLParser::parseTracks(DOMDocument *doc, TrackList &trackList, SetList &set
                         part->m_controllerRemap = new ControllerRemap::VolQuadratic;
                     else if (id == "volReverse")
                         part->m_controllerRemap = new ControllerRemap::VolReverse;
+                    else if (id == "drop16")
+                        part->m_controllerRemap = new ControllerRemap::Drop16;
                     else
                         throw(Error("unknown controllerRemap id"));
                 }

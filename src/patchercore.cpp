@@ -528,7 +528,7 @@ void Patcher::sendEventToFantom(uint8_t midiStatusByte,
                     fprintf(m_fpLog, "transposer sustain\n");
                 drop = true;
             }
-            swPart->m_controllerRemap->value(data1, data2, &data1Out, &data2Out);
+            drop = !swPart->m_controllerRemap->value(data1, data2, &data1Out, &data2Out);
         }
         if (!drop)
         {

@@ -353,7 +353,7 @@ void CursesClient::loadConfig()
 
 int main(int argc, char**argv)
 {
-    bool enableLogging = false;
+    bool enableLogging = true;
     for (;;)
     {
         int opt = getopt(argc, argv, "lh");

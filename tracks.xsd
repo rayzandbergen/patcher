@@ -10,6 +10,7 @@
         <xs:restriction base="xs:string">
             <xs:enumeration value="volQuadratic"/>
             <xs:enumeration value="volReverse"/>
+            <xs:enumeration value="drop16"/>
         </xs:restriction>
     </xs:simpleType>
     <xs:simpleType name="TrackIndex">

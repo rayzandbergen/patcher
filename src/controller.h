@@ -25,7 +25,7 @@ protected:
 public:
     //! \brief The name of the controller, so the configuration can refer to it.
     virtual const char *name() const { return "default"; }
-    void value(uint8_t controller, uint8_t val,
+    virtual bool value(uint8_t controller, uint8_t val,
         uint8_t *controllerOut, uint8_t *valOut) const;
     virtual Real interpolate(Real x, Real x0, Real y0,
         Real x1, Real y1) const;
@@ -36,6 +36,19 @@ public:
         uint8_t x1 = 127,   uint8_t y1 = 127):
         m_from(from), m_to(to), m_x0(x0), m_y0(y0),
         m_x1(x1), m_y1(y1) { }
+};
+
+/*! \brief Drops continuous controller 16.
+ */
+class Drop16: public Default {
+public:
+    Drop16(): Default(
+        Midi::continuousController16,
+        Midi::continuousController16
+    ) { }
+    virtual const char *name() const { return "drop"; }
+    virtual bool value(uint8_t controller, uint8_t val,
+        uint8_t *controllerOut, uint8_t *valOut) const;
 };
 
 /*! \brief Remaps continuous controller 16 to volume, and replaces its value curve with a parabola.
