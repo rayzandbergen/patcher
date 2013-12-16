@@ -25,6 +25,7 @@ Screen::Screen(bool enableMain, bool enableLog):m_mainWindow(0), m_logWindow(0)
     start_color();
     curs_set(0);
     init_pair(1, COLOR_CYAN, COLOR_BLACK);
+    init_pair(2, COLOR_WHITE, COLOR_BLUE);
     if (enableMain)
     {
         trackWinHeight = 16;

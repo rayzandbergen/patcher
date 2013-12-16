@@ -113,13 +113,15 @@ void CursesClient::updateScreen()
         if (1 || part->m_channel == m_sectionIdx)
         {
             ActivityList::State s = m_channelActivity.get(part->m_channel);
-            if (s == ActivityList::event || s == ActivityList::on)
-                wattron(m_screen->main(), COLOR_PAIR(1));
             if (s == ActivityList::event)
-                wattron(m_screen->main(), A_UNDERLINE);
+                wattron(m_screen->main(), COLOR_PAIR(2));
+            else if (s == ActivityList::on)
+                wattron(m_screen->main(), COLOR_PAIR(1));
             mvwprintw(m_screen->main(), y, x, "%2d", partIdx+1);
             if (s == ActivityList::event)
-                wattroff(m_screen->main(), A_UNDERLINE);
+                wattroff(m_screen->main(), COLOR_PAIR(2));
+            if (s == ActivityList::event || s == ActivityList::on)
+                wattron(m_screen->main(), COLOR_PAIR(1));
             wprintw(m_screen->main(), " %2d %s ", 1+part->m_channel, part->m_preset);
             if (s == ActivityList::event || s == ActivityList::on)
                 wattroff(m_screen->main(), COLOR_PAIR(1));
@@ -158,13 +160,15 @@ void CursesClient::updateScreen()
                         (int)hwPart->m_octave*12;
                 ActivityList::State s = m_softPartActivity.get(i);
                 ASSERT(hwPart->m_patch.m_name[1] != '[');
-                if (s == ActivityList::event || s == ActivityList::on)
-                    wattron(m_screen->main(), COLOR_PAIR(1));
                 if (s == ActivityList::event)
-                    wattron(m_screen->main(), A_UNDERLINE);
+                    wattron(m_screen->main(), COLOR_PAIR(2));
+                else if (s == ActivityList::on)
+                    wattron(m_screen->main(), COLOR_PAIR(1));
                 mvwprintw(m_screen->main(), y, x, "%3d", j+1);
                 if (s == ActivityList::event)
-                    wattroff(m_screen->main(), A_UNDERLINE);
+                    wattroff(m_screen->main(), COLOR_PAIR(2));
+                if (s == ActivityList::event || s == ActivityList::on)
+                    wattron(m_screen->main(), COLOR_PAIR(1));
                 wprintw(m_screen->main(), " [%3s - %4s]  %12s %3d %3d",
                     keyL, keyU, hwPart->m_patch.m_name, hwPart->m_volume,transpose);
                 if (s == ActivityList::event || s == ActivityList::on)
