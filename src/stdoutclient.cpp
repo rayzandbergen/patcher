@@ -17,7 +17,7 @@ int main()
     {
         m_eventRxQueue.receive(event);
         printf("%04x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
-            event.m_sequenceNumber,
+            event.m_packetCounter,
             event.m_metaMode,
             event.m_currentTrack,
             event.m_currentSection,
