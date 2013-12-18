@@ -106,6 +106,7 @@ public:
     void addSection(Section *s) { m_sectionList.push_back(s); }
     //! \brief The number of sections in this Track.
     int nofSections() const { return (int)m_sectionList.size(); }
+    void merge(Fantom::Performance *performance);
 };
 
 typedef std::vector<Track*> TrackList;  //!< A list of \a Track object pointers.

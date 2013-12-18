@@ -13,6 +13,9 @@
 namespace ControllerRemap {
 
 /*! \brief Remaps a single controller to a new controller, with its value interpolated to a new value.
+ *
+ * This object by itself does not do anything. Its descendants provide
+ * more interesting behaviour.
  */
 class Default {
 protected:
@@ -24,7 +27,7 @@ protected:
     Real m_y1;                      //!<    Interpolation 'to' value y1.
 public:
     //! \brief The name of the controller, so the configuration can refer to it.
-    virtual const char *name() const { return "default"; }
+    virtual const char *name() const = 0;
     virtual bool value(uint8_t controller, uint8_t val,
         uint8_t *controllerOut, uint8_t *valOut) const;
     virtual Real interpolate(Real x, Real x0, Real y0,
@@ -46,7 +49,7 @@ public:
         Midi::continuousController16,
         Midi::continuousController16
     ) { }
-    virtual const char *name() const { return "drop"; }
+    virtual const char *name() const { return "drop16"; }
     virtual bool value(uint8_t controller, uint8_t val,
         uint8_t *controllerOut, uint8_t *valOut) const;
 };

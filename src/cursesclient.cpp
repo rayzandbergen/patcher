@@ -1,5 +1,5 @@
-#include <queue.h>
 #include <iostream>
+#include "queue.h"
 #include "screen.h"
 #include "trackdef.h"
 #include "fantomdef.h"
@@ -259,6 +259,7 @@ void CursesClient::eventLoop()
                 {
                     // parse MIDI out event
                     uint8_t channel = Midi::channel(event.m_midi[0]);
+                    bool volumeChange = false;
                     if (Midi::isNote(event.m_midi[0]))
                     {
                         bool on = Midi::isNoteOn(event.m_midi[0], event.m_midi[1], event.m_midi[2]);
@@ -281,6 +282,7 @@ void CursesClient::eventLoop()
                             if ((event.m_midi[0] & 0xf0) == Midi::controller &&
                                  event.m_midi[1] == Midi::mainVolume)
                             {
+                                volumeChange = true;
                                 SwPart *swPart = currentSection()->m_partList[event.m_part];
                                 for (size_t hwPart = 0; hwPart < swPart->m_hwPartList.size(); hwPart++)
                                 {
@@ -293,7 +295,7 @@ void CursesClient::eventLoop()
                             }
                         }
                     }
-                    if (m_channelActivity.isDirty() || m_softPartActivity.isDirty())
+                    if (m_channelActivity.isDirty() || m_softPartActivity.isDirty() || volumeChange)
                     {
                         updateScreen();
                         wrefresh(m_screen->main());
@@ -326,31 +328,16 @@ void CursesClient::loadConfig()
     m_eventRxQueue.receive(event);
     // By now the cache file should be available.
     m_xml->importPerformances("fantom_cache.xml", m_performanceList);
-    for (size_t t = 0; t < nofTracks(); t++)
+
+    TrackList::iterator track = m_trackList.begin();
+    Fantom::PerformanceList::iterator performance =
+                m_performanceList.begin();
+    for (; performance != m_performanceList.end(); ++performance, ++track)
     {
-        Track *track = m_trackList[t];
-        track->m_performance = m_performanceList[t];
         if (m_fpLog)
-            fprintf(m_fpLog, "merging performance %s\n", track->m_performance->m_name);
-        for (size_t s = 0; s < track->m_sectionList.size(); s++)
-        {
-            const Section *section = track->m_sectionList[s];
-            for (size_t sp = 0; sp < section->m_partList.size(); sp++)
-            {
-                SwPart *swPart = section->m_partList[sp];
-                for (int hp = 0; hp < Fantom::Performance::NofParts; hp++)
-                {
-                    Fantom::Part *hwPart = track->m_performance->m_partList + hp;
-                    if (swPart->m_channel == hwPart->m_channel)
-                    {
-                        swPart->m_hwPartList.push_back(hwPart);
-                        hwPart->m_swPartList.push_back(swPart);
-                        if (m_fpLog)
-                            fprintf(m_fpLog, "merging part %s\n", hwPart->m_preset);
-                    }
-                }
-            }
-        }
+            fprintf(m_fpLog, "merging performance %s\n",
+                (*performance)->m_name);
+        (*track)->merge(*performance);
     }
 }
 

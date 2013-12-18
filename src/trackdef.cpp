@@ -42,7 +42,7 @@ SwPart::SwPart(int number, const char *name):
         m_name(name), m_channel(255), m_transpose(0),
         m_customTransposeEnabled(false),
         m_rangeLower(0), m_rangeUpper(127),
-        m_controllerRemap(new ControllerRemap::Default),
+        m_controllerRemap(0),
         m_mono(false),
         m_transposer(0)
 {
@@ -58,7 +58,8 @@ SwPart::~SwPart()
 //! \brief Clean up memory used by this \a SwPart..
 void SwPart::clear()
 {
-    delete m_controllerRemap;
+    if (m_controllerRemap)
+        delete m_controllerRemap;
     m_controllerRemap = 0;
     delete m_transposer;
     m_transposer = 0;
@@ -75,6 +76,35 @@ Track::Track(const char *name): m_name(name), m_chain(false), m_startSection(0),
 Track::~Track()
 {
     clear();
+}
+
+/*! \brief Merge performance data.
+ */
+void Track::merge(Fantom::Performance *performance)
+{
+    m_performance = performance;
+    // FOREACH section
+    for (SectionList::const_iterator section = m_sectionList.begin();
+            section != m_sectionList.end(); ++section)
+    {
+        // FOREACH software part
+        for (SwPartList::const_iterator sp = (*section)->m_partList.begin();
+                sp != (*section)->m_partList.end(); ++sp)
+        {
+            SwPart *swPart = (*sp);
+            // FOREACH hardware part
+            for (int hp = 0; hp < Fantom::Performance::NofParts; hp++)
+            {
+                Fantom::Part *hwPart = m_performance->m_partList + hp;
+                // create double link if channels match
+                if (swPart->m_channel == hwPart->m_channel)
+                {
+                    swPart->m_hwPartList.push_back(hwPart);
+                    hwPart->m_swPartList.push_back(swPart);
+                }
+            }
+        }
+    }
 }
 
 //! \brief Clean up memory used by this \a Track.

@@ -51,9 +51,9 @@ public:
         {
             if (renice != 0)
                 nice(renice);
-            std::cout << "launching " << name << " " << getpid() << std::endl;
+            //std::cout << "launching " << name << " " << getpid() << std::endl;
             execl(name, name, 0);
-            std::cout << "execl " << name << ": "
+            std::cerr << "execl " << name << ": "
                 << strerror(errno) << "\n";
             exit(1);
         }
@@ -87,7 +87,7 @@ public:
             pid_t pid = m_process[i].m_pid;
             if (pid != -1)
             {
-                std::cout << "sending SIGTERM to "
+                std::cerr << "sending SIGTERM to "
                     << m_process[i].m_name <<
                     " (" << pid << ")\n";
                 kill(pid, SIGTERM);
@@ -139,21 +139,26 @@ void signalHandler(int sigNum, siginfo_t *sigInfo, void *unused)
 //! \brief Patcher task main entry.
 int main(int argc, char **argv)
 {
-    bool startCursesClient = true;
+    enum Client { None, Curses, Stdout };
+    Client client = Curses;
     for (;;)
     {
-        int opt = getopt(argc, argv, "ch");
+        int opt = getopt(argc, argv, "chs");
         if (opt == -1)
             break;
         switch (opt)
         {
             case 'c':
-                startCursesClient = false;
+                client = None;
+                break;
+            case 's':
+                client = Stdout;
                 break;
             default:
-                std::cerr << "\npatcher [-h|?] [-d <dir>] [-c]\n\n"
+                std::cerr << "\npatcher [-h|?] [-c] [-s]\n\n"
                     "  -h|?     This message\n"
-                    "  -c       Do not lauch curses client\n\n";
+                    "  -c       Do not lauch curses client\n"
+                    "  -s       Launch stdout client\n\n";
                 return 1;
                 break;
         }
@@ -167,23 +172,30 @@ int main(int argc, char **argv)
     q.create();
     int nofSubProcesses = 1;
     admin.startProcess(0, "./patcher_core");
-    if (startCursesClient)
+    switch (client)
     {
-        nofSubProcesses++;
-        admin.startProcess(1, "./curses_client", 10);
+        case Curses:
+            nofSubProcesses++;
+            admin.startProcess(1, "./curses_client", 10);
+            break;
+        case Stdout:
+            nofSubProcesses++;
+            admin.startProcess(1, "./stdout_client", 10);
+            break;
+        default:
+            ;
     }
-    std::cout << "waiting\n";
     for (;;)
     {
         if (admin.nofProcesses() != (size_t)nofSubProcesses)
+            // failed launch or unexpected death
             break;
         if (admin.terminate())
             break;
         pause();
-        std::cout << "caught signal\n";
+        std::cerr << "caught signal\n";
     }
     admin.killAll();
     q.unlink();
-    std::cout << "exit admin\n";
     return 0;
 }

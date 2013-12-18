@@ -162,27 +162,11 @@ void Patcher::loadConfig()
     }
     // merge performance data into track data
     g_timer.setTimeout((Real)0.4, 3);
-    for (size_t t = 0; t < nofTracks(); t++)
+    TrackList::iterator track = m_trackList.begin();
+    Fantom::PerformanceList::iterator performance = performanceList.begin();
+    for (; performance != performanceList.end(); ++performance, ++track)
     {
-        Track *track = m_trackList[t];
-        track->m_performance = performanceList[t];
-        for (size_t s = 0; s < track->m_sectionList.size(); s++)
-        {
-            const Section *section = track->m_sectionList[s];
-            for (size_t sp = 0; sp < section->m_partList.size(); sp++)
-            {
-                SwPart *swPart = section->m_partList[sp];
-                for (int hp = 0; hp < Fantom::Performance::NofParts; hp++)
-                {
-                    Fantom::Part *hwPart = track->m_performance->m_partList + hp;
-                    if (swPart->m_channel == hwPart->m_channel)
-                    {
-                        swPart->m_hwPartList.push_back(hwPart);
-                        hwPart->m_swPartList.push_back(swPart);
-                    }
-                }
-            }
-        }
+        (*track)->merge(*performance);
     }
 }
 
@@ -460,7 +444,6 @@ void Patcher::eventLoop()
 void Patcher::sendEventToFantom(uint8_t midiStatusByte,
                 uint8_t data1, uint8_t data2)
 {
-    bool drop = false;
     uint8_t data1Out = data1;
     uint8_t data2Out = data2;
     uint8_t midiStatus = Midi::status(midiStatusByte);
@@ -470,6 +453,7 @@ void Patcher::sendEventToFantom(uint8_t midiStatusByte,
     bool isController = Midi::isController(midiStatus);
     for (size_t i=0; i<currentSection()->m_partList.size(); i++)
     {
+        bool drop = false;
         SwPart *swPart = currentSection()->m_partList[i];
         if (isNoteData)
         {
@@ -529,7 +513,11 @@ void Patcher::sendEventToFantom(uint8_t midiStatusByte,
                     fprintf(m_fpLog, "transposer sustain\n");
                 drop = true;
             }
-            drop = !swPart->m_controllerRemap->value(data1, data2, &data1Out, &data2Out);
+            if (swPart->m_controllerRemap)
+            {
+                drop = drop || !swPart->m_controllerRemap->value(
+                    data1, data2, &data1Out, &data2Out);
+            }
         }
         if (!drop)
         {
@@ -546,7 +534,7 @@ void Patcher::sendEventToFantom(uint8_t midiStatusByte,
 void Patcher::setVolume(uint8_t hwPart, uint8_t value)
 {
     m_fantom->setVolume(hwPart, value);
-    // Since the volume is set as a part parameter rather than through 
+    // Since the volume is set as a part parameter rather than through
     // a controller message, we need to fake the controller message
     // to inform clients about the volume change.
     Fantom::Part *part = currentTrack()->m_performance->m_partList+hwPart;
@@ -834,13 +822,21 @@ int main(int argc, char **argv)
     Fantom::PerformanceList perfList;
     xml.importPerformances("fantom_cache.xml", perfList);
     xml.exportPerformances("fantom_cache2.xml", perfList);
-    for (std::vector<Fantom::Performance*>::iterator i = perfList.begin(); i != perfList.end(); i++)
-        delete *i;
-    // read tracklist and setlist, then delete.
+    // read tracklist and setlist
     TrackList trackList;
     SetList setList;
     xml.importTracks(TRACK_DEF, trackList, setList);
+    // merge performance data
+    TrackList::iterator track = trackList.begin();
+    Fantom::PerformanceList::iterator performance = perfList.begin();
+    for (; performance != perfList.end(); ++performance, ++track)
+    {
+        (*track)->merge(*performance);
+    }
+    // cleanup
     clear(trackList);
+    for (std::vector<Fantom::Performance*>::iterator i = perfList.begin(); i != perfList.end(); i++)
+        delete *i;
     return 0;
 #endif
     try

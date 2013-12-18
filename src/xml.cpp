@@ -314,7 +314,6 @@ void XMLParser::parseTracks(DOMDocument *doc, TrackList &trackList, SetList &set
                 DOMNode *controllerRemapNode = findNode(doc, (DOMElement*)partNode, "./controllerRemap");
                 if (controllerRemapNode)
                 {
-                    delete part->m_controllerRemap; // default
                     std::string id = xmlStdString(((DOMElement*)controllerRemapNode)->getAttribute(m_xmlStr("id")));
                     if (id == "volQuadratic")
                         part->m_controllerRemap = new ControllerRemap::VolQuadratic;
@@ -325,8 +324,6 @@ void XMLParser::parseTracks(DOMDocument *doc, TrackList &trackList, SetList &set
                     else
                         throw(Error("unknown controllerRemap id"));
                 }
-                if (!part->m_controllerRemap)
-                    part->m_controllerRemap = new ControllerRemap::Default;
 
                 DOMNode *rangeNode = findNode(doc, (DOMElement*)partNode, "./range");
                 if (rangeNode)
