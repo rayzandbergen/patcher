@@ -68,6 +68,11 @@ set(curses_clientSources
     now.h
 )
 
+set(stdout_clientSources
+    src/stdoutclient.cpp
+    src/queue.cpp
+)
+
 set(patcherSources
     src/patcher.cpp
     src/queue.cpp
@@ -76,6 +81,7 @@ set(patcherSources
 
 add_executable(patcher_core ${patcher_coreSources})
 add_executable(curses_client ${curses_clientSources})
+add_executable(stdout_client ${stdout_clientSources})
 add_executable(patcher ${patcherSources})
 
 add_custom_command(
@@ -89,9 +95,11 @@ add_dependencies(patcher_core tags)
 
 set(patcher_corelibs "-lrt -lxerces-c -lasound ${FEATURE_LIBS}")
 set(curses_clientlibs "-lrt -lxerces-c ${FEATURE_LIBS}")
+set(stdout_clientlibs "-lrt")
 set(patcherlibs "-lrt")
 
 set_target_properties(patcher_core PROPERTIES LINK_FLAGS ${patcher_corelibs})
 set_target_properties(curses_client PROPERTIES LINK_FLAGS ${curses_clientlibs})
+set_target_properties(stdout_client PROPERTIES LINK_FLAGS ${stdout_clientlibs})
 set_target_properties(patcher PROPERTIES LINK_FLAGS ${patcherlibs})
 
