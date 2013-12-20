@@ -68,10 +68,34 @@ void passEvents()
     }
 }
 
-//! \brief Main entry point, no parameters.
-int main()
+//! \brief Main entry point.
+int main(int argc, char **argv)
 {
+    bool enableFakeEvents = false;
+    for (;;)
+    {
+        int opt = getopt(argc, argv, "fh");
+        if (opt == -1)
+            break;
+        switch (opt)
+        {
+            case 'f':
+                enableFakeEvents = true;
+                break;
+            default:
+                fprintf(stderr, "\nstdout_client [-h|?] [-f]\n\n"
+                    "  -h|?     This message\n"
+                    "  -f       Enable fake events\n\n");
+                return 1;
+                break;
+        }
+    }
+    if (argc > optind)
+    {
+        fprintf(stderr, "unrecognised trailing arguments, try -h\n");
+    }
+    if (enableFakeEvents)
+        fakeEvents();
     passEvents();
-    //fakeEvents();
     return 0;
 }
