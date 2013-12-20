@@ -144,7 +144,7 @@ int parseGetSwPart(Tcl_Interp *interp, int argc, int objc, Tcl_Obj *const objv[]
                 else if (strcmp(member, "name") == 0)
                     Tcl_SetObjResult(interp, Tcl_NewStringObj(part->m_name, -1));
                 else if (strcmp(member, "channel") == 0)
-                    Tcl_SetObjResult(interp, Tcl_NewIntObj((int)part->m_number));
+                    Tcl_SetObjResult(interp, Tcl_NewIntObj((int)part->m_channel));
                 else if (strcmp(member, "transpose") == 0)
                     Tcl_SetObjResult(interp, Tcl_NewIntObj((int)part->m_transpose));
                 else if (strcmp(member, "customTransposeEnabled") == 0)
