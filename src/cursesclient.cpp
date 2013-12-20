@@ -355,7 +355,7 @@ int main(int argc, char**argv)
                 enableLogging = true;
                 break;
             default:
-                std::cerr << "\ncursesclient [-h|?] [-l]\n\n"
+                std::cerr << "\ncurses_client [-h|?] [-l]\n\n"
                     "  -h|?     This message\n"
                     "  -l       Enable logging\n\n";
                 return 1;
