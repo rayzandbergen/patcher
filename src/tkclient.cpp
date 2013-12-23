@@ -43,6 +43,56 @@ public:
     }
 };
 
+class Range
+{
+public:
+    const char *m_canvas;
+    int m_x1;
+    int m_y1;
+    int m_x2;
+    int m_y2;
+    int m_value1;
+    int m_value2;
+    int m_max;
+    struct {
+        int m_bg;
+        int m_fg;
+        int m_text1;
+        int m_text2;
+    } m_id;
+    Range(Tcl_Interp *interp, const char *canvas, int x1, int y1, int x2, int y2,
+            int value1, int value2, int max):
+        m_canvas(canvas), m_x1(x1), m_y1(y1), m_x2(x2), m_y2(y2),
+        m_value1(value1), m_value2(value2), m_max(max)
+    {
+        TclEval eval;
+        eval.stream() << m_canvas << " create rectangle " << m_x1 << "p " << m_y1 <<
+                "p " << m_x2 << "p " << m_y2 << "p -fill black";
+        eval.flush(interp, m_id.m_bg);
+        double f1 = (double)m_value1/(double)m_max;
+        double f2 = (double)m_value2/(double)m_max;
+        int x3 = m_x1 + f1 * (m_x2-m_x1);
+        int x4 = m_x1 + f2 * (m_x2-m_x1);
+        eval.stream() << m_canvas << " create rectangle " << x3 << "p " << m_y1 <<
+                "p " << x4 << "p " << m_y2 << "p -fill green";
+        eval.flush(interp, m_id.m_fg);
+#if 0
+        x3 = (m_x1 + m_x2)/2;
+        int y3 = (m_y1 + m_y2)/2;
+        eval.stream() << m_canvas << " create text " << x3 << "p " << y3 << "p -text " << m_value << " -fill white";
+        eval.flush(interp, m_id.m_text);
+#endif
+    }
+    void clear(Tcl_Interp *interp)
+    {
+        TclEval eval;
+        eval.stream() << m_canvas << " delete " << m_id.m_fg;
+        eval.flush(interp);
+        eval.stream() << m_canvas << " delete " << m_id.m_bg;
+        eval.flush(interp);
+    }
+};
+
 class Bar
 {
 public:
@@ -98,6 +148,7 @@ public:
 class SwPartState
 {
     const char *m_canvas;
+    Range *m_range;
     int m_num;
     int m_num1;
     int m_num2;
@@ -177,10 +228,10 @@ Fantom::Part *SwPartState::hwPart() const
 }
 
 SwPartState::SwPartState(Tcl_Interp *interp, const char *canvas, int num, int num1, int num2):
-            m_canvas(canvas), m_num(num), m_num1(num1), m_num2(num2)
+            m_canvas(canvas), m_range(0), m_num(num), m_num1(num1), m_num2(num2)
 {
     int row = (m_num % 4) * 30 + 30;
-    int col = (m_num / 4) * 180 + 30;
+    int col = (m_num / 4) * 380 + 30;
     TclEval eval;
     eval.stream() << m_canvas << " create text " << col << "p " << row << "p -text " << (1+m_num);
     eval.flush(interp, m_id.m_num);
@@ -193,6 +244,8 @@ SwPartState::SwPartState(Tcl_Interp *interp, const char *canvas, int num, int nu
     col += 60;
     eval.stream() << m_canvas << " create text " << col << "p " << row << "p -text {" << hwPart()->m_patch.m_name << "}";
     eval.flush(interp, m_id.m_name);
+    col += 90;
+    m_range = new Range(interp, canvas, col, row-5, col+100, row+5, swPart()->m_rangeLower, swPart()->m_rangeUpper, 127);
 }
 
 HwPartState::HwPartState(Tcl_Interp *interp, const char *canvas, int num): m_canvas(canvas), m_volumeBar(0),
@@ -227,6 +280,9 @@ void SwPartState::update(Tcl_Interp *interp)
     eval.flush(interp);
     eval.stream() << m_canvas << " insert " << m_id.m_name << " end {" << hwPart()->m_patch.m_name << "}";
     eval.flush(interp);
+    int row = (m_num % 8) * 30 + 30;
+    int col = (m_num / 8) * 380 + 30 + 30 +40 +60 +90;
+    m_range = new Range(interp, m_canvas, col, row-5, col+100, row+5, swPart()->m_rangeLower, swPart()->m_rangeUpper, 127);
 }
 
 void SwPartState::clear(Tcl_Interp *interp)
@@ -242,6 +298,12 @@ void SwPartState::clear(Tcl_Interp *interp)
     eval.flush(interp);
     eval.stream() << m_canvas << " dchars " << m_id.m_name << " 0 end";
     eval.flush(interp);
+    if (m_range)
+    {
+        m_range->clear(interp);
+        delete m_range;
+    }
+    m_range = 0;
 }
 
 void HwPartState::update(Tcl_Interp *interp)
