@@ -84,6 +84,7 @@ set(tk_clientSources
     src/fantomdef.cpp
     src/mididef.cpp
     src/monofilter.cpp
+    src/queue.cpp
     src/timer.cpp
     src/timestamp.cpp
     src/tkclient.cpp
