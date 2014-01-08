@@ -33,8 +33,8 @@ proc ProcessPatcherEvent { line } {
 }
 
 # wait for first event
-#set channel [ open "|./stdout_client -f" ]
-set channel [ open "|./stdout_client" ]
+set channel [ open "|./stdout_client -f" ]
+#set channel [ open "|./stdout_client" ]
 set firstLine [ gets $channel ]
 foreach i $eventMembers { lappend globals State::$i }
 eval "scan \"$firstLine\" \"%x %x %x %x %x %x %x %x %x %x %x\" $globals"
@@ -63,12 +63,8 @@ checkbutton .viewOptionsFrame.cb3 -text "Event log" -command onClick  \
 pack .viewOptionsFrame.cb1 -side left
 pack .viewOptionsFrame.cb2 -side left
 pack .viewOptionsFrame.cb3 -side left
-frame .currentFrame
-pack .currentFrame -fill both -expand 1
-label .currentFrame.track -text {track x 1/1} -font TkTextFont
-pack .currentFrame.track
-label .currentFrame.section -text {section y 1/1} -font TkTextFont
-pack .currentFrame.section
+canvas .bannerCanvas -width 30c -height 3c
+pack .bannerCanvas
 canvas .fantomCanvas -width 30c -height 10c
 pack .fantomCanvas
 canvas .c -width 30c -height 5c

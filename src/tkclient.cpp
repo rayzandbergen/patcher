@@ -43,6 +43,50 @@ public:
     }
 };
 
+class Banner
+{
+public:
+    const char *m_canvas;
+    int m_row;
+    int m_col;
+    struct {
+        int m_value;
+        int m_fraction;
+    } m_id;
+    Banner(Tcl_Interp *interp, const char *canvas, const char *field, int row, int col): 
+        m_canvas(canvas), m_row(row), m_col(col)
+    {
+        TclEval eval;
+        eval.stream() << m_canvas << " create text " << col << "p " << row << "p -text {" 
+            << field << "} -anchor w";
+        eval.flush(interp);
+        update(interp, "banner", 0, 1);
+    }
+    void clear(Tcl_Interp *interp)
+    {
+        TclEval eval;
+        eval.stream() << m_canvas << " delete " << m_id.m_value;
+        eval.flush(interp);
+        eval.stream() << m_canvas << " delete " << m_id.m_fraction;
+        eval.flush(interp);
+    }
+    void update(Tcl_Interp *interp, const char *value, int numerator, int denominator)
+    {
+        int row = m_row;
+        int col = m_col;
+        clear(interp);
+        TclEval eval;
+        col += 60;
+        eval.stream() << m_canvas << " create text " << col << "p " << row << "p -text {" 
+            << numerator << "/" << denominator << "}";
+        eval.flush(interp, m_id.m_fraction);
+        col += 80;
+        eval.stream() << m_canvas << " create text " << col << "p " << row << "p -text {" 
+            << value << "} -anchor w -font TkTextFont";
+        eval.flush(interp, m_id.m_value);
+    }
+};
+
 class Range
 {
 public:
@@ -203,6 +247,19 @@ public:
     void update(Tcl_Interp *interp);
 };
 
+class BannerState
+{
+    Banner *m_track;
+    Banner *m_section;
+public:
+    BannerState(Tcl_Interp *interp, const char *canvas)
+    {
+        m_track = new Banner(interp, canvas, "track", 15, 50);
+        m_section = new Banner(interp, canvas, "section", 60, 50);
+    }
+    void update(Tcl_Interp *interp);
+};
+
 class TkClientState
 {
 public:
@@ -213,6 +270,7 @@ public:
     int m_currentSection;
     HwPartState *m_hwPartState[16];
     SwPartState *m_swPartState[64];
+    BannerState *m_bannerState;
     Track *currentTrack() const {
         return m_trackList[m_currentTrack];
     }
@@ -223,6 +281,7 @@ public:
     {
         m_currentTrack = -1;
         m_currentSection = -1;
+        m_bannerState = 0;
         for (int i=0; i<16; i++)
             m_hwPartState[i] = 0;
         for (int i=0; i<64; i++)
@@ -231,6 +290,14 @@ public:
 };
 
 TkClientState tkClientState;
+
+void BannerState::update(Tcl_Interp *interp)
+{
+    m_track->update(interp, tkClientState.currentTrack()->m_name, 
+        (tkClientState.m_currentTrack+1), tkClientState.m_trackList.size());
+    m_section->update(interp, tkClientState.currentSection()->m_name, 
+        (tkClientState.m_currentSection+1), tkClientState.currentTrack()->m_sectionList.size());
+}
 
 Fantom::Part *HwPartState::hwPart() const
 {
@@ -358,16 +425,14 @@ int getSet(Tcl_Interp *interp)
 int processSectionChange(Tcl_Interp *interp, uint8_t newSection)
 {
     tkClientState.m_currentSection = newSection;
-    TclEval eval;
-    eval.stream() << ".currentFrame.section configure -text {section " << (tkClientState.m_currentSection+1)
-                  << "/" << tkClientState.currentTrack()->m_sectionList.size() << " "
-                  << tkClientState.currentSection()->m_name << "}";
-    eval.flush(interp);
     int num = 0;
     for (int i=0; i<12 && tkClientState.m_swPartState[i]; i++)
     {
         tkClientState.m_swPartState[i]->clear(interp);
     }
+    if (tkClientState.m_bannerState == 0)
+        tkClientState.m_bannerState = new BannerState(interp, ".bannerCanvas");
+    tkClientState.m_bannerState->update(interp);
     for (int num1 = 0; num < 12 &&
             num1 < (int)tkClientState.currentSection()->m_partList.size(); num1++)
     {
@@ -389,14 +454,6 @@ int processSectionChange(Tcl_Interp *interp, uint8_t newSection)
 int processTrackChange(Tcl_Interp *interp, uint8_t newTrack)
 {
     tkClientState.m_currentTrack = newTrack;
-    if (tkClientState.m_currentSection >= 0)
-    {
-        TclEval eval;
-        eval.stream() << ".currentFrame.track configure -text {track " << (tkClientState.m_currentTrack+1)
-                      << "/" << tkClientState.m_trackList.size() << " "
-                      << tkClientState.currentTrack()->m_name << "}";
-        eval.flush(interp);
-    }
     for (int i=0; i<16; i++)
     {
         if (tkClientState.m_hwPartState[i] == 0)
