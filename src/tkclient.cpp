@@ -53,35 +53,51 @@ public:
     int m_y2;
     int m_value1;
     int m_value2;
-    int m_max;
+    static const int m_min = Midi::Note::E2;
+    static const int m_max = Midi::Note::G8;
     struct {
         int m_bg;
         int m_fg;
         int m_text1;
         int m_text2;
     } m_id;
-    Range(Tcl_Interp *interp, const char *canvas, int x1, int y1, int x2, int y2,
-            int value1, int value2, int max):
-        m_canvas(canvas), m_x1(x1), m_y1(y1), m_x2(x2), m_y2(y2),
-        m_value1(value1), m_value2(value2), m_max(max)
+    static int clamp(int x, int xa, int xb)
     {
+        return std::max(xa, std::min(x, xb));
+    }
+    Range(Tcl_Interp *interp, const char *canvas, int x1, int y1, int x2, int y2,
+            int value1, int value2):
+        m_canvas(canvas), m_x1(x1), m_y1(y1), m_x2(x2), m_y2(y2),
+        m_value1(value1), m_value2(value2)
+    {
+        m_value1 = clamp(m_value1, m_min, m_max);
+        m_value2 = clamp(m_value2, m_min, m_max);
+        m_value1 -= m_min;
+        m_value2 -= m_min;
+        double range = m_max - m_min;
         TclEval eval;
         eval.stream() << m_canvas << " create rectangle " << m_x1 << "p " << m_y1 <<
                 "p " << m_x2 << "p " << m_y2 << "p -fill black";
         eval.flush(interp, m_id.m_bg);
-        double f1 = (double)m_value1/(double)m_max;
-        double f2 = (double)m_value2/(double)m_max;
+        double f1 = (double)m_value1/range;
+        double f2 = (double)m_value2/range;
         int x3 = m_x1 + f1 * (m_x2-m_x1);
         int x4 = m_x1 + f2 * (m_x2-m_x1);
+        if (std::abs(x3-x4) < 2)
+        {
+            if (x3 > m_min)
+                x3 -= 2;
+            else
+                x4 += 2;
+        }
         eval.stream() << m_canvas << " create rectangle " << x3 << "p " << m_y1 <<
-                "p " << x4 << "p " << m_y2 << "p -fill green";
+                "p " << x4 << "p " << m_y2 << "p -fill blue";
         eval.flush(interp, m_id.m_fg);
-#if 0
-        x3 = (m_x1 + m_x2)/2;
         int y3 = (m_y1 + m_y2)/2;
-        eval.stream() << m_canvas << " create text " << x3 << "p " << y3 << "p -text " << m_value << " -fill white";
-        eval.flush(interp, m_id.m_text);
-#endif
+        eval.stream() << m_canvas << " create text " << m_x1 << "p " << y3 << "p -text {" << Midi::noteName(m_value1+m_min) << "} -fill white -anchor w";
+        eval.flush(interp, m_id.m_text1);
+        eval.stream() << m_canvas << " create text " << m_x2 << "p " << y3 << "p -text {" << Midi::noteName(m_value2+m_min) << "} -fill white -anchor e";
+        eval.flush(interp, m_id.m_text2);
     }
     void clear(Tcl_Interp *interp)
     {
@@ -89,6 +105,10 @@ public:
         eval.stream() << m_canvas << " delete " << m_id.m_fg;
         eval.flush(interp);
         eval.stream() << m_canvas << " delete " << m_id.m_bg;
+        eval.flush(interp);
+        eval.stream() << m_canvas << " delete " << m_id.m_text1;
+        eval.flush(interp);
+        eval.stream() << m_canvas << " delete " << m_id.m_text2;
         eval.flush(interp);
     }
 };
@@ -242,10 +262,10 @@ SwPartState::SwPartState(Tcl_Interp *interp, const char *canvas, int num, int nu
     eval.stream() << m_canvas << " create text " << col << "p " << row << "p -text {" << hwPart()->m_preset << "}";
     eval.flush(interp, m_id.m_preset);
     col += 60;
-    eval.stream() << m_canvas << " create text " << col << "p " << row << "p -text {" << hwPart()->m_patch.m_name << "}";
+    eval.stream() << m_canvas << " create text " << col << "p " << row << "p -text {" << hwPart()->m_patch.m_name << "} -anchor w";
     eval.flush(interp, m_id.m_name);
     col += 90;
-    m_range = new Range(interp, canvas, col, row-5, col+100, row+5, swPart()->m_rangeLower, swPart()->m_rangeUpper, 127);
+    m_range = new Range(interp, canvas, col, row-5, col+100, row+5, swPart()->m_rangeLower, swPart()->m_rangeUpper);
 }
 
 HwPartState::HwPartState(Tcl_Interp *interp, const char *canvas, int num): m_canvas(canvas), m_volumeBar(0),
@@ -266,7 +286,7 @@ HwPartState::HwPartState(Tcl_Interp *interp, const char *canvas, int num): m_can
     eval.stream() << m_canvas << " create text " << col << "p " << row << "p -text {" << hwPart()->m_patch.m_name << "} -anchor w";
     eval.flush(interp, m_id.m_name);
     col += 90;
-    m_volumeBar = new Bar(interp,  ".fantomCanvas", col, row-5, col+100, row+5, hwPart()->m_volume, 127);
+    m_volumeBar = new Bar(interp,  canvas, col, row-5, col+100, row+5, hwPart()->m_volume, 127);
 }
 
 void SwPartState::update(Tcl_Interp *interp)
@@ -282,7 +302,7 @@ void SwPartState::update(Tcl_Interp *interp)
     eval.flush(interp);
     int row = (m_num % 8) * 30 + 30;
     int col = (m_num / 8) * 380 + 30 + 30 +40 +60 +90;
-    m_range = new Range(interp, m_canvas, col, row-5, col+100, row+5, swPart()->m_rangeLower, swPart()->m_rangeUpper, 127);
+    m_range = new Range(interp, m_canvas, col, row-5, col+100, row+5, swPart()->m_rangeLower, swPart()->m_rangeUpper);
 }
 
 void SwPartState::clear(Tcl_Interp *interp)

@@ -3,11 +3,15 @@
  *
  *  Copyright 2013 Raymond Zandbergen (ray.zandbergen@gmail.com)
  */
+#define USE_XML_FAKES
 #include <stdio.h>
 #include "queue.h"
 #include "mididef.h"
 #include "mididriver.h"
 #include "error.h"
+#ifdef USE_XML_FAKES
+#include "xml.h"
+#endif
 
 void printEvent(const Event &event)
 {
@@ -28,14 +32,27 @@ void printEvent(const Event &event)
 
 void fakeEvents()
 {
+#ifdef USE_XML_FAKES
+    XML xml;
+    TrackList trackList;
+    SetList setList;
+    xml.importTracks(TRACK_DEF, trackList, setList);
+#endif
+
     Event event;
     for (int i=0;; i++)
     {
         event.m_packetCounter = i;
         event.m_metaMode = i % 10 == 0;
+#ifdef USE_XML_FAKES
+        event.m_currentTrack = i % trackList.size();
+        event.m_currentSection = i % trackList[event.m_currentTrack]->m_sectionList.size();
+        event.m_trackIdxWithinSet = (i/4) % setList.size();
+#else
         event.m_currentTrack = i % 10 < 4;
         event.m_currentSection = i % 2;
         event.m_trackIdxWithinSet = i / 15;
+#endif
         event.m_type = Event::MidiOut3Bytes;
         event.m_deviceId = Midi::Device::FantomOut;
         event.m_part = 0;

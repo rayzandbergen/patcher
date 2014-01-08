@@ -50,6 +50,7 @@ proc GetPatcherEvent {channel} {
 }
 
 ########### main #############
+font configure TkTextFont -size 28
 frame .viewOptionsFrame
 pack .viewOptionsFrame -fill both -expand 1
 checkbutton .viewOptionsFrame.cb1 -text "Fantom Parts" -command onClick  \
@@ -64,9 +65,9 @@ pack .viewOptionsFrame.cb2 -side left
 pack .viewOptionsFrame.cb3 -side left
 frame .currentFrame
 pack .currentFrame -fill both -expand 1
-label .currentFrame.track -text {track x 1/1}
+label .currentFrame.track -text {track x 1/1} -font TkTextFont
 pack .currentFrame.track
-label .currentFrame.section -text {section y 1/1}
+label .currentFrame.section -text {section y 1/1} -font TkTextFont
 pack .currentFrame.section
 canvas .fantomCanvas -width 30c -height 10c
 pack .fantomCanvas

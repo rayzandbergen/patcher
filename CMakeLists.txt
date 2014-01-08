@@ -69,8 +69,16 @@ set(curses_clientSources
 )
 
 set(stdout_clientSources
+    src/controller.cpp
+    src/fantomdef.cpp
+    src/mididef.cpp
+    src/monofilter.cpp
     src/queue.cpp
     src/stdoutclient.cpp
+    src/toggler.cpp
+    src/trackdef.cpp
+    src/transposer.cpp
+    src/xml.cpp
 )
 
 set(patcherSources
@@ -111,7 +119,7 @@ add_dependencies(patcher_core tags)
 
 set(patcher_corelibs "-lrt -lxerces-c -lasound ${FEATURE_LIBS}")
 set(curses_clientlibs "-lrt -lxerces-c ${FEATURE_LIBS}")
-set(stdout_clientlibs "-lrt")
+set(stdout_clientlibs "-lrt -lxerces-c")
 set(tk_clientlibs "-lrt -lxerces-c")
 set(patcherlibs "-lrt")
 
