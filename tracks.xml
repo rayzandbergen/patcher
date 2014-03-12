@@ -617,6 +617,7 @@
 
     <track name="Lines in the sand 1/2">
       <section name="Section 1">
+        <noteOff enter="false" leave="false"/>
         <part channel="1" name="Starchild">
           <range lower="C0" upper="C5"/>
           <transpose offset="0"/>
@@ -627,6 +628,7 @@
         </part>
       </section>
       <section name="Section 2">
+        <noteOff enter="false" leave="true"/>
         <part channel="3" name="Searing COSM">
           <range lower="C0" upper="G10"/>
           <transpose offset="0"/>
@@ -639,8 +641,13 @@
           <range lower="C0" upper="B4"/>
           <transpose offset="0"/>
         </part>
+        <part channel="1" name="Starchild">
+          <range lower="C0" upper="D0"/>
+          <transpose offset="0"/>
+        </part>
       </section>
       <section name="Section 3">
+        <noteOff enter="true" leave="true"/>
         <part channel="6" name="Searing COSM">
           <range lower="C0" upper="G10"/>
           <transpose offset="0"/>
@@ -651,6 +658,10 @@
         </part>
         <part channel="8" name="FS Syn Str">
           <range lower="C0" upper="B4"/>
+          <transpose offset="0"/>
+        </part>
+        <part channel="1" name="Starchild">
+          <range lower="C0" upper="D0"/>
           <transpose offset="0"/>
         </part>
       </section>
