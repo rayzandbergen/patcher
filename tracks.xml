@@ -2395,8 +2395,12 @@
           <range lower="C0" upper="B5"/>
           <transpose offset="12"/>
         </part>
+        <part channel="8" name="ac guitar">
+          <range lower="C6" upper="A6"/>
+          <transpose offset="-12"/>
+        </part>
         <part channel="1" name="piano">
-          <range lower="C6" upper="B9"/>
+          <range lower="B6" upper="B9"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -2439,8 +2443,12 @@
           <range lower="C0" upper="B5"/>
           <transpose offset="12"/>
         </part>
+        <part channel="8" name="ac guitar">
+          <range lower="C6" upper="A6"/>
+          <transpose offset="-12"/>
+        </part>
         <part channel="1" name="piano">
-          <range lower="C6" upper="B9"/>
+          <range lower="B6" upper="B9"/>
           <transpose offset="0"/>
         </part>
       </section>
@@ -2516,6 +2524,30 @@
         <part channel="5" name="clavi hi">
           <range lower="C6" upper="B9"/>
           <transpose offset="-12"/>
+        </part>
+      </section>
+      <section name="shrink">
+        <part channel="1" name="piano">
+          <range lower="C0" upper="B9"/>
+          <transpose offset="0"/>
+        </part>
+      </section>
+      <section name="solo">
+        <part channel="7" name="square lead">
+          <range lower="C0" upper="B9"/>
+          <transpose offset="0"/>
+        </part>
+      </section>
+      <section name="unison">
+        <part channel="9" name="square lead">
+          <range lower="C0" upper="B9"/>
+          <transpose offset="0"/>
+        </part>
+      </section>
+      <section name="outtro piano">
+        <part channel="1" name="piano">
+          <range lower="C0" upper="B9"/>
+          <transpose offset="0"/>
         </part>
       </section>
     </track>
