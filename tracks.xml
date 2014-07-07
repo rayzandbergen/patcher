@@ -143,7 +143,7 @@
 
     <track name="Home">
       <section name="Section 1">
-        <part channel="1" name="Home PATCH">
+        <part channel="1" name="Home PATCH" toggle="true">
           <range lower="C0" upper="E2"/>
           <transpose offset="0"/>
         </part>
@@ -2561,37 +2561,19 @@
     <track name="Lines in the sand 1/2"/>
     <track name="Lines in the sand 2/2"/>
     <track name="Another day"/>
-    <track name="Scarred"/>
-    <track name="Home"/>
+    <track name="Erotomania"/>
+    <track name="Overture 1928"/>
 
     <track name="About to crash"/>
     <track name="Pull me under"/>
+
+    <track name="Home"/>
+    <track name="Scarred"/>
     <track name="The Mirror"/>
     <track name="Metropolis part I"/>
-
     <track name="The count of Tuscany"/>
-    <track name="Erotomania"/>
-    <track name="Overture 1928"/>
 
     <![CDATA[ optie B ]]>
-
-    <track name="Overture 1928 2"/>
-    <track name="Overture 1928"/>
-    <track name="Lines in the sand 1/2"/>
-    <track name="Lines in the sand 2/2"/>
-    <track name="Another day"/>
-    <track name="Scarred"/>
-    <track name="The Mirror"/>
-    <track name="Home"/>
-
-    <track name="About to crash"/>
-    <track name="Pull me under"/>
-    <track name="Peruvian skies"/>
-    <track name="Metropolis part I"/>
-
-    <track name="The count of Tuscany"/>
-    <track name="Erotomania"/>
-    <track name="Overture 1928"/>
 
   </setList>
 </tracks>
