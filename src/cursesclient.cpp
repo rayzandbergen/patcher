@@ -1,4 +1,5 @@
 #include <iostream>
+#include <unistd.h> // getopt
 #include "queue.h"
 #include "screen.h"
 #include "trackdef.h"

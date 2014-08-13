@@ -5,6 +5,7 @@
  */
 #define USE_XML_FAKES
 #include <stdio.h>
+#include <unistd.h>
 #include "queue.h"
 #include "mididef.h"
 #include "mididriver.h"

@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <cmath>
+#include <unistd.h>
 #include "error.h"
 
 Timer g_timer;

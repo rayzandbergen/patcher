@@ -39,6 +39,7 @@ public:
         uint8_t x1 = 127,   uint8_t y1 = 127):
         m_from(from), m_to(to), m_x0(x0), m_y0(y0),
         m_x1(x1), m_y1(y1) { }
+    virtual ~Default() { }
 };
 
 /*! \brief Drops continuous controller 16.
