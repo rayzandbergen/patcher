@@ -383,12 +383,21 @@ void Patcher::eventLoop()
                                 else if (currentTrack()->m_chain)
                                 {
                                     if (num <= FCB1010::FootSwitch2)
-                                        prevSection();
+                                    {
+                                        if (debounced(debounceTime))
+                                            prevSection();
+                                    }
                                     else if (num >=FCB1010::FootSwitch3)
-                                        nextSection();
+                                    {
+                                        if (debounced(debounceTime))
+                                            nextSection();
+                                    }
                                 }
                                 else
-                                    changeSection(num);
+                                {
+                                        if (debounced(debounceTime))
+                                            changeSection(num);
+                                }
                             }
                             break;
                         }
@@ -701,8 +710,6 @@ bool Patcher::debounced(Real delaySeconds)
  */
 void Patcher::nextSection()
 {
-    if (!debounced(debounceTime))
-        return;
     int newTrack = currentSection()->m_nextTrack;
     int newSection = currentSection()->m_nextSection;
     if (newTrack != m_trackIdx)
@@ -723,8 +730,6 @@ void Patcher::nextSection()
  */
 void Patcher::prevSection()
 {
-    if (!debounced(debounceTime))
-        return;
     int newTrack = currentSection()->m_previousTrack;
     int newSection = currentSection()->m_previousSection;
     if (newTrack != m_trackIdx)
