@@ -1,0 +1,14 @@
+*~
+*.swp
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+curses_client
+doc/
+libtk_client.so
+now.h
+patcher
+patcher_core
+stdout_client
+tags
