@@ -1,0 +1,9 @@
+Ray's MIDI patcher
+
+(This is a copy-paste of the 'Introduction' section of the Doxygen documentation.)
+
+This MIDI patcher is an application that is intended to run on a Raspberry Pi board. It was implemented because my off-the-shelf MIDI controllers are not powerful enough to manage all the different sound settings and keyboard layouts that I use in my setup.
+
+When playing a single track of the Noble Silence set list, a single Roland Fantom Performance used. A Performance is a full mix of at most 16 sounds plus a chain of effects. During the track, different sounds need to be controlled or played at different times. In practice, this means switching between multiple keyboard layouts. In my setup, switching is controlled by an FCB1010 MIDI foot controller.
+
+The goal of this MIDI patcher implementation is to create and manage keyboard layouts in live situations.
