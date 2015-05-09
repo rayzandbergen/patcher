@@ -2424,14 +2424,30 @@
           <transpose offset="-12"/>
         </part>
       </section>
-      <section name="organ unison">
-        <part channel="1" name="piano">
-          <range lower="C5" upper="B9"/>
+      <section name="organ unison sweep">
+        <part channel="4" name="EP">
+          <range lower="D5" upper="D7"/>
           <transpose offset="0"/>
         </part>
         <part channel="6" name="organ">
-          <range lower="C0" upper="B4"/>
+          <range lower="D5" upper="D7"/>
+          <transpose offset="0"/>
+        </part>
+        <part channel="1" name="piano">
+          <range lower="D5" upper="B9"/>
+          <transpose offset="0"/>
+        </part>
+        <part channel="6" name="organ">
+          <range lower="C0" upper="A#3"/>
           <transpose offset="36"/>
+        </part>
+        <part channel="11" name="organ sweep">
+          <range lower="B3" upper="B3"/>
+          <transpose offset="12"/>
+        </part>
+        <part channel="6" name="organ">
+          <range lower="C4" upper="C#5"/>
+          <transpose offset="24"/>
         </part>
       </section>
       <section name="choir">
