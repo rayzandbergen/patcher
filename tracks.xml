@@ -2567,6 +2567,32 @@
         </part>
       </section>
     </track>
+
+    <track name="Beyond this Life">
+      <section name="brassy">
+        <part channel="2" name="Growl">
+          <range lower="C0" upper="E4"/>
+          <transpose offset="24"/>
+        </part>
+        <part channel="1" name="Brassy">
+          <range lower="F5" upper="G10"/>
+          <transpose offset="-12"/>
+        </part>
+      </section>
+      <section name="Organ">
+        <part channel="3" name="Organ">
+          <range lower="C0" upper="G10"/>
+          <transpose offset="0"/>
+        </part>
+      </section>
+      <section name="Brass">
+        <part channel="4" name="Organ">
+          <range lower="C0" upper="G10"/>
+          <transpose offset="0"/>
+        </part>
+      </section>
+    </track>
+
   </trackDefinitions>
   <setList>
 
