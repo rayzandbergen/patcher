@@ -2468,10 +2468,24 @@
           <transpose offset="0"/>
         </part>
       </section>
+      <section name="piano bridge">
+        <part channel="1" name="piano">
+          <range lower="C0" upper="B9"/>
+          <transpose offset="0"/>
+        </part>
+      </section>
       <section name="piano">
         <part channel="1" name="piano">
           <range lower="C0" upper="B9"/>
           <transpose offset="0"/>
+        </part>
+        <part channel="1" name="piano">
+          <range lower="C0" upper="B9"/>
+          <transpose offset="-12"/>
+        </part>
+        <part channel="4" name="EP">
+          <range lower="C0" upper="B9"/>
+          <transpose offset="+12"/>
         </part>
       </section>
       <section name="clavi solo">
@@ -2546,6 +2560,14 @@
         <part channel="1" name="piano">
           <range lower="C0" upper="B9"/>
           <transpose offset="0"/>
+        </part>
+        <part channel="1" name="piano">
+          <range lower="C0" upper="B9"/>
+          <transpose offset="-12"/>
+        </part>
+        <part channel="4" name="EP">
+          <range lower="C0" upper="B9"/>
+          <transpose offset="+12"/>
         </part>
       </section>
       <section name="solo">
