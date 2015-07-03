@@ -2483,10 +2483,6 @@
           <range lower="C0" upper="B9"/>
           <transpose offset="-12"/>
         </part>
-        <part channel="4" name="EP">
-          <range lower="C0" upper="B9"/>
-          <transpose offset="+12"/>
-        </part>
       </section>
       <section name="clavi solo">
         <part channel="5" name="clavi lo">
@@ -2565,10 +2561,6 @@
           <range lower="C0" upper="B9"/>
           <transpose offset="-12"/>
         </part>
-        <part channel="4" name="EP">
-          <range lower="C0" upper="B9"/>
-          <transpose offset="+12"/>
-        </part>
       </section>
       <section name="solo">
         <part channel="7" name="square lead">
@@ -2590,19 +2582,169 @@
       </section>
     </track>
 
-    <track name="Beyond this Life">
-      <section name="brassy">
+    <track chain="true" name="Beyond this Life">
+      <section name="intro">
         <part channel="2" name="Growl">
           <range lower="C0" upper="E4"/>
           <transpose offset="24"/>
         </part>
+        <part channel="5" name="Growl2">
+          <range lower="C1" upper="E4"/>
+          <transpose offset="-12"/>
+        </part>
         <part channel="1" name="Brassy">
-          <range lower="F5" upper="G10"/>
+          <range lower="F4" upper="B5"/>
+          <transpose offset="0"/>
+        </part>
+        <part channel="8" name="EP Bells">
+          <range lower="F4" upper="B5"/>
+          <transpose offset="-36"/>
+        </part>
+        <part channel="6" name="Piano">
+          <range lower="C6" upper="G10"/>
+          <transpose offset="0"/>
+        </part>
+        <part channel="6" name="Piano">
+          <range lower="C6" upper="G10"/>
           <transpose offset="-12"/>
         </part>
       </section>
-      <section name="Organ">
+      <section name="pad">
+        <part channel="7" name="Pad">
+          <range lower="C0" upper="G10"/>
+          <transpose offset="0"/>
+        </part>
+        <part channel="11" name="Wah">
+          <range lower="C0" upper="G10"/>
+          <transpose offset="0"/>
+        </part>
+      </section>
+      <section name="organ">
         <part channel="3" name="Organ">
+          <range lower="C0" upper="B5"/>
+          <transpose offset="0"/>
+        </part>
+        <part channel="6" name="Piano">
+          <range lower="C6" upper="G10"/>
+          <transpose offset="0"/>
+        </part>
+        <part channel="6" name="Piano">
+          <range lower="C6" upper="G10"/>
+          <transpose offset="-12"/>
+        </part>
+      </section>
+      <section name="theme1">
+        <part channel="2" name="Growl">
+          <range lower="C0" upper="E4"/>
+          <transpose offset="24"/>
+        </part>
+        <part channel="5" name="Growl2">
+          <range lower="C1" upper="E4"/>
+          <transpose offset="-12"/>
+        </part>
+        <part channel="1" name="Brassy">
+          <range lower="F4" upper="B5"/>
+          <transpose offset="0"/>
+        </part>
+        <part channel="8" name="EP Bells">
+          <range lower="F4" upper="B5"/>
+          <transpose offset="-36"/>
+        </part>
+        <part channel="6" name="Piano">
+          <range lower="C6" upper="G10"/>
+          <transpose offset="0"/>
+        </part>
+        <part channel="6" name="Piano">
+          <range lower="C6" upper="G10"/>
+          <transpose offset="-12"/>
+        </part>
+      </section>
+      <section name="pad">
+        <part channel="7" name="Pad">
+          <range lower="C0" upper="G10"/>
+          <transpose offset="0"/>
+        </part>
+        <part channel="11" name="Wah">
+          <range lower="C0" upper="G10"/>
+          <transpose offset="0"/>
+        </part>
+      </section>
+      <section name="organ2">
+        <part channel="3" name="Organ">
+          <range lower="C0" upper="B5"/>
+          <transpose offset="0"/>
+        </part>
+        <part channel="6" name="Piano">
+          <range lower="C6" upper="G10"/>
+          <transpose offset="0"/>
+        </part>
+        <part channel="6" name="Piano">
+          <range lower="C6" upper="G10"/>
+          <transpose offset="-12"/>
+        </part>
+      </section>
+      <section name="slow organ">
+        <part channel="9" name="slow organ">
+          <range lower="C0" upper="G10"/>
+          <transpose offset="0"/>
+        </part>
+      </section>
+      <section name="pad">
+        <part channel="2" name="Growl">
+          <range lower="C0" upper="E4"/>
+          <transpose offset="24"/>
+        </part>
+        <part channel="5" name="Growl2">
+          <range lower="C1" upper="E4"/>
+          <transpose offset="-12"/>
+        </part>
+      </section>
+      <section name="organ4">
+        <part channel="5" name="Growl2">
+          <range lower="C1" upper="E4"/>
+          <transpose offset="12"/>
+        </part>
+        <part channel="5" name="Growl2">
+          <range lower="C1" upper="E4"/>
+          <transpose offset="0"/>
+        </part>
+        <part channel="12" name="Lead">
+          <range lower="C0" upper="B4"/>
+          <transpose offset="24"/>
+        </part>
+        <part channel="10" name="Organ">
+          <range lower="C7" upper="B9"/>
+          <transpose offset="-12"/>
+        </part>
+        <part channel="3" name="Organ">
+          <range lower="C5" upper="B6"/>
+          <transpose offset="-12"/>
+        </part>
+      </section>
+      <section name="organ4 + bass">
+        <part channel="13" name="Growl4">
+          <range lower="C1" upper="E4"/>
+          <transpose offset="12"/>
+        </part>
+        <part channel="5" name="Growl2">
+          <range lower="C1" upper="E4"/>
+          <transpose offset="0"/>
+        </part>
+        <part channel="12" name="Lead">
+          <range lower="C0" upper="B4"/>
+          <transpose offset="24"/>
+        </part>
+        <part channel="10" name="Organ">
+          <range lower="C7" upper="B9"/>
+          <transpose offset="-12"/>
+        </part>
+        <part channel="3" name="Organ">
+          <range lower="C5" upper="B6"/>
+          <transpose offset="-12"/>
+        </part>
+      </section>
+      <section name="pad">
+        <part channel="7" name="Pad">
           <range lower="C0" upper="G10"/>
           <transpose offset="0"/>
         </part>
