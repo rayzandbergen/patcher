@@ -2744,14 +2744,123 @@
         </part>
       </section>
       <section name="pad">
+        <chain nextSection="0" nextTrack="next"/>
         <part channel="7" name="Pad">
           <range lower="C0" upper="G10"/>
           <transpose offset="0"/>
         </part>
       </section>
+      <section>
+        <chain previousSection="0" previousTrack="next"/>
+        <part channel="3" name="Organ">
+          <range lower="C0" upper="B9"/>
+          <transpose offset="0"/>
+        </part>
+      </section>
       <section name="Brass">
-        <part channel="4" name="Organ">
+        <part channel="4" name="Trumpet">
+          <range lower="C4" upper="G10"/>
+          <transpose offset="0"/>
+        </part>
+        <part channel="6" name="EP Bells">
+          <range lower="C0" upper="B3"/>
+          <transpose offset="36"/>
+        </part>
+        <part channel="6" name="EP Bells">
+          <range lower="C0" upper="B3"/>
+          <transpose offset="24"/>
+        </part>
+      </section>
+      <section name="Brass + Xylo">
+        <part channel="4" name="Trumpet">
           <range lower="C0" upper="G10"/>
+          <transpose offset="0"/>
+        </part>
+        <part channel="14" name="Xylo">
+          <range lower="C0" upper="G10"/>
+          <transpose offset="0"/>
+        </part>
+        <part channel="7" name="Pad">
+          <range lower="C0" upper="G10"/>
+          <transpose offset="0"/>
+        </part>
+      </section>
+      <section name="Brass 2">
+        <part channel="4" name="Trumpet">
+          <range lower="C4" upper="G10"/>
+          <transpose offset="0"/>
+        </part>
+        <part channel="6" name="EP Bells">
+          <range lower="C0" upper="B3"/>
+          <transpose offset="36"/>
+        </part>
+        <part channel="6" name="EP Bells">
+          <range lower="C0" upper="B3"/>
+          <transpose offset="24"/>
+        </part>
+      </section>
+      <section name="Brass + Xylo 2">
+        <part channel="4" name="Trumpet">
+          <range lower="C0" upper="G10"/>
+          <transpose offset="0"/>
+        </part>
+        <part channel="14" name="Xylo">
+          <range lower="C0" upper="G10"/>
+          <transpose offset="0"/>
+        </part>
+        <part channel="7" name="Pad">
+          <range lower="C0" upper="G10"/>
+          <transpose offset="0"/>
+        </part>
+      </section>
+      <section name="Perc Organ">
+        <chain nextSection="1" nextTrack="next"/>
+        <part channel="15" name="Perc Organ">
+          <range lower="C0" upper="G10"/>
+          <transpose offset="0"/>
+        </part>
+      </section>
+      <section name="pad">
+        <chain previousSection="1" previousTrack="next"/>
+        <part channel="7" name="Pad">
+          <range lower="C4" upper="G10"/>
+          <transpose offset="0"/>
+        </part>
+        <part channel="16" name="Pad">
+          <range lower="C0" upper="B3"/>
+          <transpose offset="+24"/>
+        </part>
+        <part channel="1" name="Pad">
+          <range lower="C4" upper="E6"/>
+          <transpose offset="12"/>
+        </part>
+      </section>
+      <section name="pad">
+        <part channel="7" name="Pad">
+          <range lower="C0" upper="G10"/>
+          <transpose offset="12"/>
+        </part>
+        <part channel="1" name="Pad">
+          <range lower="C0" upper="G10"/>
+          <transpose offset="0"/>
+        </part>
+      </section>
+    </track>
+
+    <track chain="true" name="Beyond this Life 2">
+      <section name="solo">
+        <chain previousSection="10" previousTrack="previous"
+               nextSection="11" nextTrack="previous"/>
+        <part channel="7" name="square lead">
+          <range lower="C0" upper="B9"/>
+          <transpose offset="0"/>
+        </part>
+      </section>
+      <section name="unison">
+        <chain previousSection="16" previousTrack="previous"
+               nextSection="17" nextTrack="previous"/>
+        <part channel="7" name="square lead">
+          <range lower="C0" upper="B9"/>
           <transpose offset="0"/>
         </part>
       </section>
