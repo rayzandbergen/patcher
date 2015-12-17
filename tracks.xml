@@ -2900,7 +2900,7 @@
           <transpose offset="0" />
         </part>
       </section>
-      <section>
+      <section name="organ">
         <chain previousSection="0" previousTrack="next" />
         <part channel="3" name="Organ">
           <range lower="C0" upper="B9" />
