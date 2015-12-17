@@ -400,7 +400,7 @@
     </track>
 
     <track name="Learning to live">
-      <section name="Section 1">
+      <section name="Intro, flute, hit">
         <part channel="1" name="Gang Strangs">
           <range lower="C#6" upper="G10"/>
           <transpose offset="0"/>
@@ -430,7 +430,7 @@
           <transpose offset="0"/>
         </part>
       </section>
-      <section name="Section 2">
+      <section name="Soft saw lead">
         <part channel="4" name="FS Saw Ld 1">
           <range lower="D4" upper="G10"/>
           <transpose offset="0"/>
@@ -440,7 +440,7 @@
           <transpose offset="0"/>
         </part>
       </section>
-      <section name="Section 3">
+      <section name="String + Bells">
         <part channel="5" name="secret GM">
           <range lower="C0" upper="D6"/>
           <transpose offset="0"/>
@@ -450,7 +450,7 @@
           <transpose offset="0"/>
         </part>
       </section>
-      <section name="Section 4">
+      <section name="Piano">
         <part channel="6" name="So true...">
           <range lower="C0" upper="G10"/>
           <transpose offset="0"/>
@@ -460,7 +460,7 @@
           <transpose offset="0"/>
         </part>
       </section>
-      <section name="Optik'Synth2">
+      <section name="Lead Solo">
         <part channel="8" name="Optik'Synth2">
           <range lower="C0" upper="G10"/>
           <transpose offset="0"/>
