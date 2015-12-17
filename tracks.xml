@@ -49,7 +49,7 @@
     </track>
 
     <track name="Metropolis part I">
-      <section name="Section 1">
+      <section name="Intro">
         <part channel="1" name="Metr PATCH">
           <range lower="C0" upper="E2" />
           <transpose offset="0" />
@@ -63,19 +63,19 @@
           <transpose offset="0" />
         </part>
       </section>
-      <section name="secret GM">
+      <section name="Strings">
         <part channel="7" name="secret GM">
           <range lower="C0" upper="G10" />
           <transpose offset="0" />
         </part>
       </section>
-      <section name="FS Saw Ld 1">
+      <section name="Soft FS Saw Ld 1">
         <part channel="9" name="FS Saw Ld 1">
           <range lower="C0" upper="G10" />
           <transpose offset="0" />
         </part>
       </section>
-      <section name="Section 4">
+      <section name="Dual Solo">
         <part channel="3" name="Optik'Synth2">
           <range lower="D#4" upper="G10" />
           <transpose offset="0" />
@@ -85,7 +85,7 @@
           <transpose offset="0" />
         </part>
       </section>
-      <section name="Section 5">
+      <section name="EP Octave">
         <part channel="5" name="EP Belle">
           <range lower="C0" upper="G10" />
           <transpose offset="0" />
@@ -104,7 +104,7 @@
           <transpose offset="0" />
         </part>
       </section>
-      <section name="Section 2">
+      <section name="Piano Oz">
         <part channel="2" name="Piano Oz">
           <range lower="C0" upper="G10" />
           <transpose offset="0" />
@@ -114,13 +114,13 @@
           <transpose offset="0" />
         </part>
       </section>
-      <section name="secret GM">
+      <section name="Phase Strings">
         <part channel="4" name="secret GM">
           <range lower="C0" upper="G10" />
           <transpose offset="0" />
         </part>
       </section>
-      <section name="Section 4">
+      <section name="Clavi + EP">
         <part channel="5" name="Phase Clavi">
           <range lower="C0" upper="E3" />
           <transpose offset="0" />
