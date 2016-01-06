@@ -601,7 +601,37 @@
           <transpose offset="0" />
         </part>
       </section>
-    <section name="String + Bells">
+      <section name="Intro, flute, hit">
+        <part channel="1" name="Gang Strangs">
+          <range lower="C#6" upper="G10" />
+          <transpose offset="0" />
+        </part>
+        <part channel="2" name="EP Belle">
+          <range lower="C#6" upper="G10" />
+          <transpose offset="0" />
+        </part>
+        <part channel="3" name="Bosporus">
+          <range lower="C#6" upper="G10" />
+          <transpose offset="0" />
+        </part>
+        <part channel="9" name="Spit Flugel">
+          <range lower="C#4" upper="C6" />
+          <transpose offset="0" />
+        </part>
+        <part channel="10" name="Pan Pipes">
+          <range lower="C#4" upper="C6" />
+          <transpose offset="0" />
+        </part>
+        <part channel="13" name="Gang Strangs">
+          <range lower="C0" upper="C4" />
+          <transpose offset="0" />
+        </part>
+        <part channel="14" name="Terra Nostra">
+          <range lower="C0" upper="C4" />
+          <transpose offset="0" />
+        </part>
+      </section>
+      <section name="String + Bells">
         <part channel="5" name="secret GM">
           <range lower="C0" upper="D6" />
           <transpose offset="0" />
