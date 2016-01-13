@@ -3016,7 +3016,7 @@
         </part>
       </section>
       <section name="pad">
-        <chain nextSection="1" nextTrack="36"/>
+        <chain nextSection="0" nextTrack="36"/>
         <part channel="7" name="Pad">
           <range lower="C0" upper="G10" />
           <transpose offset="12" />
