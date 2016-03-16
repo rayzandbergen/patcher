@@ -3066,6 +3066,40 @@
           <transpose offset="0" />
         </part>
       </section>
+      <section name="Piano">
+        <part channel="4" name="piano">
+          <range lower="C0" upper="B9" />
+          <transpose offset="0" />
+        </part>
+      </section>
+      <section name="Piano + pad">
+        <part channel="4" name="piano">
+          <range lower="C0" upper="B9" />
+          <transpose offset="0" />
+        </part>
+        <part channel="1" name="soft pad">
+          <range lower="C0" upper="B9" />
+          <transpose offset="12" />
+        </part>
+      </section>
+      <section name="Piano + pad">
+        <part channel="4" name="piano">
+          <range lower="E4" upper="B9" />
+          <transpose offset="0" />
+        </part>
+        <part channel="1" name="soft pad">
+          <range lower="C4" upper="D4" />
+          <transpose offset="12" />
+        </part>
+        <part channel="5" name="organ">
+          <range lower="C0" upper="D4" />
+          <transpose offset="24" />
+        </part>
+        <part channel="1" name="soft pad">
+          <range lower="C0" upper="D4" />
+          <transpose offset="36" />
+        </part>
+      </section>
     </track>
 
   </trackDefinitions>
