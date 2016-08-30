@@ -3183,25 +3183,20 @@
   </trackDefinitions>
   <setList>
 
-     optie A 
-
     <track name="Overture 1928 2" />
     <track name="Overture 1928" />
-    <track name="About to crash" />
-    <track name="Fatal Tragedy" />
-    <track name="Trial of tears" />
+    <track name="Another Day" />
+    <track name="Hell's kitchen" />
+    <track name="Beyond this Life" />
+    <track name="The test that stumped them all" />
     <track name="Under a glass moon" />
 
-    <track name="A change of seasons 1/2" />
-    <track name="The Mirror" />
-    <track name="Pull me under" />
-
     <track name="Peruvian Skies" />
-    <track name="Only a matter of time" />
     <track name="Erotomania" />
     <track name="Overture 1928" />
-    <track name="Metropolis part I" />
-
+    <track name="The Mirror" />
+    <track name="Through her eyes" />
+    <track name="Pull me under" />
     <track name="The count of Tuscany" />
 
   </setList>
