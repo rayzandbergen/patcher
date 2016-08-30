@@ -3101,6 +3101,84 @@
         </part>
       </section>
     </track>
+    <track chain="true" name="Dance of Eternity">
+      <section name="Arpeggio">
+        <part channel="1" name="Lead">
+          <range lower="D5" upper="B9" />
+          <transpose offset="0" />
+        </part>
+        <part channel="4" name="Marimba">
+          <range lower="D5" upper="B9" />
+          <transpose offset="-12" />
+        </part>
+        <part channel="3" name="perc organ">
+          <range lower="C0" upper="C5" />
+          <transpose offset="0" />
+        </part>
+      </section>
+      <section name="Walking bass">
+        <part channel="2" name="Saw stack">
+          <range lower="D5" upper="B9" />
+          <transpose offset="0" />
+        </part>
+        <part channel="3" name="perc organ">
+          <range lower="C0" upper="C5" />
+          <transpose offset="0" />
+        </part>
+      </section>
+      <section name="Arpeggio 2">
+        <part channel="1" name="Lead">
+          <range lower="D5" upper="B9" />
+          <transpose offset="0" />
+        </part>
+        <part channel="4" name="Marimba">
+          <range lower="D5" upper="B9" />
+          <transpose offset="-12" />
+        </part>
+        <part channel="3" name="perc organ">
+          <range lower="C0" upper="C5" />
+          <transpose offset="0" />
+        </part>
+      </section>
+      <section name="Piano cadence">
+        <part channel="3" name="perc organ">
+          <range lower="C0" upper="C5" />
+          <transpose offset="0" />
+        </part>
+        <part channel="5" name="piano">
+          <range lower="D5" upper="B9" />
+          <transpose offset="-12" />
+        </part>
+      </section>
+      <section name="Arpeggio 3">
+        <part channel="1" name="Lead">
+          <range lower="D5" upper="B9" />
+          <transpose offset="0" />
+        </part>
+        <part channel="4" name="Marimba">
+          <range lower="D5" upper="B9" />
+          <transpose offset="-12" />
+        </part>
+        <part channel="3" name="perc organ">
+          <range lower="C0" upper="C5" />
+          <transpose offset="0" />
+        </part>
+      </section>
+      <section name="Bass + lead">
+        <part channel="6" name="bass">
+          <range lower="C0" upper="B4" />
+          <transpose offset="0" />
+        </part>
+        <part channel="6" name="bass">
+          <range lower="C0" upper="B4" />
+          <transpose offset="-12" />
+        </part>
+        <part channel="7" name="soft lead">
+          <range lower="C5" upper="B9" />
+          <transpose offset="-12" />
+        </part>
+      </section>
+    </track>
 
   </trackDefinitions>
   <setList>
